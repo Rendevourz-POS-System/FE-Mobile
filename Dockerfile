@@ -10,7 +10,7 @@ WORKDIR home-project/app
 COPY package.json yarn.lock ./
 
 # Install app dependencies
-RUN yarn install --frozen-lockfile | npm ci
+RUN yarn install --frozen-lockfile && npm ci
 
 # Copy the entire app directory to the working directory
 COPY . .
