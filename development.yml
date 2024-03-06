@@ -16,5 +16,5 @@ jobs:
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
     - name: Push Image to Docker Registry
-      run: docker push myapp:dev-latest
+      run: docker push shelter-app:dev-latest
     - name: Deploy to Development Environment
