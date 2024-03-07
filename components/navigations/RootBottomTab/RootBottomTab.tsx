@@ -5,6 +5,7 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { FC } from 'react';
 import { Platform, StyleSheet } from 'react-native';
 import HomeScreen from './screens/HomeScreen';
+import { ProfileScreen } from '../Profile/screens/ProfileScreen';
 
 
 const Tab = createBottomTabNavigator<RootBottomTabParams>();
@@ -14,6 +15,13 @@ const homeTabOptions : BottomTabNavigationOptions = {
     tabBarLabel : 'Home',
     tabBarIcon : ({color, size}) => (
         <MaterialCommunityIcons name="home" color={color} size={size} />
+    )
+}
+const profileTabOptions : BottomTabNavigationOptions = {
+    headerShown : false,
+    tabBarLabel : 'Profile',
+    tabBarIcon : ({color, size}) => (
+        <MaterialCommunityIcons name="account" color={color} size={size} />
     )
 }
 
@@ -27,6 +35,7 @@ const RootBottomTab : FC<unknown> = () => {
             }}
         >
             <Tab.Screen name="Home" component={HomeScreen} options={homeTabOptions} />
+            <Tab.Screen name="Profile" component={ProfileScreen} options={profileTabOptions} />
         </Tab.Navigator>
     );
 }
