@@ -41,7 +41,7 @@ export const LoginScreen: FC<RootNavigationStackScreenProps<'LoginScreen'>> = ({
     };
 
     const onSubmit = async (data: LoginFormType) => {
-        console.log(data);
+        navigation.navigate('TabMenu');
     }
 
     return (
