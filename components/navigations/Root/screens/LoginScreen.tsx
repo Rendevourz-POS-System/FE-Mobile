@@ -1,5 +1,5 @@
 import { FC, useState } from "react";
-import { Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { Image, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { CheckBox, Icon } from "react-native-elements";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { RootNavigationStackScreenProps } from "../../StackScreenProps";
@@ -46,11 +46,13 @@ export const LoginScreen: FC<RootNavigationStackScreenProps<'LoginScreen'>> = ({
 
     return (
         <SafeAreaProvider className="flex-1 bg-white">
-            <View className="my-8">
-                <View className="items-center my-10">
-                    <Text className="text-2xl mb-5">Welcome To Our App</Text>
-                    <Image source={require('../../../../assets/logo-login.png')} />
-                </View>
+            <ScrollView>
+
+                <View className="my-8">
+                    <View className="items-center my-10">
+                        <Text className="text-2xl mb-5">Welcome To Our App</Text>
+                        <Image source={require('../../../../assets/logo-login.png')} />
+                    </View>
 
                 <View>
                     <View style={style.inputBox}>
@@ -89,38 +91,39 @@ export const LoginScreen: FC<RootNavigationStackScreenProps<'LoginScreen'>> = ({
                     <Text style={style.errorMessage}>{errors.password?.message}</Text>
                 </View>
 
-                <View className="flex-row justify-between mx-8 top-2">
-                    <CheckBox
-                        checked={rememberMe}
-                        onPress={handleRememberMeChange}
-                        checkedColor="#488DF4"
-                        containerStyle={style.checkboxContent}
-                    ></CheckBox>
-                    <Text style={style.fontColor} className="mt-1">Remember Me</Text>
-                    <TouchableOpacity>
-                        <Text style={style.fontColor} className="mt-1">Forgot Password?</Text>
-                    </TouchableOpacity>
-                </View>
+                    <View className="flex-row justify-between mx-8 top-2">
+                        <CheckBox
+                            checked={rememberMe}
+                            onPress={handleRememberMeChange}
+                            checkedColor="#488DF4"
+                            containerStyle={style.checkboxContent}
+                        ></CheckBox>
+                        <Text style={style.fontColor} className="mt-1">Remember Me</Text>
+                        <TouchableOpacity>
+                            <Text style={style.fontColor} className="mt-1">Forgot Password?</Text>
+                        </TouchableOpacity>
+                    </View>
 
                 <TouchableOpacity style={style.button} onPress={handleSubmit(onSubmit)}>
                     <Text className="text-center font-bold text-white">Sign In</Text>
                 </TouchableOpacity>
 
-                <Text className="text-center my-5 opacity-30">Or Sign In With</Text>
+                    <Text className="text-center my-5 opacity-30">Or Sign In With</Text>
 
-                <View className="flex-row flex justify-evenly">
-                    <Image source={require('../../../../assets/Facebook.png')} />
-                    <Image source={require('../../../../assets/Google.png')} />
-                    <Image source={require('../../../../assets/Instagram.png')} />
-                </View>
+                    <View className="flex-row flex justify-evenly">
+                        <Image source={require('../../../../assets/Facebook.png')} />
+                        <Image source={require('../../../../assets/Google.png')} />
+                        <Image source={require('../../../../assets/Instagram.png')} />
+                    </View>
 
-                <View className="flex-row justify-center top-5">
-                    <Text>Don't have an account?</Text>
-                    <TouchableOpacity onPress={() => navigation.navigate("RegisterScreen")}>
-                        <Text className="underline underline-offset-4" style={style.fontColor}> Sign Up</Text>
-                    </TouchableOpacity>
+                    <View className="flex-row justify-center top-5">
+                        <Text>Don't have an account?</Text>
+                        <TouchableOpacity onPress={() => navigation.navigate("RegisterScreen")}>
+                            <Text className="underline underline-offset-4" style={style.fontColor}> Sign Up</Text>
+                        </TouchableOpacity>
+                    </View>
                 </View>
-            </View>
+            </ScrollView>
         </SafeAreaProvider>
     )
 }

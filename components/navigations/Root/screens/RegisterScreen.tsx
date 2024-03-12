@@ -1,7 +1,7 @@
 import React, { FC, useState } from "react";
 import { RootNavigationStackScreenProps } from "../../StackScreenProps";
 import { SafeAreaProvider } from "react-native-safe-area-context";
-import { View, Text, Image, TextInput, StyleSheet, TouchableOpacity } from "react-native";
+import { View, Text, Image, TextInput, StyleSheet, TouchableOpacity, ScrollView } from "react-native";
 import { Icon } from "react-native-elements";
 import { z } from "zod";
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -16,6 +16,7 @@ const registerFormSchema = z.object({
     message: "Passwords don't match",
     path: ['confirmPassword'],
 });
+
 
 type RegisterFormType = z.infer<typeof registerFormSchema>
 
@@ -53,11 +54,15 @@ export const RegisterScreen: FC<RootNavigationStackScreenProps<'RegisterScreen'>
 
     return (
         <SafeAreaProvider className="flex-1 bg-white">
-            <View className="my-8">
-                <View className="items-center my-10">
-                    <Text className="text-2xl mb-5">Sign Up</Text>
-                    <Image source={require('../../../../assets/logo-register.png')} />
-                </View>
+            <ScrollView>
+                <View className="mb-8">
+                    <View className="items-center my-10">
+                        <View className="absolute left-7 top-1">
+                            <Icon name="arrow-left" type="font-awesome" onPress={() => navigation.goBack()} />
+                        </View>
+                        <Text className="text-2xl mb-5">Sign Up</Text>
+                        <Image source={require('../../../../assets/logo-register.png')} />
+                    </View>
 
                 <View>
                     <View style={style.inputBox}>
@@ -134,17 +139,18 @@ export const RegisterScreen: FC<RootNavigationStackScreenProps<'RegisterScreen'>
                     <Text style={style.errorMessage}>{errors.confirmPassword?.message}</Text>
                 </View>
 
-                <TouchableOpacity style={style.button} onPress={handleSubmit(onSubmit)}>
-                    <Text className="text-center font-bold text-white">Sign Up</Text>
-                </TouchableOpacity>
-
-                <View className="flex-row justify-center top-5">
-                    <Text>Already have an account?</Text>
-                    <TouchableOpacity onPress={() => navigation.navigate("LoginScreen")}>
-                        <Text className="underline underline-offset-4" style={style.fontColor}> Sign In</Text>
+                    <TouchableOpacity style={style.button} onPress={handleSubmit(onSubmit)}>
+                        <Text className="text-center font-bold text-white">Sign Up</Text>
                     </TouchableOpacity>
+
+                    <View className="flex-row justify-center top-5">
+                        <Text>Already have an account?</Text>
+                        <TouchableOpacity onPress={() => navigation.navigate("LoginScreen")}>
+                            <Text className="underline underline-offset-4" style={style.fontColor}> Sign In</Text>
+                        </TouchableOpacity>
+                    </View>
                 </View>
-            </View>
+            </ScrollView>
         </SafeAreaProvider>
     )
 }
