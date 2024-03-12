@@ -3,12 +3,34 @@ import { Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from "reac
 import { CheckBox, Icon } from "react-native-elements";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { RootNavigationStackScreenProps } from "../../StackScreenProps";
+import { z } from "zod";
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Controller, useForm } from 'react-hook-form';
+
+const loginFormSchema = z.object({
+    email: z.string({ required_error: "Email cannot be empty" }).email({ message: "Invalid email address" }),
+    password: z.string({ required_error: "Password cannot be empty" }).min(5, {message: "Password must be more than 5 character"})
+})
+
+type LoginFormType = z.infer<typeof loginFormSchema>
 
 export const LoginScreen: FC<RootNavigationStackScreenProps<'LoginScreen'>> = ({ navigation }) => {
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
     const [rememberMe, setRememberMe] = useState(false);
+
+    const {
+        control,
+        watch,
+        setValue,
+        handleSubmit,
+        formState: { errors },
+    } = useForm<LoginFormType>({
+        resolver: zodResolver(loginFormSchema),
+        defaultValues: {
+            email: undefined,
+            password: undefined,
+        }
+    });
 
     const togglePasswordVisibility = () => {
         setShowPassword(!showPassword);
@@ -18,6 +40,10 @@ export const LoginScreen: FC<RootNavigationStackScreenProps<'LoginScreen'>> = ({
         setRememberMe(!rememberMe);
     };
 
+    const onSubmit = async (data: LoginFormType) => {
+        console.log(data);
+    }
+
     return (
         <SafeAreaProvider className="flex-1 bg-white">
             <View className="my-8">
@@ -26,20 +52,41 @@ export const LoginScreen: FC<RootNavigationStackScreenProps<'LoginScreen'>> = ({
                     <Image source={require('../../../../assets/logo-login.png')} />
                 </View>
 
-                <View style={style.inputBox} className="mb-8">
-                    <TextInput
-                        placeholder="Email"
-                    />
+                <View>
+                    <View style={style.inputBox}>
+                        <Controller
+                            name="email"
+                            control={control}
+                            render={() => (
+                                <TextInput
+                                    placeholder="Email"
+                                    style={{ flex: 1 }}
+                                    onChangeText={(text: string) => setValue('email', text)}
+                                />
+                            )}
+                        />
+                    </View>
+                    <Text style={style.errorMessage}>{errors.email?.message}</Text>
                 </View>
 
-                <View style={style.inputBox}>
-                    <TextInput
-                        placeholder="Password"
-                        style={{flex: 1}}
-                    />
-                    <TouchableOpacity onPress={togglePasswordVisibility} style={style.passwordToggleIcon}>
-                        <Icon name={showPassword ? 'eye-slash' : 'eye'} type="font-awesome" size={18} color="#666" />
-                    </TouchableOpacity>
+                <View>
+                    <View style={style.inputBox}>
+                        <Controller
+                            name="password"
+                            control={control}
+                            render={() => (
+                                <TextInput
+                                    placeholder="Password"
+                                    style={{ flex: 1 }}
+                                    onChangeText={(text: string) => setValue('password', text)}
+                                />
+                            )}
+                        />
+                        <TouchableOpacity onPress={togglePasswordVisibility} style={style.passwordToggleIcon}>
+                            <Icon name={showPassword ? 'eye-slash' : 'eye'} type="font-awesome" size={18} color="#666" />
+                        </TouchableOpacity>
+                    </View>
+                    <Text style={style.errorMessage}>{errors.password?.message}</Text>
                 </View>
 
                 <View className="flex-row justify-between mx-8 top-2">
@@ -55,7 +102,7 @@ export const LoginScreen: FC<RootNavigationStackScreenProps<'LoginScreen'>> = ({
                     </TouchableOpacity>
                 </View>
 
-                <TouchableOpacity style={style.button}>
+                <TouchableOpacity style={style.button} onPress={handleSubmit(onSubmit)}>
                     <Text className="text-center font-bold text-white">Sign In</Text>
                 </TouchableOpacity>
 
@@ -108,5 +155,10 @@ const style = StyleSheet.create({
     passwordToggleIcon: {
         flexDirection: 'row',
         top: 5,
+    },
+    errorMessage: {
+        color: 'red',
+        marginHorizontal: 35,
+        marginBottom: 20,
     },
 })
