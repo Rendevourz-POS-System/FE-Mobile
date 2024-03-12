@@ -81,6 +81,7 @@ export const LoginScreen: FC<RootNavigationStackScreenProps<'LoginScreen'>> = ({
                                     placeholder="Password"
                                     style={{ flex: 1 }}
                                     onChangeText={(text: string) => setValue('password', text)}
+                                    secureTextEntry={!showPassword}
                                 />
                             )}
                         />
