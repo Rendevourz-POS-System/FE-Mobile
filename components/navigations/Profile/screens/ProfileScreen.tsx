@@ -1,7 +1,7 @@
 import { Ionicons, MaterialCommunityIcons, MaterialIcons, Octicons } from "@expo/vector-icons";
 import React, { FC, useState } from "react";
 import { ScrollView, Text, View, StyleSheet, TouchableOpacity } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { SafeAreaProvider } from "react-native-safe-area-context";
 import { ProfileRootBottomTabCompositeScreenProps } from "../../CompositeNavigationProps";
 
 export const ProfileScreen: FC<ProfileRootBottomTabCompositeScreenProps<'ProfileScreen'>> = ({ navigation }) => {
@@ -12,9 +12,9 @@ export const ProfileScreen: FC<ProfileRootBottomTabCompositeScreenProps<'Profile
     };
 
     return (
-        <SafeAreaView style={styles.container}>
+        <SafeAreaProvider style={styles.container}>
             <ScrollView>
-                <View className="my-10">
+                <View className="my-10 mt-20">
                     <View style={styles.rowContainer} className="justify-around">
                         <View className="w-50 h-50 bg-slate-500 p-10 rounded-full"><Text>Test</Text></View>
                         <Text className="text-3xl">David Robinson</Text>
@@ -25,21 +25,21 @@ export const ProfileScreen: FC<ProfileRootBottomTabCompositeScreenProps<'Profile
                     <Text style={styles.title}>Profile</Text>
                     <TouchableOpacity style={styles.rowContainer}>
                         <View style={styles.iconContainer}>
-                            <MaterialCommunityIcons name="account" color="white" size={30} />
+                            <MaterialCommunityIcons name="account" color="white" size={25} />
                         </View>
                         <Text style={styles.text}>Manage User</Text>
                         <View style={styles.nextIconContainer}>
-                            <MaterialIcons name="navigate-next" size={30} color="black" />
+                            <MaterialIcons name="navigate-next" size={25} color="black" />
                         </View>
                     </TouchableOpacity>
                     <TouchableOpacity style={styles.rowContainer} onPress={handleSwitchUserType}>
                         <View style={styles.iconContainer}>
-                            <Octicons name="arrow-switch" size={30} color="white" />
+                            <Octicons name="arrow-switch" size={25} color="white" />
                         </View>
                         {userType == 'user' && (<Text style={styles.text}>Switch to Shelter</Text>)}
                         {userType == 'shelter' && (<Text style={styles.text}>Switch to User</Text>)}
                         <View style={styles.nextIconContainer}>
-                            <MaterialIcons name="navigate-next" size={30} color="black" />
+                            <MaterialIcons name="navigate-next" size={25} color="black" />
                         </View>
                     </TouchableOpacity>
                 </View>
@@ -48,39 +48,39 @@ export const ProfileScreen: FC<ProfileRootBottomTabCompositeScreenProps<'Profile
                     <Text style={styles.title}>Settings</Text>
                     <TouchableOpacity style={styles.rowContainer}>
                         <View style={styles.iconContainer}>
-                            <Ionicons name="notifications" size={30} color="white" />
+                            <Ionicons name="notifications" size={25} color="white" />
                         </View>
                         <Text style={styles.text}>Notifications</Text>
                         <View style={styles.nextIconContainer}>
-                            <MaterialIcons name="navigate-next" size={30} color="black" />
+                            <MaterialIcons name="navigate-next" size={25} color="black" />
                         </View>
                     </TouchableOpacity>
                     <TouchableOpacity style={styles.rowContainer}>
                         <View style={styles.iconContainer}>
-                            <Ionicons name="receipt-outline" size={28} color="white" />
+                            <Ionicons name="receipt-outline" size={25} color="white" />
                         </View>
                         <Text style={styles.text}>History List</Text>
                         <View style={styles.nextIconContainer}>
-                            <MaterialIcons name="navigate-next" size={30} color="black" />
+                            <MaterialIcons name="navigate-next" size={25} color="black" />
                         </View>
                     </TouchableOpacity>
                     {userType == 'shelter' && (<>
                         <TouchableOpacity style={styles.rowContainer}>
                             <View style={styles.iconContainer}>
-                                <Octicons name="checklist" size={28} color="white" />
+                                <Octicons name="checklist" size={22} color="white" />
                             </View>
                             <Text style={styles.text}>Approval List</Text>
                             <View style={styles.nextIconContainer}>
-                                <MaterialIcons name="navigate-next" size={30} color="black" />
+                                <MaterialIcons name="navigate-next" size={25} color="black" />
                             </View>
                         </TouchableOpacity>
                         <TouchableOpacity style={styles.rowContainer}>
                             <View style={styles.iconContainer}>
-                                <MaterialCommunityIcons name="bone" size={30} color="white" />
+                                <MaterialCommunityIcons name="bone" size={25} color="white" />
                             </View>
                             <Text style={styles.text}>Pet List</Text>
                             <View style={styles.nextIconContainer}>
-                                <MaterialIcons name="navigate-next" size={30} color="black" />
+                                <MaterialIcons name="navigate-next" size={25} color="black" />
                             </View>
                         </TouchableOpacity>
                     </>)}
@@ -92,18 +92,18 @@ export const ProfileScreen: FC<ProfileRootBottomTabCompositeScreenProps<'Profile
                     </TouchableOpacity>
                 </View>
             </ScrollView>
-        </SafeAreaView>
+        </SafeAreaProvider>
     );
 }
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
+        flex:1,
         backgroundColor: 'white',
     },
     title: {
         fontWeight: 'bold',
-        fontSize: 25,
+        fontSize: 20,
         bottom: 15
     },
     rowContainer: {
@@ -115,8 +115,8 @@ const styles = StyleSheet.create({
         backgroundColor: "#4689FD",
         padding: 5,
         borderRadius: 100,
-        width: 50,
-        height: 50,
+        width: 45,
+        height: 45,
         alignItems: 'center',
         justifyContent: 'center',
         marginRight: 10
@@ -127,14 +127,14 @@ const styles = StyleSheet.create({
         padding: 5
     },
     text: {
-        fontSize: 20,
+        fontSize: 18,
         left: 20,
         marginRight: 'auto',
         fontWeight: '600'
     },
     signOutText: {
-        fontSize: 20,
-        left: 20,
+        fontSize: 18,
+        left: 35,
         marginRight: 'auto',
         fontWeight: '600',
         color: '#4689FD'
