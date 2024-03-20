@@ -4,8 +4,8 @@ import { RootBottomTabParams } from './RootBottomTabParams';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { FC } from 'react';
 import { Platform, StyleSheet } from 'react-native';
+import { ProfileNavigationStack } from '../Profile/ProfileNavigationStack';
 import HomeScreen from './screens/HomeScreen';
-import { ProfileScreen } from '../Profile/screens/ProfileScreen';
 
 
 const Tab = createBottomTabNavigator<RootBottomTabParams>();
@@ -35,7 +35,7 @@ const RootBottomTab : FC<unknown> = () => {
             }}
         >
             <Tab.Screen name="Home" component={HomeScreen} options={homeTabOptions} />
-            <Tab.Screen name="Profile" component={ProfileScreen} options={profileTabOptions} />
+            <Tab.Screen name="Profile" component={ProfileNavigationStack} options={profileTabOptions} />
         </Tab.Navigator>
     );
 }
