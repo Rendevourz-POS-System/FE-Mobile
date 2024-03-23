@@ -116,24 +116,22 @@ export const ManageScreen: FC<ProfileRootBottomTabCompositeScreenProps<'ManageSc
                 </View>
                 <Text style={styles.errorMessage}>{errors.email?.message}</Text>
 
-                <View>
-                    <View style={styles.inputBox}>
-                        <Controller
-                            name="phoneNumber"
-                            control={control}
-                            render={({ field: { value } }) => (
-                                <TextInput
-                                    style={{ flex: 1 }}
-                                    placeholder="Phone Number"
-                                    onChangeText={(text: string) => setValue('phoneNumber', text)}
-                                    value={value}
-                                />
-                            )}
-                        />
-                        <FontAwesome6 name="edit" size={24} color="black" />
-                    </View>
-                    <Text style={styles.errorMessage}>{errors.phoneNumber?.message}</Text>
+                <View style={styles.inputBox}>
+                    <Controller
+                        name="phoneNumber"
+                        control={control}
+                        render={({ field: { value } }) => (
+                            <TextInput
+                                style={{ flex: 1 }}
+                                placeholder="Phone Number"
+                                onChangeText={(text: string) => setValue('phoneNumber', text)}
+                                value={value}
+                            />
+                        )}
+                    />
+                    <FontAwesome6 name="edit" size={24} color="black" />
                 </View>
+                <Text style={styles.errorMessage}>{errors.phoneNumber?.message}</Text>
 
                 <View style={styles.inputBox}>
                     <Controller

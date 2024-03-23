@@ -54,43 +54,39 @@ export const LoginScreen: FC<RootNavigationStackScreenProps<'LoginScreen'>> = ({
                         <Image source={require('../../../../assets/logo-login.png')} />
                     </View>
 
-                    <View>
-                        <View style={style.inputBox}>
-                            <Controller
-                                name="email"
-                                control={control}
-                                render={() => (
-                                    <TextInput
-                                        placeholder="Email"
-                                        style={{ flex: 1 }}
-                                        onChangeText={(text: string) => setValue('email', text)}
-                                    />
-                                )}
-                            />
-                        </View>
-                        <Text style={style.errorMessage}>{errors.email?.message}</Text>
+                    <View style={style.inputBox}>
+                        <Controller
+                            name="email"
+                            control={control}
+                            render={() => (
+                                <TextInput
+                                    placeholder="Email"
+                                    style={{ flex: 1 }}
+                                    onChangeText={(text: string) => setValue('email', text)}
+                                />
+                            )}
+                        />
                     </View>
+                    <Text style={style.errorMessage}>{errors.email?.message}</Text>
 
-                    <View>
-                        <View style={style.inputBox}>
-                            <Controller
-                                name="password"
-                                control={control}
-                                render={() => (
-                                    <TextInput
-                                        placeholder="Password"
-                                        style={{ flex: 1 }}
-                                        onChangeText={(text: string) => setValue('password', text)}
-                                        secureTextEntry={!showPassword}
-                                    />
-                                )}
-                            />
-                            <TouchableOpacity onPress={togglePasswordVisibility} style={style.passwordToggleIcon}>
-                                <Icon name={showPassword ? 'eye-slash' : 'eye'} type="font-awesome" size={18} color="#666" />
-                            </TouchableOpacity>
-                        </View>
-                        <Text style={style.errorMessage}>{errors.password?.message}</Text>
+                    <View style={style.inputBox}>
+                        <Controller
+                            name="password"
+                            control={control}
+                            render={() => (
+                                <TextInput
+                                    placeholder="Password"
+                                    style={{ flex: 1 }}
+                                    onChangeText={(text: string) => setValue('password', text)}
+                                    secureTextEntry={!showPassword}
+                                />
+                            )}
+                        />
+                        <TouchableOpacity onPress={togglePasswordVisibility} style={style.passwordToggleIcon}>
+                            <Icon name={showPassword ? 'eye-slash' : 'eye'} type="font-awesome" size={18} color="#666" />
+                        </TouchableOpacity>
                     </View>
+                    <Text style={style.errorMessage}>{errors.password?.message}</Text>
 
                     <View className="flex-row justify-between mx-8 top-2">
                         <CheckBox
