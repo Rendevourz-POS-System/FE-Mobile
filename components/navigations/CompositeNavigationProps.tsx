@@ -14,6 +14,6 @@ export type ProfileRootBottomTabCompositeScreenProps<T extends keyof ProfileNavi
     NativeStackScreenProps<ProfileNavigationStackParams, T>,
     CompositeScreenProps<
         BottomTabScreenProps<RootBottomTabParams>,
-        NativeStackScreenProps<RootNavigationStackParams>
+        NativeStackScreenProps<ProfileNavigationStackParams>
     >
 >;

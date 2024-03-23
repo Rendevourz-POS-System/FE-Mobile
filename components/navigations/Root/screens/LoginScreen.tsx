@@ -9,7 +9,7 @@ import { Controller, useForm } from 'react-hook-form';
 
 const loginFormSchema = z.object({
     email: z.string({ required_error: "Email cannot be empty" }).email({ message: "Invalid email address" }),
-    password: z.string({ required_error: "Password cannot be empty" }).min(5, {message: "Password must be more than 5 character"})
+    password: z.string({ required_error: "Password cannot be empty" }).min(5, { message: "Password must be more than 5 character" })
 })
 
 type LoginFormType = z.infer<typeof loginFormSchema>
@@ -54,43 +54,43 @@ export const LoginScreen: FC<RootNavigationStackScreenProps<'LoginScreen'>> = ({
                         <Image source={require('../../../../assets/logo-login.png')} />
                     </View>
 
-                <View>
-                    <View style={style.inputBox}>
-                        <Controller
-                            name="email"
-                            control={control}
-                            render={() => (
-                                <TextInput
-                                    placeholder="Email"
-                                    style={{ flex: 1 }}
-                                    onChangeText={(text: string) => setValue('email', text)}
-                                />
-                            )}
-                        />
+                    <View>
+                        <View style={style.inputBox}>
+                            <Controller
+                                name="email"
+                                control={control}
+                                render={() => (
+                                    <TextInput
+                                        placeholder="Email"
+                                        style={{ flex: 1 }}
+                                        onChangeText={(text: string) => setValue('email', text)}
+                                    />
+                                )}
+                            />
+                        </View>
+                        <Text style={style.errorMessage}>{errors.email?.message}</Text>
                     </View>
-                    <Text style={style.errorMessage}>{errors.email?.message}</Text>
-                </View>
 
-                <View>
-                    <View style={style.inputBox}>
-                        <Controller
-                            name="password"
-                            control={control}
-                            render={() => (
-                                <TextInput
-                                    placeholder="Password"
-                                    style={{ flex: 1 }}
-                                    onChangeText={(text: string) => setValue('password', text)}
-                                    secureTextEntry={!showPassword}
-                                />
-                            )}
-                        />
-                        <TouchableOpacity onPress={togglePasswordVisibility} style={style.passwordToggleIcon}>
-                            <Icon name={showPassword ? 'eye-slash' : 'eye'} type="font-awesome" size={18} color="#666" />
-                        </TouchableOpacity>
+                    <View>
+                        <View style={style.inputBox}>
+                            <Controller
+                                name="password"
+                                control={control}
+                                render={() => (
+                                    <TextInput
+                                        placeholder="Password"
+                                        style={{ flex: 1 }}
+                                        onChangeText={(text: string) => setValue('password', text)}
+                                        secureTextEntry={!showPassword}
+                                    />
+                                )}
+                            />
+                            <TouchableOpacity onPress={togglePasswordVisibility} style={style.passwordToggleIcon}>
+                                <Icon name={showPassword ? 'eye-slash' : 'eye'} type="font-awesome" size={18} color="#666" />
+                            </TouchableOpacity>
+                        </View>
+                        <Text style={style.errorMessage}>{errors.password?.message}</Text>
                     </View>
-                    <Text style={style.errorMessage}>{errors.password?.message}</Text>
-                </View>
 
                     <View className="flex-row justify-between mx-8 top-2">
                         <CheckBox
@@ -105,9 +105,9 @@ export const LoginScreen: FC<RootNavigationStackScreenProps<'LoginScreen'>> = ({
                         </TouchableOpacity>
                     </View>
 
-                <TouchableOpacity style={style.button} onPress={handleSubmit(onSubmit)}>
-                    <Text className="text-center font-bold text-white">Sign In</Text>
-                </TouchableOpacity>
+                    <TouchableOpacity style={style.button} onPress={handleSubmit(onSubmit)}>
+                        <Text className="text-center font-bold text-white">Sign In</Text>
+                    </TouchableOpacity>
 
                     <Text className="text-center my-5 opacity-30">Or Sign In With</Text>
 
