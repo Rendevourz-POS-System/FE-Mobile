@@ -9,7 +9,7 @@ import { Controller, useForm } from 'react-hook-form';
 
 const loginFormSchema = z.object({
     email: z.string({ required_error: "Email cannot be empty" }).email({ message: "Invalid email address" }),
-    password: z.string({ required_error: "Password cannot be empty" }).min(5, { message: "Password must be more than 5 character" })
+    password: z.string({ required_error: "Password cannot be empty" })
 })
 
 type LoginFormType = z.infer<typeof loginFormSchema>
@@ -88,18 +88,20 @@ export const LoginScreen: FC<RootNavigationStackScreenProps<'LoginScreen'>> = ({
                     </View>
                     <Text style={style.errorMessage}>{errors.password?.message}</Text>
 
-                    <View className="flex-row justify-between mx-8 top-2">
-                        <CheckBox
-                            checked={rememberMe}
-                            onPress={handleRememberMeChange}
-                            checkedColor="#488DF4"
-                            containerStyle={style.checkboxContent}
-                        ></CheckBox>
-                        <Text style={style.fontColor} className="mt-1">Remember Me</Text>
-                        <TouchableOpacity>
-                            <Text style={style.fontColor} className="mt-1">Forgot Password?</Text>
-                        </TouchableOpacity>
-                    </View>
+                <View className="flex-row justify-between mx-8 top-2">
+                    <CheckBox
+                        checked={rememberMe}
+                        onPress={handleRememberMeChange}
+                        checkedColor="#488DF4"
+                        containerStyle={style.checkboxContent}
+                        title={"Remember Me"}
+                        className="mt-1"
+                        textStyle={style.fontColor}
+                    ></CheckBox>
+                    <TouchableOpacity>
+                        <Text style={style.fontColor} className="mt-1">Forgot Password?</Text>
+                    </TouchableOpacity>
+                </View>
 
                     <TouchableOpacity style={style.button} onPress={handleSubmit(onSubmit)}>
                         <Text className="text-center font-bold text-white">Sign In</Text>
@@ -151,6 +153,7 @@ const style = StyleSheet.create({
         marginLeft: -5,
         marginRight: -100,
         marginTop: -10,
+        borderColor: 'transparent',
     },
     passwordToggleIcon: {
         flexDirection: 'row',
