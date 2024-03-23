@@ -23,7 +23,7 @@ export const ProfileScreen: FC<ProfileRootBottomTabCompositeScreenProps<'Profile
 
                 <View className="mx-5">
                     <Text style={styles.title}>Profile</Text>
-                    <TouchableOpacity style={styles.rowContainer}>
+                    <TouchableOpacity style={styles.rowContainer} onPress={() => navigation.navigate("ManageScreen")}>
                         <View style={styles.iconContainer}>
                             <MaterialCommunityIcons name="account" color="white" size={25} />
                         </View>

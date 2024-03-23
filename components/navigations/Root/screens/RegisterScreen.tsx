@@ -6,12 +6,13 @@ import { Icon } from "react-native-elements";
 import { z } from "zod";
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Controller, useForm } from 'react-hook-form';
+import { Ionicons } from "@expo/vector-icons";
 
 const registerFormSchema = z.object({
-    name: z.string({ required_error: "Name cannot be empty" }).min(5, {message:"Name must be more than 5 character"}),
+    name: z.string({ required_error: "Name cannot be empty" }).min(5, { message: "Name must be more than 5 character" }),
     email: z.string({ required_error: "Email cannot be empty" }).email({ message: "Invalid email address" }),
-    password: z.string({ required_error: "Password cannot be empty" }).min(5, {message: "Password must be more than 5 character"}),
-    confirmPassword: z.string({ required_error: "Confirm Password cannot be empty" }).min(5, {message: "Password must be more than 5 character"})
+    password: z.string({ required_error: "Password cannot be empty" }).min(5, { message: "Password must be more than 5 character" }),
+    confirmPassword: z.string({ required_error: "Confirm Password cannot be empty" }).min(5, { message: "Password must be more than 5 character" })
 }).refine((data) => data.password === data.confirmPassword, {
     message: "Passwords don't match",
     path: ['confirmPassword'],
@@ -58,13 +59,12 @@ export const RegisterScreen: FC<RootNavigationStackScreenProps<'RegisterScreen'>
                 <View className="mb-8">
                     <View className="items-center my-10">
                         <View className="absolute left-7 top-1">
-                            <Icon name="arrow-left" type="font-awesome" onPress={() => navigation.goBack()} />
+                            <Ionicons name="chevron-back" size={24} color="black" onPress={() => navigation.goBack()} />
                         </View>
                         <Text className="text-2xl mb-5">Sign Up</Text>
                         <Image source={require('../../../../assets/logo-register.png')} />
                     </View>
 
-                <View>
                     <View style={style.inputBox}>
                         <Controller
                             name="name"
@@ -76,13 +76,11 @@ export const RegisterScreen: FC<RootNavigationStackScreenProps<'RegisterScreen'>
                                     onChangeText={(text: string) => setValue('name', text)}
                                 />
                             )}
-                            
+
                         />
                     </View>
                     <Text style={style.errorMessage}>{errors.name?.message}</Text>
-                </View>
 
-                <View>
                     <View style={style.inputBox}>
                         <Controller
                             name="email"
@@ -97,9 +95,7 @@ export const RegisterScreen: FC<RootNavigationStackScreenProps<'RegisterScreen'>
                         />
                     </View>
                     <Text style={style.errorMessage}>{errors.email?.message}</Text>
-                </View>
 
-                <View>
                     <View style={style.inputBox}>
                         <Controller
                             name="password"
@@ -117,9 +113,7 @@ export const RegisterScreen: FC<RootNavigationStackScreenProps<'RegisterScreen'>
                         </TouchableOpacity>
                     </View>
                     <Text style={style.errorMessage}>{errors.password?.message}</Text>
-                </View>
 
-                <View>
                     <View style={style.inputBox}>
                         <Controller
                             name="confirmPassword"
@@ -137,7 +131,6 @@ export const RegisterScreen: FC<RootNavigationStackScreenProps<'RegisterScreen'>
                         </TouchableOpacity>
                     </View>
                     <Text style={style.errorMessage}>{errors.confirmPassword?.message}</Text>
-                </View>
 
                     <TouchableOpacity style={style.button} onPress={handleSubmit(onSubmit)}>
                         <Text className="text-center font-bold text-white">Sign Up</Text>
