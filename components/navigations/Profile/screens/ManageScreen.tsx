@@ -80,23 +80,20 @@ export const ManageScreen: FC<ProfileRootBottomTabCompositeScreenProps<'ManageSc
                     </View>
                 </View>
 
-                <View>
-                    <View style={styles.inputBox}>
-                        <Controller
-                            name="name"
-                            control={control}
-                            render={({ field: { onChange, value } }) => (
-                                <TextInput
-                                    style={{ flex: 1 }}
-                                    placeholder="Name"
-                                    onChangeText={(text: string) => setValue('name', text)}
-                                    value={value}
-                                />
-                            )}
-                        />
-                        <FontAwesome6 name="edit" size={24} color="black" />
-                    </View>
-                    <Text style={styles.errorMessage}>{errors.name?.message}</Text>
+                <View style={styles.inputBox}>
+                    <Controller
+                        name="name"
+                        control={control}
+                        render={({ field: { value } }) => (
+                            <TextInput
+                                style={{ flex: 1 }}
+                                placeholder="Name"
+                                onChangeText={(text: string) => setValue('name', text)}
+                                value={value}
+                            />
+                        )}
+                    />
+                    <FontAwesome6 name="edit" size={24} color="black" />
                 </View>
 
                 <View style={styles.inputBox}>

@@ -47,7 +47,6 @@ export const LoginScreen: FC<RootNavigationStackScreenProps<'LoginScreen'>> = ({
     return (
         <SafeAreaProvider className="flex-1 bg-white">
             <ScrollView>
-
                 <View className="my-8">
                     <View className="items-center my-10">
                         <Text className="text-2xl mb-5">Welcome To Our App</Text>
@@ -88,20 +87,20 @@ export const LoginScreen: FC<RootNavigationStackScreenProps<'LoginScreen'>> = ({
                     </View>
                     <Text style={style.errorMessage}>{errors.password?.message}</Text>
 
-                <View className="flex-row justify-between mx-8 top-2">
-                    <CheckBox
-                        checked={rememberMe}
-                        onPress={handleRememberMeChange}
-                        checkedColor="#488DF4"
-                        containerStyle={style.checkboxContent}
-                        title={"Remember Me"}
-                        className="mt-1"
-                        textStyle={style.fontColor}
-                    ></CheckBox>
-                    <TouchableOpacity>
-                        <Text style={style.fontColor} className="mt-1">Forgot Password?</Text>
-                    </TouchableOpacity>
-                </View>
+                    <View className="flex-row justify-between mx-8 top-2">
+                        <CheckBox
+                            checked={rememberMe}
+                            onPress={handleRememberMeChange}
+                            checkedColor="#488DF4"
+                            containerStyle={style.checkboxContent}
+                            title={"Remember Me"}
+                            className="mt-1"
+                            textStyle={style.fontColor}
+                        ></CheckBox>
+                        <TouchableOpacity>
+                            <Text style={style.fontColor} className="mt-1">Forgot Password?</Text>
+                        </TouchableOpacity>
+                    </View>
 
                     <TouchableOpacity style={style.button} onPress={handleSubmit(onSubmit)}>
                         <Text className="text-center font-bold text-white">Sign In</Text>
