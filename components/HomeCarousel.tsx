@@ -37,7 +37,6 @@ const styles = StyleSheet.create({
     image : {
         height: '100%',
         width: '100%',
-        borderRadius: 25
     },
     carousel : {
         height: '100%',
@@ -46,10 +45,11 @@ const styles = StyleSheet.create({
     carouselContainer : {
         height: 200,
         width: '100%',
-        borderRadius: 10,
+        borderRadius: 25,
         overflow: 'hidden',
-        marginHorizontal: 10,
-        marginTop : 10
+        marginHorizontal: 20,
+        marginTop : 10,
+        marginLeft: 0
     }
 })
 
