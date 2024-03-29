@@ -27,7 +27,7 @@ export const ProfileScreen: FC<ProfileRootBottomTabCompositeScreenProps<'Profile
                         <View style={styles.iconContainer}>
                             <MaterialCommunityIcons name="account" color="white" size={25} />
                         </View>
-                        <Text style={styles.text}>Manage User</Text>
+                        <Text style={styles.text}>Manage Profile</Text>
                         <View style={styles.nextIconContainer}>
                             <MaterialIcons name="navigate-next" size={25} color="black" />
                         </View>
@@ -46,7 +46,7 @@ export const ProfileScreen: FC<ProfileRootBottomTabCompositeScreenProps<'Profile
 
                 <View className="mx-5 my-5">
                     <Text style={styles.title}>Settings</Text>
-                    <TouchableOpacity style={styles.rowContainer}>
+                    <TouchableOpacity style={styles.rowContainer} onPress={() => navigation.navigate("NotificationScreen")}>
                         <View style={styles.iconContainer}>
                             <Ionicons name="notifications" size={25} color="white" />
                         </View>

@@ -63,11 +63,12 @@ export const ManageScreen: FC<ProfileRootBottomTabCompositeScreenProps<'ManageSc
     return (
         <SafeAreaProvider style={styles.container}>
             <ScrollView>
-                <View className="mt-20 flex justify-normal left-5">
-                    <Ionicons name="chevron-back" size={24} color="black" onPress={() => navigation.goBack()} />
+                <View className="mt-20 flex-row items-center justify-center">
+                    <Ionicons name="chevron-back" size={24} color="black" onPress={() => navigation.goBack()} style={{ position: 'absolute', left: 20 }} />
+                    <Text className="text-xl">Manage Profile</Text>
                 </View>
 
-                <View className="mb-10 mt-5">
+                <View className="mb-10 mt-10">
                     <View style={styles.rowContainer} className="justify-around">
                         <TouchableOpacity
                             style={{ width: 100, height: 100, backgroundColor: '#2E3A59', borderRadius: 50, justifyContent: 'center', alignItems: 'center' }}
@@ -95,6 +96,7 @@ export const ManageScreen: FC<ProfileRootBottomTabCompositeScreenProps<'ManageSc
                     />
                     <FontAwesome6 name="edit" size={24} color="black" />
                 </View>
+                <Text style={styles.errorMessage}>{errors.name?.message}</Text>
 
                 <View style={styles.inputBox}>
                     <Controller
