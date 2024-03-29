@@ -55,7 +55,7 @@ export const ProfileScreen: FC<ProfileRootBottomTabCompositeScreenProps<'Profile
                             <MaterialIcons name="navigate-next" size={25} color="black" />
                         </View>
                     </TouchableOpacity>
-                    <TouchableOpacity style={styles.rowContainer}>
+                    <TouchableOpacity style={styles.rowContainer} onPress={() => navigation.navigate("HistoryScreen")}>
                         <View style={styles.iconContainer}>
                             <Ionicons name="receipt-outline" size={25} color="white" />
                         </View>
