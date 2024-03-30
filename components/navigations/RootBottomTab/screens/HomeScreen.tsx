@@ -1,88 +1,83 @@
 import React from 'react';
-import { Text, View, Image, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
-import { AntDesign } from '@expo/vector-icons';
+import { Image, ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-
-const sheltersData = [
-    { id: 1, name: 'Shelter 1', imageUrl: require('../../../../assets/image.png') },
-    { id: 2, name: 'Shelter 2', imageUrl: require('../../../../assets/image.png') },
-    { id: 3, name: 'Shelter 3', imageUrl: require('../../../../assets/image.png') },
-    { id: 4, name: 'Shelter 4', imageUrl: require('../../../../assets/image.png') },
-    { id: 5, name: 'Shelter 5', imageUrl: require('../../../../assets/image.png') },
-    { id: 6, name: 'Shelter 6', imageUrl: require('../../../../assets/image.png') },
-    { id: 7, name: 'Shelter 7', imageUrl: require('../../../../assets/image.png') },
-    { id: 8, name: 'Shelter 8', imageUrl: require('../../../../assets/image.png') },
-];
+import TopNavigation from '../../../TopNavigation';
+import HomeCarousel from '../../../HomeCarousel';
+import { Input, Text } from 'react-native-elements';
+import { FontAwesome, FontAwesome6, MaterialCommunityIcons } from '@expo/vector-icons';
 
 const HomeScreen = () => {
 
-    const renderHistory = () => {
-        return (
-            <View>
-                <View className='mt-10 flex-row flex items-center justify-between'>
-                    <Text className='text-lg font-bold'>Recent History</Text>
-                    <TouchableOpacity><Text>See All</Text></TouchableOpacity>
+    return (
+        <SafeAreaView className='flex-1 m-3'>
+            <ScrollView>
+                <TopNavigation />
+                <HomeCarousel />
+                <View className='mx-1 mt-4 '>
+                    <Text className='text-xl font-bold'>Find a Pet or Shelter</Text>
+                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                        <Input
+                            placeholder='Search'
+                            leftIcon={{ type: 'font-awesome', name: 'search' }}
+                            inputContainerStyle={{ marginTop: 10, borderWidth: 1, borderRadius: 22, borderColor: 'grey', width: '85%'}}
+                            leftIconContainerStyle={{ marginLeft: 10 }}
+                        />
+                        <MaterialCommunityIcons name='tune-variant' size={24} color='black' 
+                            style={{marginLeft: -68,marginTop: -15, borderWidth: 1, borderRadius: 22, padding : 14}} 
+                        />
+                    </View>
                 </View>
 
-                <View className='mt-3 flex-row items-center bg-blue-100 p-3 rounded-md'>
-                    <AntDesign name="notification" size={20} color="black" />
-                    <Text className='text-base ml-3'>Donate Rp. 50.000 to Shelter 1</Text>
-                </View>
-            </View>
-        );
-    }
-
-    const renderShelter = () => {
-        return (
-            <View>
-                <View className='mt-10 flex-row flex items-center justify-between'>
-                    <Text className='text-lg font-bold'>Shelter List</Text>
-                    <TouchableOpacity><Text>See All</Text></TouchableOpacity>
-                </View>
-
-                {sheltersData.map((shelter) => (
-                    <View key={shelter.id} className='my-3 p-3 border-[3px] rounded-md border-blue-900 flex-row flex items-center justify-between'>
-                        <Image source={shelter.imageUrl} style={styles.shelterImage} />
-                        <View className='items-center mr-10'>
-                            <Text className='mb-3'>{shelter.name}</Text>
-                            <TouchableOpacity>
-                                <Text className='py-2 px-5 bg-blue-100 rounded-md'>View</Text>
-                            </TouchableOpacity>
+                <View style={{ overflow: 'hidden' }}>
+                    <Image source={require('../../../../assets/image.png')} style={{ width: '100%', height: 300, marginTop: 10 }} />
+                    <View style={{ position: 'absolute', top: 170, left: 0, right: 0, bottom: 0 }}>
+                        <View className='border-t-2 rounded-t-3xl mt-5' style={{ marginTop: 10, backgroundColor: "#FFFDFF", paddingHorizontal: 20, paddingVertical: 15 }}>
+                            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                                <Text className='text-xl font-bold'>Shelter Hewan Jakarta</Text>
+                                <FontAwesome name='heart-o' size={30} color='blue' style={{marginEnd: 10}}/>
+                            </View>
+                            <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10 }}>
+                                <FontAwesome6 name='location-dot' size={24} color='blue' style={{marginEnd: 5}}/>
+                                <Text className='text-base font-light'>Jl. Kebon Jeruk Raya No. 1, Jakarta Barat</Text>
+                            </View>
+                            <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10 }}>
+                                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', flex: 1 }}>
+                                    <FontAwesome6 name='cat' size={24} color='black' style={{marginEnd: 5}}/>
+                                    <FontAwesome6 name='dog' size={24} color='black' style={{marginEnd: 5}}/>
+                                    <MaterialCommunityIcons name='rabbit' size={24} color='black' style={{marginEnd: 5}}/>
+                                </View>
+                            </View>
                         </View>
                     </View>
-                ))}
+                </View>
+                <View style={{ overflow: 'hidden' }} className='mt-3'>
+                    <Image source={require('../../../../assets/image.png')} style={{ width: '100%', height: 300, marginTop: 10 }} />
+                    <View style={{ position: 'absolute', top: 170, left: 0, right: 0, bottom: 0 }}>
+                        <View className='border-t-2 rounded-t-3xl mt-5' style={{ marginTop: 10, backgroundColor: "#FFFDFF", paddingHorizontal: 20, paddingVertical: 15 }}>
+                            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                                <Text className='text-xl font-bold'>Shelter Hewan Jakarta</Text>
+                                <FontAwesome name='heart-o' size={30} color='blue' style={{marginEnd: 10}}/>
+                            </View>
+                            <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10 }}>
+                                <FontAwesome6 name='location-dot' size={24} color='blue' style={{marginEnd: 5}}/>
+                                <Text className='text-base font-light'>Jl. Kebon Jeruk Raya No. 1, Jakarta Barat</Text>
+                            </View>
+                            <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10 }}>
+                                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', flex: 1 }}>
+                                    <FontAwesome6 name='cat' size={24} color='black' style={{marginEnd: 5}}/>
+                                    <FontAwesome6 name='dog' size={24} color='black' style={{marginEnd: 5}}/>
+                                    <MaterialCommunityIcons name='rabbit' size={24} color='black' style={{marginEnd: 5}}/>
+                                </View>
+                            </View>
+                        </View>
+                    </View>
+                </View>
 
-                {/* <ShelterListCard key={index} data={item} /> */}
-            </View>
-        );
-    }
 
-    return (
-        <SafeAreaView className='flex-1 mx-2'>
-            <View className="flex-1 bg-white">
-                <Text className='text-xl font-bold'>Welcome Back, John Due</Text>
-                <ScrollView>
-                    {renderHistory()}
-                    {renderShelter()}
-                </ScrollView>
-            </View>
+
+            </ScrollView>
         </SafeAreaView>
     );
 }
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        width: 200,
-        backgroundColor: "#fff",
-        borderRadius: 30,
-    },
-    shelterImage: {
-        width: 150,
-        height: 100,
-        borderRadius: 10,
-        resizeMode: 'cover',
-    },
-});
 
 export default HomeScreen;
