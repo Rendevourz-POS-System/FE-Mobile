@@ -13,15 +13,17 @@ const Tab = createBottomTabNavigator<RootBottomTabParams>();
 const homeTabOptions : BottomTabNavigationOptions = {
     headerShown : false,
     tabBarLabel : 'Home',
-    tabBarIcon : ({color, size}) => (
-        <MaterialCommunityIcons name="home" color={color} size={size} />
+    tabBarLabelStyle: { color: '#4689FD' },
+    tabBarIcon : ({size}) => (
+        <MaterialCommunityIcons name="home" color={"#4689FD"} size={size} />
     )
 }
 const profileTabOptions : BottomTabNavigationOptions = {
     headerShown : false,
     tabBarLabel : 'Profile',
-    tabBarIcon : ({color, size}) => (
-        <MaterialCommunityIcons name="account" color={color} size={size} />
+    tabBarLabelStyle: { color: '#4689FD' },
+    tabBarIcon : ({size}) => (
+        <MaterialCommunityIcons name="account" color={"#4689FD"} size={size} />
     )
 }
 
@@ -33,6 +35,7 @@ const RootBottomTab : FC<unknown> = () => {
                 tabBarActiveTintColor : '#000',
                 tabBarInactiveTintColor : '#000',
             }}
+            
         >
             <Tab.Screen name="Home" component={HomeScreen} options={homeTabOptions} />
             <Tab.Screen name="Profile" component={ProfileNavigationStack} options={profileTabOptions} />
