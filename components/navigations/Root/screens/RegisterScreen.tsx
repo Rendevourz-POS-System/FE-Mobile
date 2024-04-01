@@ -50,7 +50,7 @@ export const RegisterScreen: FC<RootNavigationStackScreenProps<'RegisterScreen'>
     };
 
     const onSubmit = async (data: RegisterFormType) => {
-        console.log(data);
+        
     }
 
     return (
