@@ -7,6 +7,7 @@ import { z } from "zod";
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Controller, useForm } from 'react-hook-form';
 import axios from "axios";
+import { useAuth } from "../../../../app/context/AuthContext";
 
 const loginFormSchema = z.object({
     Email: z.string({ required_error: "Email cannot be empty" }).email({ message: "Invalid email address" }),
@@ -18,6 +19,14 @@ type LoginFormType = z.infer<typeof loginFormSchema>
 export const LoginScreen: FC<RootNavigationStackScreenProps<'LoginScreen'>> = ({ navigation }) => {
     const [showPassword, setShowPassword] = useState(false);
     const [rememberMe, setRememberMe] = useState(false);
+    const {onLogin} = useAuth();
+
+    const login = async () => {
+        const result = await onLogin!(email, password);
+        if(result && result.error){
+            alert(result.msg);
+        }
+    }
 
     const {
         control,
@@ -33,6 +42,9 @@ export const LoginScreen: FC<RootNavigationStackScreenProps<'LoginScreen'>> = ({
         }
     });
 
+    const email = watch("Email");
+    const password = watch("Password");
+
     const togglePasswordVisibility = () => {
         setShowPassword(!showPassword);
     };
@@ -40,18 +52,6 @@ export const LoginScreen: FC<RootNavigationStackScreenProps<'LoginScreen'>> = ({
     const handleRememberMeChange = () => {
         setRememberMe(!rememberMe);
     };
-
-    const onSubmit = async (data: LoginFormType) => {
-        const payload = JSON.stringify(data);
-        try{
-            const response = await axios.post('https://bbbb-125-160-228-75.ngrok-free.app/user/login', payload);
-            if(response.status === 200){
-                navigation.navigate("TabMenu");
-            }
-        } catch (error) {
-            console.error(error);
-        }
-    }
 
     return (
         <SafeAreaProvider className="flex-1 bg-white">
@@ -111,7 +111,7 @@ export const LoginScreen: FC<RootNavigationStackScreenProps<'LoginScreen'>> = ({
                         </TouchableOpacity>
                     </View>
 
-                    <TouchableOpacity style={style.button} onPress={handleSubmit(onSubmit)}>
+                    <TouchableOpacity style={style.button} onPress={login}>
                         <Text className="text-center font-bold text-white">Sign In</Text>
                     </TouchableOpacity>
 
