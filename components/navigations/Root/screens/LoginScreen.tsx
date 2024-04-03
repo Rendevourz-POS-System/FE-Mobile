@@ -6,10 +6,12 @@ import { RootNavigationStackScreenProps } from "../../StackScreenProps";
 import { z } from "zod";
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Controller, useForm } from 'react-hook-form';
+import axios from "axios";
+import { useAuth } from "../../../../app/context/AuthContext";
 
 const loginFormSchema = z.object({
-    email: z.string({ required_error: "Email cannot be empty" }).email({ message: "Invalid email address" }),
-    password: z.string({ required_error: "Password cannot be empty" })
+    Email: z.string({ required_error: "Email cannot be empty" }).email({ message: "Invalid email address" }),
+    Password: z.string({ required_error: "Password cannot be empty" })
 })
 
 type LoginFormType = z.infer<typeof loginFormSchema>
@@ -17,6 +19,14 @@ type LoginFormType = z.infer<typeof loginFormSchema>
 export const LoginScreen: FC<RootNavigationStackScreenProps<'LoginScreen'>> = ({ navigation }) => {
     const [showPassword, setShowPassword] = useState(false);
     const [rememberMe, setRememberMe] = useState(false);
+    const {onLogin} = useAuth();
+
+    const login = async () => {
+        const result = await onLogin!(email, password);
+        if(result && result.error){
+            alert(result.msg);
+        }
+    }
 
     const {
         control,
@@ -27,10 +37,13 @@ export const LoginScreen: FC<RootNavigationStackScreenProps<'LoginScreen'>> = ({
     } = useForm<LoginFormType>({
         resolver: zodResolver(loginFormSchema),
         defaultValues: {
-            email: undefined,
-            password: undefined,
+            Email: undefined,
+            Password: undefined,
         }
     });
+
+    const email = watch("Email");
+    const password = watch("Password");
 
     const togglePasswordVisibility = () => {
         setShowPassword(!showPassword);
@@ -39,10 +52,6 @@ export const LoginScreen: FC<RootNavigationStackScreenProps<'LoginScreen'>> = ({
     const handleRememberMeChange = () => {
         setRememberMe(!rememberMe);
     };
-
-    const onSubmit = async (data: LoginFormType) => {
-        navigation.navigate('TabMenu');
-    }
 
     return (
         <SafeAreaProvider className="flex-1 bg-white">
@@ -55,28 +64,28 @@ export const LoginScreen: FC<RootNavigationStackScreenProps<'LoginScreen'>> = ({
 
                     <View style={style.inputBox}>
                         <Controller
-                            name="email"
+                            name="Email"
                             control={control}
                             render={() => (
                                 <TextInput
                                     placeholder="Email"
                                     style={{ flex: 1 }}
-                                    onChangeText={(text: string) => setValue('email', text)}
+                                    onChangeText={(text: string) => setValue('Email', text)}
                                 />
                             )}
                         />
                     </View>
-                    <Text style={style.errorMessage}>{errors.email?.message}</Text>
+                    <Text style={style.errorMessage}>{errors.Email?.message}</Text>
 
                     <View style={style.inputBox}>
                         <Controller
-                            name="password"
+                            name="Password"
                             control={control}
                             render={() => (
                                 <TextInput
                                     placeholder="Password"
                                     style={{ flex: 1 }}
-                                    onChangeText={(text: string) => setValue('password', text)}
+                                    onChangeText={(text: string) => setValue('Password', text)}
                                     secureTextEntry={!showPassword}
                                 />
                             )}
@@ -85,7 +94,7 @@ export const LoginScreen: FC<RootNavigationStackScreenProps<'LoginScreen'>> = ({
                             <Icon name={showPassword ? 'eye-slash' : 'eye'} type="font-awesome" size={18} color="#666" />
                         </TouchableOpacity>
                     </View>
-                    <Text style={style.errorMessage}>{errors.password?.message}</Text>
+                    <Text style={style.errorMessage}>{errors.Password?.message}</Text>
 
                     <View className="flex-row justify-between mx-8 top-2">
                         <CheckBox
@@ -102,7 +111,7 @@ export const LoginScreen: FC<RootNavigationStackScreenProps<'LoginScreen'>> = ({
                         </TouchableOpacity>
                     </View>
 
-                    <TouchableOpacity style={style.button} onPress={handleSubmit(onSubmit)}>
+                    <TouchableOpacity style={style.button} onPress={login}>
                         <Text className="text-center font-bold text-white">Sign In</Text>
                     </TouchableOpacity>
 
