@@ -10,7 +10,7 @@ interface AuthProps {
 }
 
 const TOKEN_KEY = "token";
-export const API_URL = "https://eb28-2404-8000-1001-b133-700b-fb1f-7939-a164.ngrok-free.app";
+export const API_URL = "https://a18e-2404-8000-1001-b133-d5d9-48be-30bb-baf4.ngrok-free.app";
 const AuthContext = createContext<AuthProps>({});
 
 export const useAuth = () => {
@@ -31,13 +31,27 @@ export const AuthProvider = ({children} : any) => {
     useEffect(() => {
         const loadToken = async () => {
             const token = await SecureStore.getItemAsync(TOKEN_KEY);
+            const test = token?.toString()
             if(token){
-                axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-                setAuthState({
-                    token,
-                    authenticated: true,
-                    username: null
-                });
+                // axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+                try{
+                    const result = await axios.get(`${API_URL}/user/data`, {
+                        headers: {
+                            Authorization: `Bearer ${token}`
+                        }
+                    });
+                    if(result.status === 200)
+                    {
+                        setAuthState({
+                            token,
+                            authenticated: true,
+                            username: result.data.Username
+                        });
+                    }
+                }
+                catch(e){
+                    console.log(e)
+                }
             } else {
                 setAuthState({
                     token: null,
