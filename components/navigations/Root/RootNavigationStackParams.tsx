@@ -6,4 +6,5 @@ export type RootNavigationStackParams = {
     TabMenu: undefined;
     LoginScreen: undefined;
     RegisterScreen: undefined;
+    ShelterDetailScreen: undefined;
 }

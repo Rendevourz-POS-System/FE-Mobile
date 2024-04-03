@@ -5,8 +5,7 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { FC } from 'react';
 import { Platform, StyleSheet } from 'react-native';
 import { ProfileNavigationStack } from '../Profile/ProfileNavigationStack';
-import HomeScreen from './screens/HomeScreen';
-
+import { HomeScreen } from './screens/HomeScreen';
 
 const Tab = createBottomTabNavigator<RootBottomTabParams>();
 
