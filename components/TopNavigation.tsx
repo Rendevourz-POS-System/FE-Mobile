@@ -6,8 +6,8 @@ import { useContext } from "react";
 
 const TopNavigation = () => {
     const {authState, onLogout} = useAuth();
+    console.log(authState)
     const username = authState?.username || "User";
-    console.log(username);
     return (
         <View className='flex-1'>
             <View className='flex-row justify-between items-center mb-5'>
