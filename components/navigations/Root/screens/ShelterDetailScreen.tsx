@@ -55,12 +55,12 @@ export const ShelterDetailScreen: FC<RootNavigationStackScreenProps<'ShelterDeta
                     <Text className='mt-2 text-base ml-1 text-[#8A8A8A]'>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.</Text>
 
                     <View className='mt-8 flex flex-row justify-evenly'>
-                        <View style={styles.donasiButton}>
+                        <TouchableOpacity style={styles.donasiButton} onPress={() => navigation.navigate("DonateScreen")}>
                             <Text style={styles.fontButton} className='text-xs text-center'>Donasi</Text>
-                        </View>
-                        <View style={styles.adopsiButton}>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={styles.adopsiButton} onPress={() => navigation.navigate("HewanAdopsiScreen")}>
                             <Text style={styles.fontButton} className='text-xs text-center'>Hewan Adopsi</Text>
-                        </View>
+                        </TouchableOpacity>
                         <View style={styles.laporButton}>
                             <Text style={styles.fontButton} className='text-xs text-center'>Rescue</Text>
                         </View>

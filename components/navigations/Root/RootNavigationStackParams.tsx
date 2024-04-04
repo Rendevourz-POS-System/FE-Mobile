@@ -7,4 +7,6 @@ export type RootNavigationStackParams = {
     LoginScreen: undefined;
     RegisterScreen: undefined;
     ShelterDetailScreen: undefined;
+    DonateScreen: undefined;
+    HewanAdopsiScreen: undefined;
 }

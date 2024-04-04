@@ -7,6 +7,9 @@ import { RegisterScreen } from "./screens/RegisterScreen";
 import { useAuth } from "../../../app/context/AuthContext";
 import { NavigationContainer } from "@react-navigation/native";
 import { ShelterDetailScreen } from "./screens/ShelterDetailScreen";
+import { DonateScreen } from "./screens/DonateScreen";
+import { HewanAdopsiScreen } from "./screens/HewanAdopsiScreen";
+
 const Stack = createNativeStackNavigator<RootNavigationStackParams>();
 
 const RootNavigationStack: React.FC = () => {
@@ -18,6 +21,8 @@ const RootNavigationStack: React.FC = () => {
                     <Stack.Group>
                         <Stack.Screen name="HomeScreen" component={RootBottomTab} options={noHeader} />
                         <Stack.Screen name="ShelterDetailScreen" component={ShelterDetailScreen} options={noHeader} />
+                        <Stack.Screen name="DonateScreen" component={DonateScreen} options={noHeader} />
+                        <Stack.Screen name="HewanAdopsiScreen" component={HewanAdopsiScreen} options={noHeader} />
                     </Stack.Group>
                 ) : (
                     <Stack.Group>

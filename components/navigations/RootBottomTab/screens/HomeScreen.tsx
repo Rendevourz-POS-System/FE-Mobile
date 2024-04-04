@@ -10,6 +10,7 @@ import { RootBottomTabCompositeNavigationProp } from '../../CompositeNavigationP
 
 export const HomeScreen: FC<{}> = () => {
     const navigation = useNavigation<RootBottomTabCompositeNavigationProp<'Home'>>();
+
     return (
         <SafeAreaProvider className='flex-1 m-3'>
             <ScrollView>
@@ -29,25 +30,24 @@ export const HomeScreen: FC<{}> = () => {
                         />
                     </View>
                 </View>
-                <TouchableOpacity onPress={() => navigation.navigate("ShelterDetailScreen")}>
-                    <View style={{ overflow: 'hidden' }}>
-                        <Image source={require('../../../../assets/image.png')} style={{ width: '100%', height: 300, marginTop: 10 }} />
-                        <View style={{ position: 'absolute', top: 170, left: 0, right: 0, bottom: 0 }}>
-                            <View className='border-t-2 rounded-t-3xl mt-5' style={{ marginTop: 10, backgroundColor: "#FFFDFF", paddingHorizontal: 20, paddingVertical: 15 }}>
-                                <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-                                    <Text className='text-xl font-bold'>Shelter Hewan Jakarta</Text>
-                                    <FontAwesome name='heart-o' size={30} color='blue' style={{ marginEnd: 10 }} />
-                                </View>
-                                <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10 }}>
-                                    <FontAwesome6 name='location-dot' size={24} color='blue' style={{ marginEnd: 5 }} />
-                                    <Text className='text-base font-light'>Jl. Kebon Jeruk Raya No. 1, Jakarta Barat</Text>
-                                </View>
-                                <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10 }}>
-                                    <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', flex: 1 }}>
-                                        <FontAwesome6 name='cat' size={24} color='black' style={{ marginEnd: 5 }} />
-                                        <FontAwesome6 name='dog' size={24} color='black' style={{ marginEnd: 5 }} />
-                                        <MaterialCommunityIcons name='rabbit' size={24} color='black' style={{ marginEnd: 5 }} />
-                                    </View>
+
+                <TouchableOpacity style={{ overflow: 'hidden' }} onPress={() => navigation.navigate("ShelterDetailScreen")}>
+                    <Image source={require('../../../../assets/image.png')} style={{ width: '100%', height: 290, marginTop: 10, borderTopLeftRadius: 20, borderTopRightRadius: 20 }} />
+                    <View style={{ position: 'absolute', top: 170, left: 0, right: 0, bottom: 0 }}>
+                        <View className='rounded-t-3xl mt-5' style={{ marginTop: 10, backgroundColor: "#FFFDFF", paddingHorizontal: 20, paddingVertical: 15 }}>
+                            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                                <Text className='text-xl font-bold'>Shelter Hewan Jakarta</Text>
+                                <FontAwesome name='heart' size={24} color="#4689FD" />
+                            </View>
+                            <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10 }}>
+                                <FontAwesome6 name='location-dot' size={20} color='#4689FD' />
+                                <Text className='text-s font-light ml-2'>Jl. Kebon Jeruk Raya No. 1, Jakarta Barat</Text>
+                            </View>
+                            <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10 }}>
+                                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', flex: 1 }}>
+                                    <FontAwesome6 name='cat' size={24} color='#8A8A8A' style={{ marginEnd: 5 }} />
+                                    <FontAwesome6 name='dog' size={24} color='#8A8A8A' style={{ marginEnd: 5 }} />
+                                    <MaterialCommunityIcons name='rabbit' size={29} color='#8A8A8A' style={{ marginEnd: 5 }} />
                                 </View>
                             </View>
                         </View>
