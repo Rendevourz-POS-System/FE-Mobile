@@ -5,7 +5,7 @@ import { Text } from 'react-native-elements';
 import { FontAwesome, FontAwesome5, FontAwesome6, Ionicons, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 import { RootNavigationStackScreenProps } from '../../StackScreenProps';
 
-export const ShelterDetailScreen: FC<RootNavigationStackScreenProps<'ShelterDetailScreen'>> = ({ navigation, route }: any) => {
+export const PetDetailScreen: FC<RootNavigationStackScreenProps<'PetDetailScreen'>> = ({ navigation, route }: any) => {
     const [isFavorite, setIsFavorite] = useState(false);
 
     const handlePressFavorite = () => {
@@ -22,9 +22,8 @@ export const ShelterDetailScreen: FC<RootNavigationStackScreenProps<'ShelterDeta
                 </View>
                 <View className='p-3 mb-24'>
                     <View className='flex flex-row justify-between'>
-                        <Text className='text-xl font-bold'>Shelter Hewan Jakarta</Text>
-                        <View className='flex flex-row items-center'>
-                            <FontAwesome name="whatsapp" size={28} color="green" style={{ marginRight: 15 }} />
+                        <Text className='text-xl font-bold'>Doggy</Text>
+                        <View className='items-center'>
                             <FontAwesome name={isFavorite ? 'heart' : 'heart-o'} size={24} color="#4689FD" onPress={handlePressFavorite} />
                         </View>
                     </View>
@@ -56,16 +55,13 @@ export const ShelterDetailScreen: FC<RootNavigationStackScreenProps<'ShelterDeta
                     <Text className='mt-2 text-base ml-1 text-[#8A8A8A]'>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.</Text>
                 </View>
             </ScrollView>
-            <View className='mt-8 flex flex-row justify-evenly absolute bottom-0 left-0 right-0 pb-5'>
-                <TouchableOpacity style={styles.donasiButton} onPress={() => navigation.navigate("DonateScreen")}>
-                    <Text style={styles.fontButton} className='text-xs text-center'>Donasi</Text>
+            <View className='mt-8 flex flex-row justify-evenly absolute bottom-0 left-0 right-0 pb-5 px-5'>
+                <TouchableOpacity style={styles.whatsappButton} className='w-1/5 mr-5'>
+                    <FontAwesome name="whatsapp" size={28} color="green" style={{ marginLeft: 20 }} />
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.adopsiButton} onPress={() => navigation.navigate("HewanAdopsiScreen")}>
-                    <Text style={styles.fontButton} className='text-xs text-center'>Hewan Adopsi</Text>
+                <TouchableOpacity style={styles.adopsiButton} onPress={() => navigation.navigate("AdoptionFormScreen")} className='w-4/5'>
+                    <Text style={styles.fontButton} className='text-xl text-center'>Adopsi Sekarang</Text>
                 </TouchableOpacity>
-                <View style={styles.laporButton}>
-                    <Text style={styles.fontButton} className='text-xs text-center'>Rescue</Text>
-                </View>
             </View>
         </SafeAreaProvider>
     );
@@ -88,28 +84,19 @@ const styles = StyleSheet.create({
     fontButton: {
         color: 'white'
     },
-    donasiButton: {
-        backgroundColor: "#4689FD",
+    whatsappButton: {
+        backgroundColor: "#ffffff",
         padding: 20,
-        borderBottomLeftRadius: 20,
-        borderTopLeftRadius: 20,
-        marginRight: 5,
-        width: 120,
-        height: 60
+        height: 70,
+        borderRadius: 30,
+        alignContent: 'center',
+        justifyContent: 'center'
     },
     adopsiButton: {
         backgroundColor: "#4689FD",
         paddingVertical: 20,
         marginRight: 5,
-        width: 120,
-        height: 60
+        height: 70,
+        borderRadius: 30,
     },
-    laporButton: {
-        backgroundColor: "#4689FD",
-        padding: 20,
-        borderTopRightRadius: 20,
-        borderBottomRightRadius: 20,
-        width: 120,
-        height: 60
-    }
 });

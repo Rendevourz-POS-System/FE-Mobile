@@ -7,26 +7,30 @@ import { ProgressBar } from "react-native-paper";
 
 export const HistoryScreen: FC<ProfileRootBottomTabCompositeScreenProps<'HistoryScreen'>> = ({ navigation }) => {
     const [historyData, setHistoryData] = useState([
-        { date: 'March 2023', events: [
-            { description: 'Donate to Shelter A', date: '20 March 2023' },
-            { description: 'Donate to Shelter B', date: '22 March 2023' },
-            { description: 'Adopted Pet A', date: '25 March 2023' },
-            { description: 'Adopted Pet B', date: '28 March 2023' },
-        ]},
-        { date: 'February 2023', events: [
-            { description: 'Donate Shelter C', date: '10 February 2023' },
-            { description: 'Donate Shelter C', date: '20 February 2023' },
-        ]},
+        {
+            date: 'March 2023', events: [
+                { description: 'Donate to Shelter A', date: '20 March 2023' },
+                { description: 'Donate to Shelter B', date: '22 March 2023' },
+                { description: 'Adopted Pet A', date: '25 March 2023' },
+                { description: 'Adopted Pet B', date: '28 March 2023' },
+            ]
+        },
+        {
+            date: 'February 2023', events: [
+                { description: 'Donate Shelter C', date: '10 February 2023' },
+                { description: 'Donate Shelter C', date: '20 February 2023' },
+            ]
+        },
     ]);
 
     return (
         <SafeAreaProvider style={styles.container}>
-            <ScrollView>
-                <View className="mt-20 flex-row items-center justify-center">
-                    <Ionicons name="chevron-back" size={24} color="black" onPress={() => navigation.goBack()} style={{ position: 'absolute', left: 20 }} />
-                    <Text className="text-xl">History</Text>
-                </View>
+            <View className="mt-14 flex-row items-center justify-center">
+                <Ionicons name="chevron-back" size={24} color="black" onPress={() => navigation.goBack()} style={{ position: 'absolute', left: 20 }} />
+                <Text className="text-xl">History</Text>
+            </View>
 
+            <ScrollView>
                 <View className="top-5">
                     <Text style={styles.heading}>Total Transaction</Text>
                     <View style={styles.transactionContainer} className="mx-8">
@@ -41,7 +45,7 @@ export const HistoryScreen: FC<ProfileRootBottomTabCompositeScreenProps<'History
                                 <Text className="mb-2">Adoption</Text>
                                 <Text>4</Text>
                             </View>
-                            <ProgressBar progress={0.4} className="mb-5"/>
+                            <ProgressBar progress={0.4} className="mb-5" />
 
                             <View className="flex-row justify-between">
                                 <Text className="mb-2">Rescue</Text>
@@ -105,10 +109,10 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         marginBottom: 5
     },
-    transactionContainer:{
+    transactionContainer: {
         backgroundColor: '#F5F5F5',
         borderRadius: 15,
-        elevation: 5, 
+        elevation: 5,
         marginBottom: 20
     },
 });

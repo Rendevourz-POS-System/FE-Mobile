@@ -9,6 +9,8 @@ import { NavigationContainer } from "@react-navigation/native";
 import { ShelterDetailScreen } from "./screens/ShelterDetailScreen";
 import { DonateScreen } from "./screens/DonateScreen";
 import { HewanAdopsiScreen } from "./screens/HewanAdopsiScreen";
+import { PetDetailScreen } from "./screens/PetDetailScreen";
+import { AdoptionFormScreen } from "./screens/AdoptionFormScreen";
 
 const Stack = createNativeStackNavigator<RootNavigationStackParams>();
 
@@ -23,6 +25,8 @@ const RootNavigationStack: React.FC = () => {
                         <Stack.Screen name="ShelterDetailScreen" component={ShelterDetailScreen} options={noHeader} />
                         <Stack.Screen name="DonateScreen" component={DonateScreen} options={noHeader} />
                         <Stack.Screen name="HewanAdopsiScreen" component={HewanAdopsiScreen} options={noHeader} />
+                        <Stack.Screen name="PetDetailScreen" component={PetDetailScreen} options={noHeader} />
+                        <Stack.Screen name="AdoptionFormScreen" component={AdoptionFormScreen} options={noHeader} />
                     </Stack.Group>
                 ) : (
                     <Stack.Group>

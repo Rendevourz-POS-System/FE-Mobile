@@ -14,14 +14,14 @@ export const HewanAdopsiScreen: FC<RootNavigationStackScreenProps<'HewanAdopsiSc
 
     return (
         <SafeAreaProvider className='flex-1'>
-            <ScrollView>
-                <View className="mt-20 flex-row items-center justify-center">
-                    <Ionicons name="chevron-back" size={24} color="black" onPress={() => navigation.goBack()} style={{ position: 'absolute', left: 20 }} />
-                    <Text className="text-xl">Hewan Adopsi</Text>
-                </View>
+            <View className="mt-14 flex-row items-center justify-center mb-3">
+                <Ionicons name="chevron-back" size={24} color="black" onPress={() => navigation.goBack()} style={{ position: 'absolute', left: 20 }} />
+                <Text className="text-xl">Hewan Adopsi</Text>
+            </View>
 
+            <ScrollView>
                 <View className='mt-5 p-5'>
-                    <TouchableOpacity style={{ overflow: 'hidden', marginBottom: 10 }}>
+                    <TouchableOpacity style={{ overflow: 'hidden', marginBottom: 10 }} onPress={() => navigation.navigate("PetDetailScreen")}>
                         <Image source={require('../../../../assets/image.png')} style={styles.imageContainer} />
                         <View style={styles.infoContainer}>
                             <View className='rounded-t-3xl mt-5' style={{ marginTop: 10, backgroundColor: "#FFFDFF", paddingHorizontal: 20, paddingVertical: 15 }}>

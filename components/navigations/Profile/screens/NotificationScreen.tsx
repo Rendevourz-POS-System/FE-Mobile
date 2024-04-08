@@ -7,12 +7,12 @@ import { ProfileRootBottomTabCompositeScreenProps } from "../../CompositeNavigat
 export const NotificationScreen: FC<ProfileRootBottomTabCompositeScreenProps<'NotificationScreen'>> = ({ navigation }) => {
     return (
         <SafeAreaProvider style={styles.container}>
-            <ScrollView>
-                <View className="mt-20 flex-row items-center justify-center">
-                    <Ionicons name="chevron-back" size={24} color="black" onPress={() => navigation.goBack()} style={{ position: 'absolute', left: 20 }} />
-                    <Text className="text-xl">Notifications</Text>
-                </View>
+            <View className="mt-14 flex-row items-center justify-center">
+                <Ionicons name="chevron-back" size={24} color="black" onPress={() => navigation.goBack()} style={{ position: 'absolute', left: 20 }} />
+                <Text className="text-xl">Notifications</Text>
+            </View>
 
+            <ScrollView>
                 <View className="top-5">
                     <Text style={styles.dateFont}>24 March 2023</Text>
                     <View style={styles.notifContainer}>

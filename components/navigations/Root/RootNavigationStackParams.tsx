@@ -9,4 +9,6 @@ export type RootNavigationStackParams = {
     ShelterDetailScreen: undefined;
     DonateScreen: undefined;
     HewanAdopsiScreen: undefined;
+    PetDetailScreen: undefined;
+    AdoptionFormScreen: undefined;
 }
