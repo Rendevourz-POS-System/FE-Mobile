@@ -63,9 +63,9 @@ export const ShelterDetailScreen: FC<RootNavigationStackScreenProps<'ShelterDeta
                 <TouchableOpacity style={styles.adopsiButton} onPress={() => navigation.navigate("HewanAdopsiScreen")}>
                     <Text style={styles.fontButton} className='text-xs text-center'>Hewan Adopsi</Text>
                 </TouchableOpacity>
-                <View style={styles.laporButton}>
+                <TouchableOpacity style={styles.laporButton} onPress={() => navigation.navigate("RescueFormScreen")}>
                     <Text style={styles.fontButton} className='text-xs text-center'>Rescue</Text>
-                </View>
+                </TouchableOpacity>
             </View>
         </SafeAreaProvider>
     );

@@ -11,4 +11,5 @@ export type RootNavigationStackParams = {
     HewanAdopsiScreen: undefined;
     PetDetailScreen: undefined;
     AdoptionFormScreen: undefined;
+    RescueFormScreen: undefined;
 }

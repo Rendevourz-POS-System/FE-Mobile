@@ -9,12 +9,12 @@ export const DonateScreen: FC<RootNavigationStackScreenProps<'DonateScreen'>> = 
 
     return (
         <SafeAreaProvider className='flex-1'>
+             <View className="mt-14 flex-row items-center justify-center mb-3">
+                <Ionicons name="chevron-back" size={24} color="black" onPress={() => navigation.goBack()} style={{ position: 'absolute', left: 20 }} />
+                <Text className="text-xl">Donasi</Text>
+            </View>
             <ScrollView>
-                <View className="mt-20 flex-row items-center justify-center">
-                    <Ionicons name="chevron-back" size={24} color="black" onPress={() => navigation.goBack()} style={{ position: 'absolute', left: 20 }} />
-                    <Text className="text-xl">Donasi</Text>
-                </View>
-                <View className='mt-5' style={styles.containerBox}>
+                <View className='mt-15' style={styles.containerBox}>
                     <View className='flex flex-row items-center' >
                         <Text className='text-base'>Virtual Account</Text>
                     </View>
