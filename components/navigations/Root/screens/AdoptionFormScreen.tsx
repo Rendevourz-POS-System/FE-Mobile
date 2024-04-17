@@ -9,13 +9,13 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Controller, useForm } from 'react-hook-form';
 
 const adoptionFormSchema = z.object({
-    fullName: z.string({ required_error: "Nama lengkap tidak boleh kosong" }).min(5, { message: "Nama lengkap tidak boleh kosong" }),
-    nik: z.string({ required_error: "NIK tidak boleh kosong" }).email({ message: "NIK tidak boleh kosong" }),
-    address: z.string({ required_error: "Alamat rumah tidak boleh kosong" }).min(5, { message: "Alamat rumah tidak boleh kosong" }),
-    city: z.string({ required_error: "Kabupaten/Kota tidak boleh kosong" }).min(5, { message: "Kabupaten/Kota tidak boleh kosong" }),
-    postalCode: z.string({ required_error: 'Kode pos tidak boleh kosong' }).min(5, { message: "Kode pos tidak boleh kosong" }),
-    work: z.string({ required_error: "Pekerjaan tidak boleh kosong" }).min(5, { message: "Pekerjaan tidak boleh kosong" }),
-    reasonAdoption: z.string({ required_error: "Alasan adopsi tidak boleh kosong" }).min(5, { message: "Alasan adopsi tidak boleh kosong" }),
+    fullName: z.string({ required_error: "Nama lengkap tidak boleh kosong" }).min(1, { message: "Nama lengkap tidak boleh kosong" }),
+    nik: z.string({ required_error: "NIK tidak boleh kosong" }).min(5, { message: "NIK minimal 5 karakter" }).regex(/^\d{16}$/, { message: "Format NIK tidak valid" }),
+    address: z.string({ required_error: "Alamat rumah tidak boleh kosong" }).min(5, { message: "Alamat rumah harus lebih dari 5 karakter" }),
+    city: z.string({ required_error: "Kabupaten/Kota tidak boleh kosong" }).min(1, { message: "Kabupaten/Kota tidak boleh kosong" }),
+    postalCode: z.string({ required_error: 'Kode pos tidak boleh kosong' }).min(5, { message: "Kode pos minimal 5 karakter" }).regex(/^\d{5}$/, { message: "Format kode pos tidak valid" }),
+    work: z.string({ required_error: "Pekerjaan tidak boleh kosong" }).min(1, { message: "Pekerjaan minimal tidak boleh kosong" }),
+    reasonAdoption: z.string({ required_error: "Alasan adopsi tidak boleh kosong" }).min(5, { message: "Alasan adopsi harus lebih dari 5 karakter" }),
 })
 
 type AdoptionFormType = z.infer<typeof adoptionFormSchema>

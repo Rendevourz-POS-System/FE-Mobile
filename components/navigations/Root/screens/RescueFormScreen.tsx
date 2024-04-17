@@ -10,8 +10,8 @@ import { Controller, useForm } from 'react-hook-form';
 import * as ImagePicker from 'expo-image-picker';
 
 const rescueFormSchema = z.object({
-    condition: z.string({ required_error: "Kondisi hewan tidak boleh kosong" }).min(5, { message: "Kondisi hewan tidak boleh kosong" }),
-    address: z.string({ required_error: "Alamat tidak boleh kosong" }).min(5, { message: "Alamat tidak boleh kosong" }),
+    condition: z.string({ required_error: "Kondisi hewan tidak boleh kosong" }).min(1, { message: "Kondisi hewan tidak boleh kosong" }),
+    address: z.string({ required_error: "Alamat tidak boleh kosong" }).min(1, { message: "Alamat tidak boleh kosong" }),
 })
 
 type RescueFormType = z.infer<typeof rescueFormSchema>
