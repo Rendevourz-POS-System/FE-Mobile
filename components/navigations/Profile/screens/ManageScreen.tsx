@@ -62,12 +62,12 @@ export const ManageScreen: FC<ProfileRootBottomTabCompositeScreenProps<'ManageSc
 
     return (
         <SafeAreaProvider style={styles.container}>
-            <ScrollView>
-                <View className="mt-20 flex-row items-center justify-center">
-                    <Ionicons name="chevron-back" size={24} color="black" onPress={() => navigation.goBack()} style={{ position: 'absolute', left: 20 }} />
-                    <Text className="text-xl">Manage Profile</Text>
-                </View>
+            <View className="mt-14 flex-row items-center justify-center">
+                <Ionicons name="chevron-back" size={24} color="black" onPress={() => navigation.goBack()} style={{ position: 'absolute', left: 20 }} />
+                <Text className="text-xl">Manage Profile</Text>
+            </View>
 
+            <ScrollView>
                 <View className="mb-10 mt-10">
                     <View style={styles.rowContainer} className="justify-around">
                         <TouchableOpacity
