@@ -1,6 +1,7 @@
 import axios from "axios";
 import { createContext, useContext, useEffect, useState } from "react";
 import * as SecureStore from "expo-secure-store";
+import { BackendApiUri } from "../../functions/BackendApiUri";
 
 interface AuthProps {
     authState?: {token: string | null; authenticated: boolean | null; username: string | null};
@@ -10,7 +11,6 @@ interface AuthProps {
 }
 
 const TOKEN_KEY = "token";
-export const API_URL = "https://a18e-2404-8000-1001-b133-d5d9-48be-30bb-baf4.ngrok-free.app";
 const AuthContext = createContext<AuthProps>({});
 
 export const useAuth = () => {
@@ -21,10 +21,12 @@ export const AuthProvider = ({children} : any) => {
     const [authState, setAuthState] = useState<{
         token: string | null; 
         authenticated: boolean | null;
+        userId: string | null;
         username: string | null;
     }>({
         token: null,
         authenticated: null,
+        userId: null,
         username: null
     });
 
@@ -33,9 +35,8 @@ export const AuthProvider = ({children} : any) => {
             const token = await SecureStore.getItemAsync(TOKEN_KEY);
             const test = token?.toString()
             if(token){
-                // axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
                 try{
-                    const result = await axios.get(`${API_URL}/user/data`, {
+                    const result = await axios.get(`${BackendApiUri.getUserData}`, {
                         headers: {
                             Authorization: `Bearer ${token}`
                         }
@@ -45,6 +46,7 @@ export const AuthProvider = ({children} : any) => {
                         setAuthState({
                             token,
                             authenticated: true,
+                            userId: result.data.Id,
                             username: result.data.Username
                         });
                     }
@@ -56,6 +58,7 @@ export const AuthProvider = ({children} : any) => {
                 setAuthState({
                     token: null,
                     authenticated: false,
+                    userId: null,
                     username: null
                 });
             }
@@ -66,7 +69,7 @@ export const AuthProvider = ({children} : any) => {
 
     const register = async (email: string, password: string) => {
         try{
-            return await axios.post(`${API_URL}/user/register`, {email, password});
+            return await axios.post(`${BackendApiUri.registerUser}`, {email, password});
         } catch(e){
             return {error: true, msg : (e as any).response.data.msg};
         }
@@ -74,11 +77,12 @@ export const AuthProvider = ({children} : any) => {
 
     const login = async (email: string, password: string) => {
         try{
-            const result = await axios.post(`${API_URL}/user/login`, {email, password});
+            const result = await axios.post(`${BackendApiUri.loginUser}`, {email, password});
 
             setAuthState({
                 token: result.data['Token'],
                 authenticated: true,
+                userId : result.data['Id'],
                 username: result.data['Username']
             });
 
@@ -100,6 +104,7 @@ export const AuthProvider = ({children} : any) => {
         setAuthState({
             token: null,
             authenticated: false,
+            userId: null,
             username: null
         });
     };
