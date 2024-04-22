@@ -3,8 +3,11 @@ import React, { FC, useState } from "react";
 import { ScrollView, Text, View, StyleSheet, TouchableOpacity } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { ProfileRootBottomTabCompositeScreenProps } from "../../CompositeNavigationProps";
+import { useAuth } from "../../../../app/context/AuthContext";
 
 export const ProfileScreen: FC<ProfileRootBottomTabCompositeScreenProps<'ProfileScreen'>> = ({ navigation }) => {
+    const { authState, onLogout } = useAuth();
+    const username = authState?.username || "User";
     const [userType, setUserType] = useState("user");
 
     const handleSwitchUserType = () => {
@@ -15,9 +18,9 @@ export const ProfileScreen: FC<ProfileRootBottomTabCompositeScreenProps<'Profile
         <SafeAreaProvider style={styles.container}>
             <ScrollView>
                 <View className="my-10 mt-20">
-                    <View style={styles.rowContainer} className="justify-around">
-                        <View className="w-50 h-50 bg-slate-500 p-10 rounded-full"><Text>Test</Text></View>
-                        <Text className="text-3xl">David Robinson</Text>
+                    <View style={{ alignItems: 'center', marginBottom: 25 }}>
+                        <Ionicons name="person-circle-outline" size={120} color="black" />
+                        <Text className="text-3xl">{username}</Text>
                     </View>
                 </View>
 
@@ -87,7 +90,7 @@ export const ProfileScreen: FC<ProfileRootBottomTabCompositeScreenProps<'Profile
                 </View>
 
                 <View style={{ flexDirection: 'row', justifyContent: 'flex-end', right: 40 }}>
-                    <TouchableOpacity style={styles.signOutButton}>
+                    <TouchableOpacity style={styles.signOutButton} onPress={onLogout}>
                         <Text style={styles.signOutText}>Sign Out</Text>
                     </TouchableOpacity>
                 </View>
