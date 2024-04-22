@@ -1,5 +1,5 @@
-import React, { FC} from 'react';
-import { Image, ScrollView} from 'react-native';
+import React, { FC, useEffect, useState} from 'react';
+import { FlatList, Image, ScrollView} from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import TopNavigation from '../../../TopNavigation';
 import HomeCarousel from '../../../HomeCarousel';
@@ -24,11 +24,8 @@ interface ShelterData {
 export const HomeScreen: FC<{}> = () => {
     return (
         <SafeAreaProvider className='flex-1 m-3'>
-            <ScrollView>
-                <TopNavigation />
-                <HomeCarousel />
-                <HomeUser/>
-            </ScrollView>
+            <TopNavigation />
+            <HomeUser/>
         </SafeAreaProvider>
     );
 }

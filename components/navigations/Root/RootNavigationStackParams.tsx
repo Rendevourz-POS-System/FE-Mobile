@@ -6,7 +6,7 @@ export type RootNavigationStackParams = {
     TabMenu: undefined;
     LoginScreen: undefined;
     RegisterScreen: undefined;
-    ShelterDetailScreen: undefined;
+    ShelterDetailScreen: {shelterId : string}
     DonateScreen: undefined;
     HewanAdopsiScreen: undefined;
     PetDetailScreen: undefined;
