@@ -1,17 +1,85 @@
-import React, { FC, useState } from 'react';
+import React, { FC, useEffect, useState } from 'react';
 import { Image, ScrollView, TouchableOpacity, View, StyleSheet } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { Text } from 'react-native-elements';
 import { FontAwesome, FontAwesome5, FontAwesome6, Ionicons, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 import { RootNavigationStackScreenProps } from '../../StackScreenProps';
-
+import { BackendApiUri } from '../../../../functions/BackendApiUri';
+import axios from 'axios';
+interface ShelterData {
+    Id : string,
+    UserId : string,
+    ShelterName : string,
+    ShelterLocation : string,
+    ShelterCapacity : number,
+    ShelterContactNumber: string,
+    ShelterDescription : string,
+    TotalPet: number,
+    BankAccountNumber: string,
+    Pin : string,
+    ShelterVertified : boolean,
+    CreatedAt : Date
+}
+interface ShelterProps {
+    Message : string,
+    Data : ShelterData
+}
 export const ShelterDetailScreen: FC<RootNavigationStackScreenProps<'ShelterDetailScreen'>> = ({ navigation, route }: any) => {
     const [isFavorite, setIsFavorite] = useState(false);
+    const [data, setData] = useState<ShelterProps>({
+        Message: "",
+        Data: {
+            Id: "",
+            UserId: "",
+            ShelterName: "",
+            ShelterLocation: "",
+            ShelterCapacity: 0,
+            ShelterContactNumber: "",
+            ShelterDescription: "",
+            TotalPet: 0,
+            BankAccountNumber: "",
+            Pin: "",
+            ShelterVertified: false,
+            CreatedAt: new Date(),
+        },
+    });
+
+    const detailData = async () => {
+        try {
+            const shelterId = route.params.shelterId;
+            const response = await axios.get(`${BackendApiUri.getShelterDetail}/${shelterId}`)
+            if(response.status === 200) {
+                setData({
+                    Message: response.data.Message,
+                    Data: {
+                        Id: response.data.Data.Id,
+                        UserId: response.data.Data.UserId,
+                        ShelterName: response.data.Data.ShelterName,
+                        ShelterLocation: response.data.Data.ShelterLocation,
+                        ShelterCapacity: response.data.Data.ShelterCapacity,
+                        ShelterContactNumber: response.data.Data.ShelterContactNumber,
+                        ShelterDescription: response.data.Data.ShelterDescription,
+                        TotalPet: response.data.Data.TotalPet,
+                        BankAccountNumber: response.data.Data.BankAccountNumber,
+                        Pin: response.data.Data.Pin,
+                        ShelterVertified: response.data.Data.ShelterVertified,
+                        CreatedAt: response.data.Data.CreatedAt
+                    }
+                });
+            }
+        }
+        catch(e){
+            console.log(e)
+        }
+    }
+    
+    useEffect(() => {
+        detailData();
+    }, [route.params.shelterId]);
 
     const handlePressFavorite = () => {
         setIsFavorite(!isFavorite);
     };
-
 
     return (
         <SafeAreaProvider className='flex-1'>
@@ -22,7 +90,7 @@ export const ShelterDetailScreen: FC<RootNavigationStackScreenProps<'ShelterDeta
                 </View>
                 <View className='p-3 mb-24'>
                     <View className='flex flex-row justify-between'>
-                        <Text className='text-xl font-bold'>Shelter Hewan Jakarta</Text>
+                        <Text className='text-xl font-bold'>{data.Data.ShelterName}</Text>
                         <View className='flex flex-row items-center'>
                             <FontAwesome name="whatsapp" size={28} color="green" style={{ marginRight: 15 }} />
                             <FontAwesome name={isFavorite ? 'heart' : 'heart-o'} size={24} color="#4689FD" onPress={handlePressFavorite} />
@@ -31,13 +99,13 @@ export const ShelterDetailScreen: FC<RootNavigationStackScreenProps<'ShelterDeta
 
                     <View className='mt-5 flex flex-row items-center'>
                         <FontAwesome6 name='location-dot' size={20} color='#4689FD' style={{ marginLeft: 2 }} />
-                        <Text className='text-base ml-3 text-[#8A8A8A]'>Jl. Kebon Jeruk Raya No. 1, Jakarta Barat</Text>
+                        <Text className='text-base ml-3 text-[#8A8A8A]'>{data.Data.ShelterLocation}</Text>
                     </View>
 
                     <View className='mt-5 flex flex-row items-center justify-between'>
                         <View className='flex flex-row items-center'>
                             <MaterialIcons name="pets" size={21} color="#4689FD" />
-                            <Text className='text-base ml-2 text-[#8A8A8A]'>22</Text>
+                            <Text className='text-base ml-2 text-[#8A8A8A]'>{data.Data.ShelterCapacity}</Text>
                         </View>
                         <View className='flex flex-row items-center'>
                             <FontAwesome6 name='cat' size={21} color='#8A8A8A' style={{ marginEnd: 5 }} />
@@ -48,12 +116,11 @@ export const ShelterDetailScreen: FC<RootNavigationStackScreenProps<'ShelterDeta
 
                     <View className='mt-5 flex flex-row items-center'>
                         <FontAwesome5 name="calendar-alt" size={21} color="#4689FD" style={{ marginLeft: 3 }} />
-                        <Text className='text-base ml-2 text-[#8A8A8A]'>2010</Text>
+                        <Text className='text-base ml-2 text-[#8A8A8A]'>{new Date(data.Data.CreatedAt).getFullYear()}</Text>
                     </View>
 
                     <Text className='mt-8 text-xl font-bold'>Tentang Kami</Text>
-                    <Text className='mt-2 text-base ml-1 text-[#8A8A8A]'>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.</Text>
-                    <Text className='mt-2 text-base ml-1 text-[#8A8A8A]'>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.</Text>
+                    <Text className='mt-2 text-base ml-1 text-[#8A8A8A]'>{data.Data.ShelterDescription}</Text>
                 </View>
             </ScrollView>
             <View className='mt-8 flex flex-row justify-evenly absolute bottom-0 left-0 right-0 pb-5'>
