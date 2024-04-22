@@ -69,7 +69,7 @@ export const HomeUser = () => {
             </View>
 
             {shelterData.map((shelter, index) => (
-                <TouchableOpacity key={index} style={{ overflow: 'hidden' }} onPress={() => navigation.navigate("ShelterDetailScreen")}>
+                <TouchableOpacity key={index} style={{ overflow: 'hidden' }} onPress={() => navigation.navigate("ShelterDetailScreen", { shelterId : shelter.Id })}>
                     <Image source={require('../../assets/image.png')} style={{ width: '100%', height: 290, marginTop: 10, borderTopLeftRadius: 20, borderTopRightRadius: 20 }} />
                     <View style={{ position: 'absolute', top: 170, left: 0, right: 0, bottom: 0 }}>
                         <View className='rounded-t-3xl mt-5' style={{ marginTop: 10, backgroundColor: "#FFFDFF", paddingHorizontal: 20, paddingVertical: 15 }}>
