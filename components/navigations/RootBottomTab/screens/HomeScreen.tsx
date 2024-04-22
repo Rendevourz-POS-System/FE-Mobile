@@ -24,7 +24,7 @@ interface ShelterData {
 
 export const HomeScreen: FC<{}> = () => {
     return (
-        <SafeAreaProvider className='flex-1 m-3'>
+        <SafeAreaProvider className='flex-1'>
             <GestureHandlerRootView style={{ flex: 1 }}>
                 <TopNavigation />
                 <HomeUser/>

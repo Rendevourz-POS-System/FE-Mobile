@@ -52,6 +52,20 @@ export const HomeUser = () => {
         { id: 'paw', name: 'Pets', icon: 'paw' },
     ];
 
+    const filterPet = [
+        {id: 'cat', name: 'Cat'},
+        {id: 'dog', name: 'Dog'},
+        {id: 'rabbit', name: 'Rabbit'},
+        {id: 'hamster', name: 'Hamster'}
+    ]
+
+    const filterShelter = [
+        {id: 'jakartaBarat', name: 'Jakarta Barat'},
+        {id: 'jakartaTimur', name: 'Jakarta Timur'},
+        {id: 'jakartaSelatan', name: 'Jakarta Selatan'},
+        {id: 'jakartaUtara', name: 'Jakarta Utara'}
+    ]
+
     const [page, setPage] = useState<number>(1);
     const pageSize = 10;
     const orderBy = "ascending";
@@ -68,13 +82,53 @@ export const HomeUser = () => {
         fetchData();
     }, [debounceValue]);
 
+    const [selectedShelters, setSelectedShelters] = useState<string[]>([]);
+
+    const toggleShelterSelection = (shelterId: string) => {
+        setSelectedShelters((prevSelectedShelters) => {
+            if (prevSelectedShelters.includes(shelterId)) {
+                return prevSelectedShelters.filter((id) => id !== shelterId);
+            } else {
+                return [...prevSelectedShelters, shelterId];
+            }
+        });
+    };
+
+    const isShelterSelected = (shelterId: string) => {
+        return selectedShelters.includes(shelterId);
+    };
+
+    const [selectedPets, setSelectedPets] = useState<string[]>([]);
+
+    const togglePetSelection = (petId: string) => {
+        setSelectedPets((prevSelectedPets) => {
+            if (prevSelectedPets.includes(petId)) {
+                return prevSelectedPets.filter((id) => id !== petId);
+            } else {
+                return [...prevSelectedPets, petId];
+            }
+        });
+    };
+
+    const isPetSelected = (petId: string) => {
+        return selectedPets.includes(petId);
+    };
+
+
+    const styles = StyleSheet.create({
+        bottomSheetModal: {
+            borderTopLeftRadius: 20,
+            borderTopRightRadius: 20,
+            backgroundColor: 'white',
+        }
+    });
 
     return (
         <>
         <BottomSheetModalProvider>
             <View className='mt-4'>
                 <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-                <Input
+                    <Input
                         value={search}
                         onChangeText={setSearch}
                         placeholder='Search'
@@ -92,15 +146,49 @@ export const HomeUser = () => {
                         snapPoints={snapPoints}
                         onChange={handleSheetChanges}
                         backdropComponent={BottomSheetBackdrop}
+                        style={styles.bottomSheetModal}
                         >
-                        <BottomSheetView style={styles.contentContainer}>
-                            <Text>Awesome 🎉</Text>
+                        <BottomSheetView>
+                            <View className='mx-5'>
+                                <Text className='text-xl font-bold'>Filter</Text>
+                                <Text className='text-xl font-bold mt-8'>Pet</Text>
+                                <View className='flex flex-row flex-wrap'>
+                                    {filterPet.map((pet) => (
+                                        <TouchableOpacity
+                                            key={pet.id}
+                                            onPress={() => togglePetSelection(pet.id)}
+                                            className={`rounded-full px-4 py-2 m-2 ${isPetSelected(pet.id) ? 'bg-blue-500' : 'bg-gray-200'}`}
+                                        >
+                                            <Text className={`text-gray-700 ${isPetSelected(pet.id) ? 'text-white' : ''}`}>
+                                                {pet.name}
+                                            </Text>
+                                        </TouchableOpacity>
+                                    ))}
+                                </View>
+
+
+                                <Text className='text-xl font-bold mt-8'>Shelter</Text>
+                                <View className='flex flex-row flex-wrap'>
+                                    {filterShelter.map((shelter) => (
+                                        <TouchableOpacity
+                                            key={shelter.id}
+                                            onPress={() => toggleShelterSelection(shelter.id)}
+                                            className={`rounded-full px-4 py-2 m-2 ${isShelterSelected(shelter.id) ? 'bg-blue-500' : 'bg-gray-200'}`}
+                                        >
+                                            <Text className={`text-gray-700 ${isShelterSelected(shelter.id) ? 'text-white' : ''}`}>
+                                                {shelter.name}
+                                            </Text>
+                                        </TouchableOpacity>
+                                    ))}
+                                </View>
+                            </View>
                         </BottomSheetView>
                     </BottomSheetModal>
                 </View>
             </View>
 
-            <View style={{ flexDirection: 'row' }}>
+            <View style={{ flexDirection: 'row' }}
+            className='mx-3'>
                 {data.map((item, index) => (
                     <View className='items-center mr-3' key={item.id}>
                         <View 
@@ -117,7 +205,7 @@ export const HomeUser = () => {
             <FlatList
                 data={shelterData}
                 maxToRenderPerBatch={15}
-                className='mt-3'
+                className='mt-3 mx-3'
                 renderItem={({ item: shelter }) => (
                     <TouchableOpacity 
                         style={{ overflow: 'hidden' }} 
@@ -151,18 +239,6 @@ export const HomeUser = () => {
         </>
         
     )
-    
 };
 
-const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      padding: 24,
-      justifyContent: 'center',
-      backgroundColor: 'grey',
-    },
-    contentContainer: {
-      flex: 1,
-      alignItems: 'center',
-    },
-  });
+export default HomeUser;
