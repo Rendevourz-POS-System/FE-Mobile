@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { FlatList, Image, TouchableOpacity, View } from 'react-native';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { FlatList, Image, TouchableOpacity, View, StyleSheet } from 'react-native';
 import { Input, Text } from 'react-native-elements';
 import { FontAwesome, FontAwesome5, FontAwesome6, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
@@ -7,6 +7,12 @@ import axios from 'axios';
 import { RootBottomTabCompositeNavigationProp } from './CompositeNavigationProps';
 import { BackendApiUri } from '../../functions/BackendApiUri';
 import { useDebounce } from 'use-debounce';
+import {
+    BottomSheetModal,
+    BottomSheetView,
+    BottomSheetModalProvider,
+    BottomSheetBackdrop,
+} from '@gorhom/bottom-sheet';
 
 interface ShelterData {
     Id: string;
@@ -25,6 +31,17 @@ interface ShelterData {
 
 export const HomeUser = () => {
     const navigation = useNavigation<RootBottomTabCompositeNavigationProp<'Home'>>();
+
+    const bottomSheetModalRef = useRef<BottomSheetModal>(null);
+    const snapPoints = useMemo(() => ['50%', '75%'], []);
+    // callbacks
+    const handleFilterPress = useCallback(() => {
+        bottomSheetModalRef.current?.present();
+    }, []);
+    const handleSheetChanges = useCallback((index: number) => {
+        console.log('handleSheetChanges', index);
+    }, []);
+
     const [shelterData, setShelterData] = useState<ShelterData[]>([]);
 
     const [search, setSearch] = useState<string>('');
@@ -51,10 +68,11 @@ export const HomeUser = () => {
         fetchData();
     }, [debounceValue]);
 
+
     return (
         <>
+        <BottomSheetModalProvider>
             <View className='mt-4'>
-                {/* <Text className='text-xl font-bold'>Find a Pet or Shelter</Text> */}
                 <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
                 <Input
                         value={search}
@@ -66,7 +84,19 @@ export const HomeUser = () => {
                     />
                     <MaterialCommunityIcons name='tune-variant' size={24} color='black'
                         style={{ marginLeft: -68, marginTop: -15, borderWidth: 1, borderRadius: 22, padding: 14 }}
+                        onPress={handleFilterPress}
                     />
+                    <BottomSheetModal
+                        ref={bottomSheetModalRef}
+                        index={1}
+                        snapPoints={snapPoints}
+                        onChange={handleSheetChanges}
+                        backdropComponent={BottomSheetBackdrop}
+                        >
+                        <BottomSheetView style={styles.contentContainer}>
+                            <Text>Awesome 🎉</Text>
+                        </BottomSheetView>
+                    </BottomSheetModal>
                 </View>
             </View>
 
@@ -93,7 +123,7 @@ export const HomeUser = () => {
                         style={{ overflow: 'hidden' }} 
                         onPress={() => navigation.navigate("ShelterDetailScreen", { shelterId: shelter.Id })}
                         activeOpacity={1}>
-                            <Image source={require('../../assets/image.png')} style={{ width: '100%', height: 290, borderTopLeftRadius: 20, borderTopRightRadius: 20 }} />
+                            <Image source={require('../../assets/image.png')} style={{ width: '100%', height: 290, marginBottom: 15, marginTop: 5, borderTopLeftRadius: 20, borderTopRightRadius: 20 }} />
                             <View style={{ position: 'absolute', top: 170, left: 0, right: 0, bottom: 0}}>
                                 <View style={{ marginTop: 10, backgroundColor: "#FFFDFF", paddingHorizontal: 20, paddingVertical: 15, borderTopLeftRadius: 15, borderTopRightRadius: 15}}>
                                     <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -117,6 +147,22 @@ export const HomeUser = () => {
                 )}
                 keyExtractor={(item) => item.Id}
             />
+        </BottomSheetModalProvider>
         </>
+        
     )
-}
+    
+};
+
+const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+      padding: 24,
+      justifyContent: 'center',
+      backgroundColor: 'grey',
+    },
+    contentContainer: {
+      flex: 1,
+      alignItems: 'center',
+    },
+  });
