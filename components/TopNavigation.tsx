@@ -7,7 +7,7 @@ import { useContext } from "react";
 const TopNavigation = () => {
     const {authState, onLogout} = useAuth();
     return (
-        <View className='mt-5'>
+        <View className='mt-9 mx-3'>
             <View className='flex-row justify-between items-center '>
                 <Image source={require('../assets/image.png')} className='w-16 h-16 rounded-full'/>
                 <Text className='text-sm font-bold mr-auto ml-3'>Welcome back, {'\n'}{authState?.username}</Text>
