@@ -7,8 +7,8 @@ import { useContext } from "react";
 const TopNavigation = () => {
     const {authState, onLogout} = useAuth();
     return (
-        <View className='flex-1 mt-10'>
-            <View className='flex-row justify-between items-center mb-5'>
+        <View className='mt-5'>
+            <View className='flex-row justify-between items-center '>
                 <Image source={require('../assets/image.png')} className='w-16 h-16 rounded-full'/>
                 <Text className='text-sm font-bold mr-auto ml-3'>Welcome back, {'\n'}{authState?.username}</Text>
                 <TouchableOpacity>

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Image, TouchableOpacity, View } from 'react-native';
+import { FlatList, Image, TouchableOpacity, View } from 'react-native';
 import { Input, Text } from 'react-native-elements';
 import { FontAwesome, FontAwesome6, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
@@ -51,7 +51,7 @@ export const HomeUser = () => {
 
     return (
         <>
-            <View className='mx-1 mt-4 '>
+            <View className='mx-1 mt-4'>
                 <Text className='text-xl font-bold'>Find a Pet or Shelter</Text>
                 <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
                 <Input
@@ -68,30 +68,38 @@ export const HomeUser = () => {
                 </View>
             </View>
 
-            {shelterData.map((shelter, index) => (
-                <TouchableOpacity key={index} style={{ overflow: 'hidden' }} onPress={() => navigation.navigate("ShelterDetailScreen", { shelterId : shelter.Id })}>
-                    <Image source={require('../../assets/image.png')} style={{ width: '100%', height: 290, marginTop: 10, borderTopLeftRadius: 20, borderTopRightRadius: 20 }} />
-                    <View style={{ position: 'absolute', top: 170, left: 0, right: 0, bottom: 0 }}>
-                        <View className='rounded-t-3xl mt-5' style={{ marginTop: 10, backgroundColor: "#FFFDFF", paddingHorizontal: 20, paddingVertical: 15 }}>
-                            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-                                <Text className='text-xl font-bold'>{shelter.ShelterName}</Text>
-                                <FontAwesome name='heart' size={24} color="#4689FD" />
-                            </View>
-                            <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10 }}>
-                                <FontAwesome6 name='location-dot' size={20} color='#4689FD' />
-                                <Text className='text-s font-light ml-2'>{shelter.ShelterLocation}</Text>
-                            </View>
-                            <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10 }}>
-                                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', flex: 1 }}>
-                                    <FontAwesome6 name='cat' size={24} color='#8A8A8A' style={{ marginEnd: 5 }} />
-                                    <FontAwesome6 name='dog' size={24} color='#8A8A8A' style={{ marginEnd: 5 }} />
-                                    <MaterialCommunityIcons name='rabbit' size={29} color='#8A8A8A' style={{ marginEnd: 5 }} />
+            <FlatList
+                data={shelterData}
+                maxToRenderPerBatch={15}
+                renderItem={({ item: shelter }) => (
+                    <TouchableOpacity 
+                        style={{ overflow: 'hidden' }} 
+                        onPress={() => navigation.navigate("ShelterDetailScreen", { shelterId: shelter.Id })}
+                        activeOpacity={1}>
+                            <Image source={require('../../assets/image.png')} style={{ width: '100%', height: 290, marginTop: 10, borderTopLeftRadius: 20, borderTopRightRadius: 20 }} />
+                            <View style={{ position: 'absolute', top: 170, left: 0, right: 0, bottom: 0}}>
+                                <View style={{ marginTop: 10, backgroundColor: "#FFFDFF", paddingHorizontal: 20, paddingVertical: 15, borderTopLeftRadius: 15, borderTopRightRadius: 15}}>
+                                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                                        <Text style={{ fontSize: 20, fontWeight: 'bold' }}>{shelter.ShelterName}</Text>
+                                        <FontAwesome name='heart' size={24} color="#4689FD" />
+                                    </View>
+                                    <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10 }}>
+                                        <FontAwesome6 name='location-dot' size={20} color='#4689FD' />
+                                        <Text style={{ fontSize: 14, fontWeight: 'normal', marginLeft: 5 }}>{shelter.ShelterLocation}</Text>
+                                    </View>
+                                    <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10 }}>
+                                        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', flex: 1 }}>
+                                            <FontAwesome6 name='cat' size={24} color='#8A8A8A' style={{ marginEnd: 5 }} />
+                                            <FontAwesome6 name='dog' size={24} color='#8A8A8A' style={{ marginEnd: 5 }} />
+                                            <MaterialCommunityIcons name='rabbit' size={29} color='#8A8A8A' style={{ marginEnd: 5 }} />
+                                        </View>
+                                    </View>
                                 </View>
                             </View>
-                        </View>
-                    </View>
-                </TouchableOpacity>
-            ))}
+                    </TouchableOpacity>
+                )}
+                keyExtractor={(item) => item.Id}
+            />
         </>
     )
 }
