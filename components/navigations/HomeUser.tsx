@@ -72,7 +72,7 @@ export const HomeUser = () => {
 
             <View style={{ flexDirection: 'row' }}>
                 {data.map((item, index) => (
-                    <View className='items-center mr-3'>
+                    <View className='items-center mr-3' key={item.id}>
                         <View 
                             key={index} 
                             className='bg-blue-500 rounded-full p-5'
