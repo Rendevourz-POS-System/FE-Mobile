@@ -83,7 +83,7 @@ export const HomeUser = () => {
                     </View>
                 ))}
             </View>
-
+                
             <FlatList
                 data={shelterData}
                 maxToRenderPerBatch={15}
