@@ -87,12 +87,13 @@ export const HomeUser = () => {
             <FlatList
                 data={shelterData}
                 maxToRenderPerBatch={15}
+                className='mt-3'
                 renderItem={({ item: shelter }) => (
                     <TouchableOpacity 
                         style={{ overflow: 'hidden' }} 
                         onPress={() => navigation.navigate("ShelterDetailScreen", { shelterId: shelter.Id })}
                         activeOpacity={1}>
-                            <Image source={require('../../assets/image.png')} style={{ width: '100%', height: 290, marginTop: 10, borderTopLeftRadius: 20, borderTopRightRadius: 20 }} />
+                            <Image source={require('../../assets/image.png')} style={{ width: '100%', height: 290, borderTopLeftRadius: 20, borderTopRightRadius: 20 }} />
                             <View style={{ position: 'absolute', top: 170, left: 0, right: 0, bottom: 0}}>
                                 <View style={{ marginTop: 10, backgroundColor: "#FFFDFF", paddingHorizontal: 20, paddingVertical: 15, borderTopLeftRadius: 15, borderTopRightRadius: 15}}>
                                     <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>

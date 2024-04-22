@@ -1,4 +1,4 @@
-const baseUrl = "http://192.168.43.15:8080"
+const baseUrl = "http://192.168.18.3:8080"
 
 export const BackendApiUri = {
     registerUser : baseUrl + '/user/register',
