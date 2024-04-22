@@ -28,7 +28,7 @@ export const HomeUser = () => {
     const [shelterData, setShelterData] = useState<ShelterData[]>([]);
 
     const [search, setSearch] = useState<string>('');
-    const [debounceValue] = useDebounce(search, 1500);
+    const [debounceValue] = useDebounce(search, 1000);
 
     const data = [
         { id: 'home', name: 'Shelter', icon: 'home' },
@@ -83,7 +83,7 @@ export const HomeUser = () => {
                     </View>
                 ))}
             </View>
-                
+
             <FlatList
                 data={shelterData}
                 maxToRenderPerBatch={15}
