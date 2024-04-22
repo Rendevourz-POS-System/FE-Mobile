@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { FlatList, Image, TouchableOpacity, View } from 'react-native';
 import { Input, Text } from 'react-native-elements';
-import { FontAwesome, FontAwesome6, MaterialCommunityIcons } from '@expo/vector-icons';
+import { FontAwesome, FontAwesome5, FontAwesome6, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
 import { RootBottomTabCompositeNavigationProp } from './CompositeNavigationProps';
@@ -30,6 +30,11 @@ export const HomeUser = () => {
     const [search, setSearch] = useState<string>('');
     const [debounceValue] = useDebounce(search, 1500);
 
+    const data = [
+        { id: 'home', name: 'Shelter', icon: 'home' },
+        { id: 'paw', name: 'Pets', icon: 'paw' },
+    ];
+
     const [page, setPage] = useState<number>(1);
     const pageSize = 10;
     const orderBy = "ascending";
@@ -48,8 +53,8 @@ export const HomeUser = () => {
 
     return (
         <>
-            <View className='mx-1 mt-4'>
-                <Text className='text-xl font-bold'>Find a Pet or Shelter</Text>
+            <View className='mt-4'>
+                {/* <Text className='text-xl font-bold'>Find a Pet or Shelter</Text> */}
                 <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
                 <Input
                         value={search}
@@ -63,6 +68,20 @@ export const HomeUser = () => {
                         style={{ marginLeft: -68, marginTop: -15, borderWidth: 1, borderRadius: 22, padding: 14 }}
                     />
                 </View>
+            </View>
+
+            <View style={{ flexDirection: 'row' }}>
+                {data.map((item, index) => (
+                    <View className='items-center mr-3'>
+                        <View 
+                            key={index} 
+                            className='bg-blue-500 rounded-full p-5'
+                        >
+                            <FontAwesome5 name={item.icon} size={30} color='white' />
+                        </View>
+                        <Text className='text-black mt-2 font-bold'>{item.name}</Text>
+                    </View>
+                ))}
             </View>
 
             <FlatList
