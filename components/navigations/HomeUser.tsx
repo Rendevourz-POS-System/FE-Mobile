@@ -6,9 +6,6 @@ import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
 import { RootBottomTabCompositeNavigationProp } from './CompositeNavigationProps';
 import { BackendApiUri } from '../../functions/BackendApiUri';
-import { Controller, useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
 import { useDebounce } from 'use-debounce';
 
 interface ShelterData {
