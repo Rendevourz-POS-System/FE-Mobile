@@ -1,9 +1,8 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { FlatList, Image, TouchableOpacity, View, StyleSheet, ActivityIndicator } from 'react-native';
+import { Image, TouchableOpacity, View, StyleSheet, ActivityIndicator } from 'react-native';
 import { Input, Text } from 'react-native-elements';
 import { FontAwesome, FontAwesome5, FontAwesome6, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
-import axios from 'axios';
 import { RootBottomTabCompositeNavigationProp } from './CompositeNavigationProps';
 import { BackendApiUri } from '../../functions/BackendApiUri';
 import { useDebounce } from 'use-debounce';
@@ -14,40 +13,29 @@ import {
     BottomSheetBackdrop,
 } from '@gorhom/bottom-sheet';
 import { FlashList } from '@shopify/flash-list';
-
-interface ShelterData {
-    Id: string;
-    UserId: string;
-    ShelterName: string;
-    ShelterLocation: string;
-    ShelterCapacity: number;
-    ShelterContactNumber: string;
-    ShelterDescription: string;
-    TotalPet: number;
-    BankAccountNumber: string;
-    Pin: string;
-    ShelterVerified: boolean;
-    CreatedAt: string;
-}
+import { get } from '../../functions/Fetch';
+import { ShelterData } from '../../interface/IShelterList';
 
 export const HomeUser = () => {
     const navigation = useNavigation<RootBottomTabCompositeNavigationProp<'Home'>>();
-
+    const [shelterData, setShelterData] = useState<ShelterData[]>([]);
+    const [isLoading, setIsLoading] = useState<boolean>(true);
+    const [search, setSearch] = useState<string>('');
+    const [debounceValue] = useDebounce(search, 1000);
     const bottomSheetModalRef = useRef<BottomSheetModal>(null);
     const snapPoints = useMemo(() => ['50%', '75%'], []);
-    // callbacks
+    const [page, setPage] = useState<number>(1);
+    const pageSize = 10;
+    const orderBy = "ascending";
+    const sort = "";
+
+
     const handleFilterPress = useCallback(() => {
         bottomSheetModalRef.current?.present();
     }, []);
     const handleSheetChanges = useCallback((index: number) => {
         console.log('handleSheetChanges', index);
     }, []);
-
-    const [shelterData, setShelterData] = useState<ShelterData[]>([]);
-    const [isLoading, setIsLoading] = useState<boolean>(true);
-
-    const [search, setSearch] = useState<string>('');
-    const [debounceValue] = useDebounce(search, 1000);
 
     const data = [
         { id: 'home', name: 'Shelter', icon: 'home' },
@@ -68,19 +56,15 @@ export const HomeUser = () => {
         {id: 'jakartaUtara', name: 'Jakarta Utara'}
     ]
 
-    const [page, setPage] = useState<number>(1);
-    const pageSize = 10;
-    const orderBy = "ascending";
-    const sort = "";
     const fetchData = async () => {
-        try {
-            const response = await axios.get(`${BackendApiUri.getShelterList}/?search=${search}&page=${page}&page_size=${pageSize}&order_by=${orderBy}&sort=${sort}`);
-            if(response.status === 200) {
+        try{
+            const response = await get(`${BackendApiUri.getShelterList}/?search=${search}&page=${page}&page_size=${pageSize}&order_by=${orderBy}&sort=${sort}`);
+            if(response && response.status === 200) {
                 setShelterData(response.data);
-                setIsLoading(true);
+                setIsLoading(false);
             }
-        } catch (error) {
-            console.error("Error fetching shelter data:", error);
+        } catch(e) {
+            throw Error;
         }
     };
     useEffect(() => {
@@ -132,7 +116,7 @@ export const HomeUser = () => {
     <>
         <BottomSheetModalProvider>
             <View className='mt-4'>
-                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+                <View className='flex-row items-center justify-around'>
                     <Input
                         value={search}
                         onChangeText={setSearch}
@@ -215,7 +199,7 @@ export const HomeUser = () => {
                     estimatedItemSize={50}
                     data={shelterData}
                     renderItem={({item: shelter}) => (
-                    <TouchableOpacity 
+                        <TouchableOpacity 
                             style={{ overflow: 'hidden' }} 
                             onPress={() => navigation.navigate("ShelterDetailScreen", { shelterId: shelter.Id })}
                             activeOpacity={1}>
@@ -239,12 +223,12 @@ export const HomeUser = () => {
                                         </View>
                                     </View>
                                 </View>
-                    </TouchableOpacity>
-            )}/>
+                        </TouchableOpacity>
+                    )}
+                />
             )}
         </BottomSheetModalProvider>
     </>
-        
     )
 };
 
