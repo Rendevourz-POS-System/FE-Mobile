@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { FlatList, Image, TouchableOpacity, View, StyleSheet } from 'react-native';
+import { FlatList, Image, TouchableOpacity, View, StyleSheet, ActivityIndicator } from 'react-native';
 import { Input, Text } from 'react-native-elements';
 import { FontAwesome, FontAwesome5, FontAwesome6, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
@@ -13,6 +13,7 @@ import {
     BottomSheetModalProvider,
     BottomSheetBackdrop,
 } from '@gorhom/bottom-sheet';
+import { FlashList } from '@shopify/flash-list';
 
 interface ShelterData {
     Id: string;
@@ -43,6 +44,7 @@ export const HomeUser = () => {
     }, []);
 
     const [shelterData, setShelterData] = useState<ShelterData[]>([]);
+    const [isLoading, setIsLoading] = useState<boolean>(true);
 
     const [search, setSearch] = useState<string>('');
     const [debounceValue] = useDebounce(search, 1000);
@@ -73,7 +75,10 @@ export const HomeUser = () => {
     const fetchData = async () => {
         try {
             const response = await axios.get(`${BackendApiUri.getShelterList}/?search=${search}&page=${page}&page_size=${pageSize}&order_by=${orderBy}&sort=${sort}`);
-            setShelterData(response.data);
+            if(response.status === 200) {
+                setShelterData(response.data);
+                setIsLoading(true);
+            }
         } catch (error) {
             console.error("Error fetching shelter data:", error);
         }
@@ -124,7 +129,7 @@ export const HomeUser = () => {
     });
 
     return (
-        <>
+    <>
         <BottomSheetModalProvider>
             <View className='mt-4'>
                 <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -201,42 +206,44 @@ export const HomeUser = () => {
                     </View>
                 ))}
             </View>
-
-            <FlatList
-                data={shelterData}
-                maxToRenderPerBatch={15}
-                className='mt-3 mx-3'
-                renderItem={({ item: shelter }) => (
+            {isLoading ? (
+                <View className='flex-1 justify-center items-center'>
+                    <ActivityIndicator color="blue" size="large"/>
+                </View>
+            ) : (
+                <FlashList
+                    estimatedItemSize={50}
+                    data={shelterData}
+                    renderItem={({item: shelter}) => (
                     <TouchableOpacity 
-                        style={{ overflow: 'hidden' }} 
-                        onPress={() => navigation.navigate("ShelterDetailScreen", { shelterId: shelter.Id })}
-                        activeOpacity={1}>
-                            <Image source={require('../../assets/image.png')} style={{ width: '100%', height: 290, marginBottom: 15, marginTop: 5, borderTopLeftRadius: 20, borderTopRightRadius: 20 }} />
-                            <View style={{ position: 'absolute', top: 170, left: 0, right: 0, bottom: 0}}>
-                                <View style={{ marginTop: 10, backgroundColor: "#FFFDFF", paddingHorizontal: 20, paddingVertical: 15, borderTopLeftRadius: 15, borderTopRightRadius: 15}}>
-                                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-                                        <Text style={{ fontSize: 20, fontWeight: 'bold' }}>{shelter.ShelterName}</Text>
-                                        <FontAwesome name='heart' size={24} color="#4689FD" />
-                                    </View>
-                                    <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10 }}>
-                                        <FontAwesome6 name='location-dot' size={20} color='#4689FD' />
-                                        <Text style={{ fontSize: 14, fontWeight: 'normal', marginLeft: 5 }}>{shelter.ShelterLocation}</Text>
-                                    </View>
-                                    <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10 }}>
-                                        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', flex: 1 }}>
-                                            <FontAwesome6 name='cat' size={24} color='#8A8A8A' style={{ marginEnd: 5 }} />
-                                            <FontAwesome6 name='dog' size={24} color='#8A8A8A' style={{ marginEnd: 5 }} />
-                                            <MaterialCommunityIcons name='rabbit' size={29} color='#8A8A8A' style={{ marginEnd: 5 }} />
+                            style={{ overflow: 'hidden' }} 
+                            onPress={() => navigation.navigate("ShelterDetailScreen", { shelterId: shelter.Id })}
+                            activeOpacity={1}>
+                                <Image source={require('../../assets/image.png')} style={{ width: '100%', height: 290, marginBottom: 15, marginTop: 5, borderTopLeftRadius: 20, borderTopRightRadius: 20 }} />
+                                <View style={{ position: 'absolute', top: 170, left: 0, right: 0, bottom: 0}}>
+                                    <View style={{ marginTop: 10, backgroundColor: "#FFFDFF", paddingHorizontal: 20, paddingVertical: 15, borderTopLeftRadius: 15, borderTopRightRadius: 15}}>
+                                        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                                            <Text style={{ fontSize: 20, fontWeight: 'bold' }}>{shelter.ShelterName}</Text>
+                                            <FontAwesome name='heart' size={24} color="#4689FD" />
+                                        </View>
+                                        <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10 }}>
+                                            <FontAwesome6 name='location-dot' size={20} color='#4689FD' />
+                                            <Text style={{ fontSize: 14, fontWeight: 'normal', marginLeft: 5 }}>{shelter.ShelterLocation}</Text>
+                                        </View>
+                                        <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10 }}>
+                                            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', flex: 1 }}>
+                                                <FontAwesome6 name='cat' size={24} color='#8A8A8A' style={{ marginEnd: 5 }} />
+                                                <FontAwesome6 name='dog' size={24} color='#8A8A8A' style={{ marginEnd: 5 }} />
+                                                <MaterialCommunityIcons name='rabbit' size={29} color='#8A8A8A' style={{ marginEnd: 5 }} />
+                                            </View>
                                         </View>
                                     </View>
                                 </View>
-                            </View>
                     </TouchableOpacity>
-                )}
-                keyExtractor={(item) => item.Id}
-            />
+            )}/>
+            )}
         </BottomSheetModalProvider>
-        </>
+    </>
         
     )
 };
