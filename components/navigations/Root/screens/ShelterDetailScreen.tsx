@@ -5,7 +5,7 @@ import { Text } from 'react-native-elements';
 import { FontAwesome, FontAwesome5, FontAwesome6, Ionicons, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 import { RootNavigationStackScreenProps } from '../../StackScreenProps';
 import { BackendApiUri } from '../../../../functions/BackendApiUri';
-import axios from 'axios';
+import { get } from '../../../../functions/Fetch';
 interface ShelterData {
     Id : string,
     UserId : string,
@@ -47,7 +47,7 @@ export const ShelterDetailScreen: FC<RootNavigationStackScreenProps<'ShelterDeta
     const detailData = async () => {
         try {
             const shelterId = route.params.shelterId;
-            const response = await axios.get(`${BackendApiUri.getShelterDetail}/${shelterId}`)
+            const response = await get(`${BackendApiUri.getShelterDetail}/${shelterId}`);
             if(response.status === 200) {
                 setData({
                     Message: response.data.Message,
