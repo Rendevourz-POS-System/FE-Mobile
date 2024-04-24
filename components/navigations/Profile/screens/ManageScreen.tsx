@@ -1,6 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
 import React, { FC, useEffect, useState } from "react";
-import { ScrollView, Text, View, StyleSheet, TouchableOpacity, TextInput, Alert } from "react-native";
+import { ScrollView, Text, View, StyleSheet, TouchableOpacity, TextInput, Alert, Image } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { ProfileRootBottomTabCompositeScreenProps } from "../../CompositeNavigationProps";
 import { z } from "zod";
@@ -9,6 +9,8 @@ import { Controller, useForm } from 'react-hook-form';
 import { FontAwesome6 } from '@expo/vector-icons';
 import { BackendApiUri } from "../../../../functions/BackendApiUri";
 import axios from "axios";
+import { get } from "../../../../functions/Fetch";
+import * as ImagePicker from 'expo-image-picker';
 
 interface User {
     Username: string,
@@ -34,11 +36,12 @@ type ProfileFormType = z.infer<typeof profileFormSchema>
 
 export const ManageScreen: FC<ProfileRootBottomTabCompositeScreenProps<'ManageScreen'>> = ({ navigation }) => {
     const [userData, setUserData] = useState<User>();
+    const [image, setImage] = useState('');
 
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await axios.get(`${BackendApiUri.getUserData}`);
+                const response = await get(`${BackendApiUri.getUserData}`);
                 setUserData(response.data);
                 setValue("Nik", response.data?.Nik);
                 setValue("PhoneNumber", response.data?.PhoneNumber);
@@ -53,24 +56,38 @@ export const ManageScreen: FC<ProfileRootBottomTabCompositeScreenProps<'ManageSc
         fetchData();
     }, []);
 
-    const {
-        control,
-        setValue,
-        handleSubmit,
-        formState: { errors },
-    } = useForm<ProfileFormType>({
+    const { control, setValue, handleSubmit, formState: { errors } } = useForm<ProfileFormType>({
         resolver: zodResolver(profileFormSchema)
     });
 
     const onSubmit = async (data: ProfileFormType) => {
-        setValue("Nik", data.Nik);
-        setValue("PhoneNumber", data.PhoneNumber);
-        setValue("Address", data.Address);
-        setValue("City", data.City);
-        setValue("Province", data.Province);
-        setValue("PostalCode", data.PostalCode);
-        Alert.alert('Data Tersimpan', 'Data anda telah tersimpan.');
+        try {
+            setValue("Nik", data.Nik);
+            setValue("PhoneNumber", data.PhoneNumber);
+            setValue("Address", data.Address);
+            setValue("City", data.City);
+            setValue("Province", data.Province);
+            setValue("PostalCode", data.PostalCode);
+            console.log(data)
+            await axios.post(`${BackendApiUri.registerUser}`, data);
+            Alert.alert('Data Tersimpan', 'Data anda telah tersimpan.');
+        } catch (error) {
+            console.error("Error during registration:", error);
+        }
     }
+
+    const pickImage = async () => {
+        let result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.All,
+            allowsEditing: true,
+            aspect: [1, 1],
+            quality: 1,
+        })
+
+        if (!result.canceled) {
+            setImage(result.assets[0].uri)
+        }
+    };
 
     return (
         <SafeAreaProvider style={styles.container}>
@@ -82,7 +99,17 @@ export const ManageScreen: FC<ProfileRootBottomTabCompositeScreenProps<'ManageSc
             <ScrollView>
                 <View className="mb-10 mt-10">
                     <View style={styles.rowContainer} className="justify-around">
-                        <Ionicons name="person-circle-outline" size={120} color="black" />
+                        <TouchableOpacity
+                            style={{ width: 100, height: 100, backgroundColor: '#2E3A59', borderRadius: 50, justifyContent: 'center', alignItems: 'center' }}
+                            onPress={pickImage}
+                            disabled={image ? true : false}
+                        >
+                            {image ? (
+                                <Image source={{ uri: image }} style={{ width: 100, height: 100, borderRadius: 50 }} />)
+                                :
+                                (<Ionicons name="camera" size={40} color="white" />
+                            )}
+                        </TouchableOpacity>
                         <Text className="top-5 text-3xl">{userData?.Username}</Text>
                     </View>
                 </View>
