@@ -115,14 +115,6 @@ export const LoginScreen: FC<RootNavigationStackScreenProps<'LoginScreen'>> = ({
                         <Text className="text-center font-bold text-white">Sign In</Text>
                     </TouchableOpacity>
 
-                    <Text className="text-center my-5 opacity-30">Or Sign In With</Text>
-
-                    <View className="flex-row flex justify-evenly">
-                        <Image source={require('../../../../assets/Facebook.png')} />
-                        <Image source={require('../../../../assets/Google.png')} />
-                        <Image source={require('../../../../assets/Instagram.png')} />
-                    </View>
-
                     <View className="flex-row justify-center top-5">
                         <Text>Don't have an account?</Text>
                         <TouchableOpacity onPress={() => navigation.navigate("RegisterScreen")}>
