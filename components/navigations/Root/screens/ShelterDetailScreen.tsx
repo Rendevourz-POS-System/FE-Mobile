@@ -130,6 +130,9 @@ export const ShelterDetailScreen: FC<RootNavigationStackScreenProps<'ShelterDeta
                 <TouchableOpacity style={styles.adopsiButton} onPress={() => navigation.navigate("HewanAdopsiScreen")}>
                     <Text style={styles.fontButton} className='text-xs text-center'>Hewan Adopsi</Text>
                 </TouchableOpacity>
+                <TouchableOpacity style={styles.adopsiButton} onPress={() => navigation.navigate("SurrenderFormScreen")}>
+                    <Text style={styles.fontButton} className='text-xs text-center'>Surrender</Text>
+                </TouchableOpacity>
                 <TouchableOpacity style={styles.laporButton} onPress={() => navigation.navigate("RescueFormScreen")}>
                     <Text style={styles.fontButton} className='text-xs text-center'>Rescue</Text>
                 </TouchableOpacity>
@@ -161,14 +164,14 @@ const styles = StyleSheet.create({
         borderBottomLeftRadius: 20,
         borderTopLeftRadius: 20,
         marginRight: 5,
-        width: 120,
+        width: 90,
         height: 60
     },
     adopsiButton: {
         backgroundColor: "#4689FD",
         paddingVertical: 20,
         marginRight: 5,
-        width: 120,
+        width: 90,
         height: 60
     },
     laporButton: {
@@ -176,7 +179,7 @@ const styles = StyleSheet.create({
         padding: 20,
         borderTopRightRadius: 20,
         borderBottomRightRadius: 20,
-        width: 120,
+        width: 90,
         height: 60
     }
 });

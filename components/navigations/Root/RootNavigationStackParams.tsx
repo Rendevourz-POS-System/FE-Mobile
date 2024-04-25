@@ -12,4 +12,5 @@ export type RootNavigationStackParams = {
     PetDetailScreen: undefined;
     AdoptionFormScreen: undefined;
     RescueFormScreen: undefined;
+    SurrenderFormScreen: undefined;
 }
