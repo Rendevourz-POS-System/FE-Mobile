@@ -1,5 +1,5 @@
 import React, { FC, useEffect, useState } from 'react';
-import { Image, ScrollView, TouchableOpacity, View, StyleSheet } from 'react-native';
+import { Image, ScrollView, TouchableOpacity, View, StyleSheet, Linking } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { Text } from 'react-native-elements';
 import { FontAwesome, FontAwesome5, FontAwesome6, Ionicons, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
@@ -7,22 +7,22 @@ import { RootNavigationStackScreenProps } from '../../StackScreenProps';
 import { BackendApiUri } from '../../../../functions/BackendApiUri';
 import { get } from '../../../../functions/Fetch';
 interface ShelterData {
-    Id : string,
-    UserId : string,
-    ShelterName : string,
-    ShelterLocation : string,
-    ShelterCapacity : number,
+    Id: string,
+    UserId: string,
+    ShelterName: string,
+    ShelterLocation: string,
+    ShelterCapacity: number,
     ShelterContactNumber: string,
-    ShelterDescription : string,
+    ShelterDescription: string,
     TotalPet: number,
     BankAccountNumber: string,
-    Pin : string,
-    ShelterVertified : boolean,
-    CreatedAt : Date
+    Pin: string,
+    ShelterVertified: boolean,
+    CreatedAt: Date
 }
 interface ShelterProps {
-    Message : string,
-    Data : ShelterData
+    Message: string,
+    Data: ShelterData
 }
 export const ShelterDetailScreen: FC<RootNavigationStackScreenProps<'ShelterDetailScreen'>> = ({ navigation, route }: any) => {
     const [isFavorite, setIsFavorite] = useState(false);
@@ -68,11 +68,11 @@ export const ShelterDetailScreen: FC<RootNavigationStackScreenProps<'ShelterDeta
                 });
             }
         }
-        catch(e){
+        catch (e) {
             console.log(e)
         }
     }
-    
+
     useEffect(() => {
         detailData();
     }, [route.params.shelterId]);
@@ -81,18 +81,25 @@ export const ShelterDetailScreen: FC<RootNavigationStackScreenProps<'ShelterDeta
         setIsFavorite(!isFavorite);
     };
 
+    const handleWhatsApp = (phoneNumber: string) => {
+        const message = 'Halo saya ingin bertanya mengenai shelter anda.';
+        Linking.openURL(`whatsapp://send?text=${encodeURIComponent(message)}&phone=${phoneNumber}`);
+    }
+
     return (
         <SafeAreaProvider className='flex-1'>
+            <View style={[styles.nextIcon, { position: 'absolute', left: 20, top: 45, zIndex: 1 }]}>
+                <Ionicons name="chevron-back" size={24} color="black" onPress={() => navigation.goBack()} />
+            </View>
             <ScrollView>
-                <View className="mt-1" style={styles.container}>
+                <View style={styles.container}>
                     <Image source={require('../../../../assets/image.png')} style={{ width: '100%', height: 350 }} />
-                    <Ionicons name="chevron-back" size={24} color="black" onPress={() => navigation.goBack()} style={[styles.nextIcon, { position: 'absolute', left: 20, top: 45 }]} />
                 </View>
                 <View className='p-3 mb-24'>
                     <View className='flex flex-row justify-between'>
                         <Text className='text-xl font-bold'>{data.Data.ShelterName}</Text>
                         <View className='flex flex-row items-center'>
-                            <FontAwesome name="whatsapp" size={28} color="green" style={{ marginRight: 15 }} />
+                            <FontAwesome name="whatsapp" size={28} color="green" style={{ marginRight: 15 }} onPress={() => handleWhatsApp(data.Data.ShelterContactNumber)} />
                             <FontAwesome name={isFavorite ? 'heart' : 'heart-o'} size={24} color="#4689FD" onPress={handlePressFavorite} />
                         </View>
                     </View>

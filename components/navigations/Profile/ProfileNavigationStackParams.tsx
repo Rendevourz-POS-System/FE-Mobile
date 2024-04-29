@@ -3,4 +3,5 @@ export type ProfileNavigationStackParams = {
     ManageScreen: undefined;
     NotificationScreen: undefined;
     HistoryScreen: undefined;
+    FavoriteScreen: undefined;
 }

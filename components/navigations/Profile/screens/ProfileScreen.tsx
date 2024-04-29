@@ -1,4 +1,4 @@
-import { Ionicons, MaterialCommunityIcons, MaterialIcons, Octicons } from "@expo/vector-icons";
+import { FontAwesome, Ionicons, MaterialCommunityIcons, MaterialIcons, Octicons } from "@expo/vector-icons";
 import React, { FC, useState } from "react";
 import { ScrollView, Text, View, StyleSheet, TouchableOpacity } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
@@ -22,6 +22,7 @@ export const ProfileScreen: FC<ProfileRootBottomTabCompositeScreenProps<'Profile
                         <Ionicons name="person-circle-outline" size={120} color="black" />
                         <Text className="text-3xl">{username}</Text>
                     </View>
+
                 </View>
 
                 <View className="mx-5">
@@ -67,6 +68,17 @@ export const ProfileScreen: FC<ProfileRootBottomTabCompositeScreenProps<'Profile
                             <MaterialIcons name="navigate-next" size={25} color="black" />
                         </View>
                     </TouchableOpacity>
+                    {userType == 'user' && (
+                        <TouchableOpacity style={styles.rowContainer} onPress={() => navigation.navigate("FavoriteScreen")}>
+                            <View style={styles.iconContainer}>
+                                <FontAwesome name={'heart'} size={24} color="white" />
+                            </View>
+                            <Text style={styles.text}>Favorite</Text>
+                            <View style={styles.nextIconContainer}>
+                                <MaterialIcons name="navigate-next" size={25} color="black" />
+                            </View>
+                        </TouchableOpacity>
+                    )}
                     {userType == 'shelter' && (<>
                         <TouchableOpacity style={styles.rowContainer}>
                             <View style={styles.iconContainer}>
@@ -89,11 +101,9 @@ export const ProfileScreen: FC<ProfileRootBottomTabCompositeScreenProps<'Profile
                     </>)}
                 </View>
 
-                <View style={{ flexDirection: 'row', justifyContent: 'flex-end', right: 40 }}>
-                    <TouchableOpacity style={styles.signOutButton} onPress={onLogout}>
-                        <Text style={styles.signOutText}>Sign Out</Text>
-                    </TouchableOpacity>
-                </View>
+                <TouchableOpacity style={styles.signOutButton} onPress={onLogout}>
+                    <Text className="text-center font-bold text-white">Sign Out</Text>
+                </TouchableOpacity>
             </ScrollView>
         </SafeAreaProvider>
     );
@@ -101,7 +111,7 @@ export const ProfileScreen: FC<ProfileRootBottomTabCompositeScreenProps<'Profile
 
 const styles = StyleSheet.create({
     container: {
-        flex:1,
+        flex: 1,
         backgroundColor: 'white',
     },
     title: {
@@ -135,16 +145,11 @@ const styles = StyleSheet.create({
         marginRight: 'auto',
         fontWeight: '600'
     },
-    signOutText: {
-        fontSize: 18,
-        left: 35,
-        marginRight: 'auto',
-        fontWeight: '600',
-        color: '#4689FD'
-    },
     signOutButton: {
-        color: '#EDECEC',
-        padding: 10,
-        width: 100,
+        backgroundColor: "#378CE7",
+        padding: 15,
+        marginHorizontal: 30,
+        borderRadius: 10,
+        marginTop: 20
     }
 });

@@ -4,6 +4,7 @@ import { ProfileScreen } from "./screens/ProfileScreen";
 import { ManageScreen } from "./screens/ManageScreen";
 import { NotificationScreen } from "./screens/NotificationScreen";
 import { HistoryScreen } from "./screens/HistoryScreen";
+import { FavoriteScreen } from "./screens/FavoriteScreen";
 
 const Stack = createNativeStackNavigator<ProfileNavigationStackParams>();
 
@@ -14,6 +15,7 @@ export const ProfileNavigationStack: React.FC<{}> = () => {
             <Stack.Screen name="ManageScreen" component={ManageScreen} options={noHeader} />
             <Stack.Screen name="NotificationScreen" component={NotificationScreen} options={noHeader} />
             <Stack.Screen name="HistoryScreen" component={HistoryScreen} options={noHeader} />
+            <Stack.Screen name="FavoriteScreen" component={FavoriteScreen} options={noHeader} />
         </Stack.Navigator>
     );
 }
