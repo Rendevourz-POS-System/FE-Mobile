@@ -47,8 +47,8 @@ export const ShelterDetailScreen: FC<RootNavigationStackScreenProps<'ShelterDeta
     const detailData = async () => {
         try {
             const shelterId = route.params.shelterId;
-            const response = await get(`${BackendApiUri.getShelterDetail}/${shelterId}`)
-            if (response.status === 200) {
+            const response = await get(`${BackendApiUri.getShelterDetail}/${shelterId}`);
+            if(response.status === 200) {
                 setData({
                     Message: response.data.Message,
                     Data: {

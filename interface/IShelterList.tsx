@@ -11,4 +11,5 @@ export interface ShelterData {
     Pin: string;
     ShelterVerified: boolean;
     CreatedAt: string;
+    Type: "Shelter";
 }
