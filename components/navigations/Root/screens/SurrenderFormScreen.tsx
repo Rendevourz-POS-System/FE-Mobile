@@ -10,12 +10,12 @@ import { RadioButton } from "react-native-paper";
 import * as ImagePicker from 'expo-image-picker';
 import { SelectList } from "react-native-dropdown-select-list";
 import { RootNavigationStackScreenProps } from "../../StackScreenProps";
+import { dataJenisHewan, dataSpesiesHewan } from "../../../../constans/data";
 
 const surrenderFormSchema = z.object({
     name: z.string({ required_error: "Nama tidak boleh kosong" }).min(1, { message: "Nama tidak boleh kosong" }),
     dob: z.string({ required_error: "Tanggal lahir tidak boleh kosong" }).min(10, { message: 'Tanggal lahir tidak boleh kosong' }),
     type: z.string({ required_error: "Jenis Hewan tidak boleh kosong" }).min(1, { message: "Jenis Hewan tidak boleh kosong" }),
-    color: z.string({ required_error: "Jenis Hewan tidak boleh kosong" }).min(1, { message: "Warna Hewan tidak boleh kosong" }),
     species: z.string({ required_error: 'Spesies hewan tidak boleh kosong' }).min(1, { message: "Spesies hewan tidak boleh kosong" }),
     gender: z.string({ required_error: "Jenis kelamin hewan tidak boleh kosong" }),
     steril: z.string({ required_error: 'Steril tidak boleh kosong' }),
@@ -47,7 +47,7 @@ export const SurrenderFormScreen: FC<RootNavigationStackScreenProps<'SurrenderFo
     });
 
     const {
-        dob
+        dob, type
     } = watch();
 
     const onConfirmBirthDate = (value: Date) => {
@@ -74,17 +74,12 @@ export const SurrenderFormScreen: FC<RootNavigationStackScreenProps<'SurrenderFo
         }
     };
 
-    const [selected, setSelected] = useState("");
-
-    const data = [
-        { key: '1', value: 'Mobiles', disabled: true },
-        { key: '2', value: 'Appliances' },
-        { key: '3', value: 'Cameras' },
-        { key: '4', value: 'Computers' },
-        { key: '5', value: 'Vegetables' },
-        { key: '6', value: 'Diary Products' },
-        { key: '7', value: 'Drinks' },
-    ]
+    const handleSpeciesSelection = () => {
+        if(type == "Dog") return dataSpesiesHewan.Dog;
+        if(type == "Cat") return dataSpesiesHewan.Cat;
+        if(type == "Rabbit") return dataSpesiesHewan.Rabbit
+        return []
+    };
 
     return (
         <SafeAreaProvider style={styles.container}>
@@ -130,22 +125,6 @@ export const SurrenderFormScreen: FC<RootNavigationStackScreenProps<'SurrenderFo
                 />
                 <Text style={styles.errorMessage}>{errors.dob?.message}</Text>
 
-                <Text style={styles.textColor}>Warna Hewan<Text className='text-[#ff0000]'>*</Text></Text>
-                <View style={styles.inputBox}>
-                    <Controller
-                        name="color"
-                        control={control}
-                        render={() => (
-                            <TextInput
-                                placeholder="Masukkan Warna Hewan"
-                                style={{ flex: 1 }}
-                                onChangeText={(text: string) => setValue('color', text)}
-                            />
-                        )}
-                    />
-                </View>
-                <Text style={styles.errorMessage}>{errors.color?.message}</Text>
-
                 <Text style={styles.textColor}>Jenis Hewan<Text className='text-[#ff0000]'>*</Text></Text>
                 <Controller
                     name="type"
@@ -153,13 +132,13 @@ export const SurrenderFormScreen: FC<RootNavigationStackScreenProps<'SurrenderFo
                     render={() => (
                         <SelectList
                             setSelected={(text: string) => setValue('type', text)}
-                            data={data}
+                            data={dataJenisHewan}
                             save="value"
-                            search={false}
+                            search={true}
                             dropdownStyles={styles.inputBox}
                             boxStyles={styles.selectBox}
-                            inputStyles={{ padding: 8 }}
-                            arrowicon={<FontAwesome name="chevron-down" size={12} color={'#808080'} style={{ padding: 8 }} />}
+                            inputStyles={{ padding: 3 }}
+                            arrowicon={<FontAwesome name="chevron-down" size={12} color={'#808080'} style={{ padding: 3 }} />}
                             placeholder="Masukkan Jenis Hewan"
                         />
                     )}
@@ -173,13 +152,13 @@ export const SurrenderFormScreen: FC<RootNavigationStackScreenProps<'SurrenderFo
                     render={() => (
                         <SelectList
                             setSelected={(text: string) => setValue('species', text)}
-                            data={data}
+                            data={handleSpeciesSelection()}
                             save="value"
-                            search={false}
+                            search={true}
                             dropdownStyles={styles.inputBox}
                             boxStyles={styles.selectBox}
-                            inputStyles={{ padding: 8 }}
-                            arrowicon={<FontAwesome name="chevron-down" size={12} color={'#808080'} style={{ padding: 8 }} />}
+                            inputStyles={{ padding: 3 }}
+                            arrowicon={<FontAwesome name="chevron-down" size={12} color={'#808080'} style={{ padding: 3}} />}
                             placeholder="Masukkan Spesies Hewan"
                         />
                     )}

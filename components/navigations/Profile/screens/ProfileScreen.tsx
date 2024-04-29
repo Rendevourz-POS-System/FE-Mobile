@@ -1,4 +1,4 @@
-import { Ionicons, MaterialCommunityIcons, MaterialIcons, Octicons } from "@expo/vector-icons";
+import { FontAwesome, Ionicons, MaterialCommunityIcons, MaterialIcons, Octicons } from "@expo/vector-icons";
 import React, { FC, useState } from "react";
 import { ScrollView, Text, View, StyleSheet, TouchableOpacity } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
@@ -68,6 +68,17 @@ export const ProfileScreen: FC<ProfileRootBottomTabCompositeScreenProps<'Profile
                             <MaterialIcons name="navigate-next" size={25} color="black" />
                         </View>
                     </TouchableOpacity>
+                    {userType == 'user' && (
+                        <TouchableOpacity style={styles.rowContainer} onPress={() => navigation.navigate("FavoriteScreen")}>
+                            <View style={styles.iconContainer}>
+                                <FontAwesome name={'heart'} size={24} color="white" />
+                            </View>
+                            <Text style={styles.text}>Favorite</Text>
+                            <View style={styles.nextIconContainer}>
+                                <MaterialIcons name="navigate-next" size={25} color="black" />
+                            </View>
+                        </TouchableOpacity>
+                    )}
                     {userType == 'shelter' && (<>
                         <TouchableOpacity style={styles.rowContainer}>
                             <View style={styles.iconContainer}>
