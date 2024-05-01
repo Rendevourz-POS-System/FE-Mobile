@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Image, TouchableOpacity, View, StyleSheet, ActivityIndicator } from 'react-native';
+import { Image, TouchableOpacity, View, StyleSheet, ActivityIndicator, ScrollView, RefreshControl } from 'react-native';
 import { Text } from 'react-native-elements';
 import { FontAwesome,FontAwesome6, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
@@ -30,6 +30,16 @@ export const ShelterList = () => {
     const pageSize = 10;
     const orderBy = "ascending";
     const sort = "";
+    const [refreshing, setRefreshing] = useState(false);
+
+    const onRefresh = () => {
+        try{
+            setRefreshing(true);
+            fetchData();
+        } catch(e){
+            console.log(e);
+        }
+    };
 
     const handleFilterPress = useCallback(() => {
         bottomSheetModalRef.current?.present();
@@ -99,6 +109,7 @@ export const ShelterList = () => {
 
     useEffect(() => {
         fetchData();
+        setRefreshing(false);
     }, [shelterFav, shelterData]);
 
     const onPressFav = async (shelterId: string) => {
@@ -123,7 +134,7 @@ export const ShelterList = () => {
     useEffect(() => {
         fetchShelter();
         fetchShelterFav();
-    }, [debounceValue]);
+    }, [debounceValue, refreshing]);
 
     const [selectedShelters, setSelectedShelters] = useState<string[]>([]);
 
@@ -168,130 +179,140 @@ export const ShelterList = () => {
 
     return (
         <>
-            <View className=''>
-                <View className='flex-row items-center justify-around'>
-                    <Searchbar
-                        placeholder='Text Here...'
-                        value={search}
-                        onChangeText={setSearch}
-                        style={{backgroundColor: 'transparent', width:'87%'}}
-                        loading={isLoading}
+            <ScrollView
+                refreshControl={
+                    <RefreshControl
+                        refreshing={refreshing}
+                        onRefresh={onRefresh}
                     />
-                    <MaterialCommunityIcons name='tune-variant' size={24} color='black'
-                        style={{marginRight: 10}}
-                        onPress={handleFilterPress}
-                    />
-                    <BottomSheetModal
-                        ref={bottomSheetModalRef}
-                        index={1}
-                        snapPoints={snapPoints}
-                        onChange={handleSheetChanges}
-                        backdropComponent={BottomSheetBackdrop}
-                        style={styles.bottomSheetModal}
-                        >
-                        <BottomSheetView>
-                            <View className='mx-5'>
-                                <Text className='text-xl font-bold'>Filter</Text>
-                                <Text className='text-xl font-bold mt-8'>Pet</Text>
-                                <View className='flex flex-row flex-wrap'>
-                                    {filterPet.map((pet) => (
-                                        <TouchableOpacity
-                                            key={pet.id}
-                                            onPress={() => togglePetSelection(pet.id)}
-                                            className={`rounded-full px-4 py-2 m-2 ${isPetSelected(pet.id) ? 'bg-blue-500' : 'bg-gray-200'}`}
-                                        >
-                                            <Text className={`text-gray-700 ${isPetSelected(pet.id) ? 'text-white' : ''}`}>
-                                                {pet.name}
-                                            </Text>
-                                        </TouchableOpacity>
-                                    ))}
+                }
+            >
+                <View className=''>
+                    <View className='flex-row items-center justify-around'>
+                        <Searchbar
+                            placeholder='Text Here...'
+                            value={search}
+                            onChangeText={setSearch}
+                            style={{backgroundColor: 'transparent', width:'87%'}}
+                            loading={isLoading}
+                        />
+                        <MaterialCommunityIcons name='tune-variant' size={24} color='black'
+                            style={{marginRight: 10}}
+                            onPress={handleFilterPress}
+                        />
+                        <BottomSheetModal
+                            ref={bottomSheetModalRef}
+                            index={1}
+                            snapPoints={snapPoints}
+                            onChange={handleSheetChanges}
+                            backdropComponent={BottomSheetBackdrop}
+                            style={styles.bottomSheetModal}
+                            >
+                            <BottomSheetView>
+                                <View className='mx-5'>
+                                    <Text className='text-xl font-bold'>Filter</Text>
+                                    <Text className='text-xl font-bold mt-8'>Pet</Text>
+                                    <View className='flex flex-row flex-wrap'>
+                                        {filterPet.map((pet) => (
+                                            <TouchableOpacity
+                                                key={pet.id}
+                                                onPress={() => togglePetSelection(pet.id)}
+                                                className={`rounded-full px-4 py-2 m-2 ${isPetSelected(pet.id) ? 'bg-blue-500' : 'bg-gray-200'}`}
+                                            >
+                                                <Text className={`text-gray-700 ${isPetSelected(pet.id) ? 'text-white' : ''}`}>
+                                                    {pet.name}
+                                                </Text>
+                                            </TouchableOpacity>
+                                        ))}
+                                    </View>
+
+
+                                    <Text className='text-xl font-bold mt-8'>Shelter</Text>
+                                    <View className='flex flex-row flex-wrap'>
+                                        {filterShelter.map((shelter) => (
+                                            <TouchableOpacity
+                                                key={shelter.id}
+                                                onPress={() => toggleShelterSelection(shelter.id)}
+                                                className={`rounded-full px-4 py-2 m-2 ${isShelterSelected(shelter.id) ? 'bg-blue-500' : 'bg-gray-200'}`}
+                                            >
+                                                <Text className={`text-gray-700 ${isShelterSelected(shelter.id) ? 'text-white' : ''}`}>
+                                                    {shelter.name}
+                                                </Text>
+                                            </TouchableOpacity>
+                                        ))}
+                                    </View>
                                 </View>
-
-
-                                <Text className='text-xl font-bold mt-8'>Shelter</Text>
-                                <View className='flex flex-row flex-wrap'>
-                                    {filterShelter.map((shelter) => (
-                                        <TouchableOpacity
-                                            key={shelter.id}
-                                            onPress={() => toggleShelterSelection(shelter.id)}
-                                            className={`rounded-full px-4 py-2 m-2 ${isShelterSelected(shelter.id) ? 'bg-blue-500' : 'bg-gray-200'}`}
-                                        >
-                                            <Text className={`text-gray-700 ${isShelterSelected(shelter.id) ? 'text-white' : ''}`}>
-                                                {shelter.name}
-                                            </Text>
-                                        </TouchableOpacity>
-                                    ))}
-                                </View>
-                            </View>
-                        </BottomSheetView>
-                    </BottomSheetModal>
-                </View>
-            </View>
-
-            <>
-                {isLoading ? (
-                    <View className='flex-1 justify-center items-center'>
-                        <ActivityIndicator color="blue" size="large"/>
+                            </BottomSheetView>
+                        </BottomSheetModal>
                     </View>
-                ) : (
-                    <>
-                        {shelterData && shelterData.length > 0 ? (
-                            <FlashList
-                                estimatedItemSize={50}
-                                data={mergedData || []}
-                                renderItem={({item: shelter}) => (
-                                    <TouchableOpacity 
-                                        style={{ overflow: 'hidden' }} 
-                                        onPress={() => navigation.navigate("ShelterDetailScreen", { shelterId: shelter.Id })}
-                                        activeOpacity={1}>
-                                            <Image source={require('../assets/image.png')} style={{ width: '100%', height: 290, marginBottom: 15, marginTop: 5, borderTopLeftRadius: 20, borderTopRightRadius: 20 }} />
-                                            <View style={{ position: 'absolute', top: 170, left: 0, right: 0, bottom: 0}}>
-                                                <View style={{ marginTop: 10, backgroundColor: "#FFFDFF", paddingHorizontal: 20, paddingVertical: 15, borderTopLeftRadius: 15, borderTopRightRadius: 15}}>
-                                                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-                                                        <Text style={{ fontSize: 20, fontWeight: 'bold' }}>{shelter.ShelterName}</Text>
-                                                        <TouchableOpacity onPress={() => onPressFav(shelter.Id)}>
-                                                            {
-                                                                shelter.isFav ? (
-                                                                    <FontAwesome
-                                                                        name='heart'
-                                                                        size={24}
-                                                                        style={{color: 'blue'}}
-                                                                    />
-                                                                ) : (
-                                                                    <FontAwesome
-                                                                        name='heart-o'
-                                                                        size={24}
-                                                                        style={{color: 'blue'}}
-                                                                    />
-                                                                )
-                                                            }
-                                                        </TouchableOpacity>
+                </View>
 
-                                                    </View>
-                                                    <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10 }}>
-                                                        <FontAwesome6 name='location-dot' size={20} color='#4689FD' />
-                                                        <Text style={{ fontSize: 14, fontWeight: 'normal', marginLeft: 5 }}>{shelter.ShelterLocation}</Text>
-                                                    </View>
-                                                    <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10 }}>
-                                                        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', flex: 1 }}>
-                                                            <FontAwesome6 name='cat' size={24} color='#8A8A8A' style={{ marginEnd: 5 }} />
-                                                            <FontAwesome6 name='dog' size={24} color='#8A8A8A' style={{ marginEnd: 5 }} />
-                                                            <MaterialCommunityIcons name='rabbit' size={29} color='#8A8A8A' style={{ marginEnd: 5 }} />
+                <>
+                    {isLoading ? (
+                        <View className='flex-1 justify-center items-center'>
+                            <ActivityIndicator color="blue" size="large"/>
+                        </View>
+                    ) : (
+                        <>
+                            {shelterData && shelterData.length > 0 ? (
+                                <FlashList
+                                    estimatedItemSize={50}
+                                    data={mergedData || []}
+                                    renderItem={({item: shelter}) => (
+                                        <TouchableOpacity 
+                                            style={{ overflow: 'hidden' }} 
+                                            onPress={() => navigation.navigate("ShelterDetailScreen", { shelterId: shelter.Id })}
+                                            activeOpacity={1}>
+                                                <Image source={require('../assets/image.png')} style={{ width: '100%', height: 290, marginBottom: 15, marginTop: 5, borderTopLeftRadius: 20, borderTopRightRadius: 20 }} />
+                                                <View style={{ position: 'absolute', top: 170, left: 0, right: 0, bottom: 0}}>
+                                                    <View style={{ marginTop: 10, backgroundColor: "#FFFDFF", paddingHorizontal: 20, paddingVertical: 15, borderTopLeftRadius: 15, borderTopRightRadius: 15}}>
+                                                        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                                                            <Text style={{ fontSize: 20, fontWeight: 'bold' }}>{shelter.ShelterName}</Text>
+                                                            <TouchableOpacity onPress={() => onPressFav(shelter.Id)}>
+                                                                {
+                                                                    shelter.isFav ? (
+                                                                        <FontAwesome
+                                                                            name='heart'
+                                                                            size={24}
+                                                                            style={{color: 'blue'}}
+                                                                        />
+                                                                    ) : (
+                                                                        <FontAwesome
+                                                                            name='heart-o'
+                                                                            size={24}
+                                                                            style={{color: 'blue'}}
+                                                                        />
+                                                                    )
+                                                                }
+                                                            </TouchableOpacity>
+
+                                                        </View>
+                                                        <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10 }}>
+                                                            <FontAwesome6 name='location-dot' size={20} color='#4689FD' />
+                                                            <Text style={{ fontSize: 14, fontWeight: 'normal', marginLeft: 5 }}>{shelter.ShelterLocation}</Text>
+                                                        </View>
+                                                        <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10 }}>
+                                                            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', flex: 1 }}>
+                                                                <FontAwesome6 name='cat' size={24} color='#8A8A8A' style={{ marginEnd: 5 }} />
+                                                                <FontAwesome6 name='dog' size={24} color='#8A8A8A' style={{ marginEnd: 5 }} />
+                                                                <MaterialCommunityIcons name='rabbit' size={29} color='#8A8A8A' style={{ marginEnd: 5 }} />
+                                                            </View>
                                                         </View>
                                                     </View>
                                                 </View>
-                                            </View>
-                                    </TouchableOpacity>
-                                )}
-                            />
-                        ) : (
-                            <View className='flex flex-1 justify-center items-center'>
-                                <Text className='text-center'>Sorry, data not found</Text>
-                            </View>
-                        )}
-                    </>
-                )}
-            </>
+                                        </TouchableOpacity>
+                                    )}
+                                />
+                            ) : (
+                                <View className='flex flex-1 justify-center items-center'>
+                                    <Text className='text-center'>Sorry, data not found</Text>
+                                </View>
+                            )}
+                        </>
+                    )}
+                </>
+
+            </ScrollView>
         </>
     )
 };
