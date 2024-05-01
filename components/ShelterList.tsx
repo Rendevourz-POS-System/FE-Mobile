@@ -77,7 +77,7 @@ export const ShelterList = () => {
         }
     }
 
-    const mergeShelters = () => {
+    function mergeShelters() {
         if (!shelterFav || shelterFav.length === 0) {
             // If shelterFav is null or empty, return shelterData without marking any as favorites
             return shelterData.map(data => ({ ...data, isFav: false }));
@@ -91,14 +91,15 @@ export const ShelterList = () => {
     };
 
     const [mergedData, setMergedData] = useState<ShelterFav[]>([]);
+
+    const fetchData =  () => {
+        const data = mergeShelters();
+        setMergedData(data);
+    };
+
     useEffect(() => {
-        const fetchData = () => {
-            const data = mergeShelters();
-            setMergedData(data);
-        };
-    
         fetchData();
-    }, []);
+    }, [shelterFav, shelterData]);
 
     const onPressFav = async (shelterId: string) => {
         try {
