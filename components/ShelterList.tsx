@@ -12,13 +12,15 @@ import {
 import { FlashList } from '@shopify/flash-list';
 import { RootBottomTabCompositeNavigationProp } from './navigations/CompositeNavigationProps';
 import { ShelterData } from '../interface/IShelterList';
-import { get } from '../functions/Fetch';
+import { get, post } from '../functions/Fetch';
 import { BackendApiUri } from '../functions/BackendApiUri';
 import { Searchbar } from 'react-native-paper';
+import { ShelterFav } from '../interface/IShelterFav';
 
 export const ShelterList = () => {
     const navigation = useNavigation<RootBottomTabCompositeNavigationProp<'Home'>>();
     const [shelterData, setShelterData] = useState<ShelterData[]>([]);
+    const [shelterFav, setShelterFav] = useState<ShelterData[]>([]);
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [search, setSearch] = useState<string>('');
     const [debounceValue] = useDebounce(search, 1000);
@@ -50,7 +52,7 @@ export const ShelterList = () => {
         {id: 'jakartaUtara', name: 'Jakarta Utara'}
     ]
 
-    const fetchData = async () => {
+    const fetchShelter = async () => {
         try{
             const response = await get(`${BackendApiUri.getShelterList}/?search=${search}&page=${page}&page_size=${pageSize}&order_by=${orderBy}&sort=${sort}`);
             if(response && response.status === 200) {
@@ -63,8 +65,63 @@ export const ShelterList = () => {
         }
     };
 
+    const fetchShelterFav = async () => {
+        try{
+            const response = await get(`${BackendApiUri.getShelterFav}`);
+            if(response && response.status === 200)
+            {
+                setShelterFav(response.data);
+            }
+        } catch(e) {
+            console.log(e)
+        }
+    }
+
+    const mergeShelters = () => {
+        if (!shelterFav || shelterFav.length === 0) {
+            // If shelterFav is null or empty, return shelterData without marking any as favorites
+            return shelterData.map(data => ({ ...data, isFav: false }));
+        } else {
+            // Otherwise, merge shelterData and shelterFav and mark favorites accordingly
+            return shelterData.map(data => {
+                const isFav = shelterFav.some(favShelter => favShelter.Id === data.Id);
+                return { ...data, isFav };
+            });
+        }
+    };
+
+    const [mergedData, setMergedData] = useState<ShelterFav[]>([]);
     useEffect(() => {
+        const fetchData = () => {
+            const data = mergeShelters();
+            setMergedData(data);
+        };
+    
         fetchData();
+    }, []);
+
+    const onPressFav = async (shelterId: string) => {
+        try {
+            const body = { "ShelterId": shelterId }; // Body as an array containing an object
+            const res = await post(BackendApiUri.postShelterFav, body);
+            if(res.status === 200) {
+                setMergedData(prevData => {
+                    return prevData.map(shelter => {
+                        if (shelter.Id === shelterId) {
+                            return { ...shelter, isFav: !shelter.isFav }; // Toggle isFav property
+                        }
+                        return shelter;
+                    });
+                });
+            }
+        } catch (error) {
+            console.error('Error:', error); // Handle error
+        }
+    }
+
+    useEffect(() => {
+        fetchShelter();
+        fetchShelterFav();
     }, [debounceValue]);
 
     const [selectedShelters, setSelectedShelters] = useState<string[]>([]);
@@ -180,7 +237,7 @@ export const ShelterList = () => {
                         {shelterData && shelterData.length > 0 ? (
                             <FlashList
                                 estimatedItemSize={50}
-                                data={shelterData || []}
+                                data={mergedData || []}
                                 renderItem={({item: shelter}) => (
                                     <TouchableOpacity 
                                         style={{ overflow: 'hidden' }} 
@@ -191,7 +248,24 @@ export const ShelterList = () => {
                                                 <View style={{ marginTop: 10, backgroundColor: "#FFFDFF", paddingHorizontal: 20, paddingVertical: 15, borderTopLeftRadius: 15, borderTopRightRadius: 15}}>
                                                     <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
                                                         <Text style={{ fontSize: 20, fontWeight: 'bold' }}>{shelter.ShelterName}</Text>
-                                                        <FontAwesome name='heart' size={24} color="#4689FD" />
+                                                        <TouchableOpacity onPress={() => onPressFav(shelter.Id)}>
+                                                            {
+                                                                shelter.isFav ? (
+                                                                    <FontAwesome
+                                                                        name='heart'
+                                                                        size={24}
+                                                                        style={{color: 'blue'}}
+                                                                    />
+                                                                ) : (
+                                                                    <FontAwesome
+                                                                        name='heart-o'
+                                                                        size={24}
+                                                                        style={{color: 'blue'}}
+                                                                    />
+                                                                )
+                                                            }
+                                                        </TouchableOpacity>
+
                                                     </View>
                                                     <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10 }}>
                                                         <FontAwesome6 name='location-dot' size={20} color='#4689FD' />
