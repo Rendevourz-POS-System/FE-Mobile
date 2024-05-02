@@ -8,4 +8,5 @@ export const BackendApiUri = {
     getPetList : '/pet/?search=&type=&age_start=&age_end=&location=&gender=&page=1&page_size=10&order_by=name&sort=Desc',
     getShelterDetail : '/shelter',
     getUserData : '/user/data',
+    getShelterFavorite: '/shelter/favorite'
 }
