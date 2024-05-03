@@ -3,7 +3,6 @@ import React, { FC, useState } from "react";
 import { ScrollView, Text, View, StyleSheet } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { ProfileRootBottomTabCompositeScreenProps } from "../../CompositeNavigationProps";
-import { ProgressBar } from "react-native-paper";
 
 export const HistoryScreen: FC<ProfileRootBottomTabCompositeScreenProps<'HistoryScreen'>> = ({ navigation }) => {
     const [historyData, setHistoryData] = useState([
@@ -32,31 +31,6 @@ export const HistoryScreen: FC<ProfileRootBottomTabCompositeScreenProps<'History
 
             <ScrollView>
                 <View className="top-5">
-                    <Text style={styles.heading}>Total Transaction</Text>
-                    <View style={styles.transactionContainer} className="mx-8">
-                        <View className="p-5">
-                            <View className="flex-row justify-between">
-                                <Text className="mb-2">Donation</Text>
-                                <Text>5</Text>
-                            </View>
-                            <ProgressBar progress={0.5} className="mb-5" />
-
-                            <View className="flex-row justify-between">
-                                <Text className="mb-2">Adoption</Text>
-                                <Text>4</Text>
-                            </View>
-                            <ProgressBar progress={0.4} className="mb-5" />
-
-                            <View className="flex-row justify-between">
-                                <Text className="mb-2">Rescue</Text>
-                                <Text>2</Text>
-                            </View>
-                            <ProgressBar progress={0.2} />
-                        </View>
-                    </View>
-                </View>
-
-                <View className="top-">
                     {historyData.map((historyItem, index) => (
                         <View key={index}>
                             <Text style={styles.heading}>{historyItem.date}</Text>
