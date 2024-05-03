@@ -15,7 +15,7 @@ export const FavoriteScreen: FC<ProfileRootBottomTabCompositeScreenProps<'Favori
 
     const fetchData = async () => {
         try {
-            const response = await get(`${BackendApiUri.getShelterFavorite}`);
+            const response = await get(`${BackendApiUri.getShelterFav}`);
             if (response && response.status === 200) {
                 setShelterData(response.data);
             }
