@@ -16,6 +16,7 @@ import { TouchableOpacity } from "react-native-gesture-handler";
 import { FlashList } from "@shopify/flash-list";
 import { useNavigation } from "@react-navigation/native";
 import { RootBottomTabCompositeNavigationProp } from "./navigations/CompositeNavigationProps";
+import { dataJenisHewan } from "../constans/data";
 
 
 export const PetList = () => {
@@ -26,6 +27,7 @@ export const PetList = () => {
     const [debounceValue] = useDebounce(search, 1000);
     const bottomSheetModalRef = useRef<BottomSheetModal>(null);
     const snapPoints = useMemo(() => ['50%', '75%'], []);
+    const [selectedItems, setSelectedItems] = useState<string[]>([]);
 
     const handleFilterPress = useCallback(() => {
         bottomSheetModalRef.current?.present();
@@ -133,7 +135,7 @@ export const PetList = () => {
                                 <Text className='text-xl font-bold'>Filter</Text>
                                 <Text className='text-xl font-bold mt-8'>Pet</Text>
                                 <View className='flex flex-row flex-wrap'>
-                                    {filterPet.map((pet) => (
+                                    {/* {filterPet.map((pet) => (
                                         <TouchableOpacity
                                             key={pet.id}
                                             onPress={() => togglePetSelection(pet.id)}
@@ -143,7 +145,42 @@ export const PetList = () => {
                                                 {pet.name}
                                             </Text>
                                         </TouchableOpacity>
-                                    ))}
+                                    ))} */}
+                                    <FlashList
+                                        estimatedItemSize={5}
+                                        data={dataJenisHewan}
+                                        horizontal={true}
+                                        renderItem={({ item }) => (
+                                            <TouchableOpacity
+                                                key={item.key}
+                                                activeOpacity={1}
+                                                className="mx-2"
+                                            >
+                                                <View className="flex justify-center items-center">
+                                                    <TouchableOpacity 
+                                                    onPress={() => {
+                                                        // Toggle selection of the item
+                                                        setSelectedItems(prevState => {
+                                                            if (prevState.includes(item.value)) {
+                                                                return prevState.filter(val => val !== item.value);
+                                                            } else {
+                                                                return [...prevState, item.value];
+                                                            }
+                                                        });
+                                                    }}>
+                                                        <Image
+                                                            source={require(`../assets/icon_${"Cat"}.jpg`)}
+                                                            style={{ width: 80, height: 80, borderRadius: 100 }}
+                                                        />
+                                                        <Text>{item.value}</Text>
+                                                        {selectedItems.includes(item.value) && ( // Conditionally render the checklist icon if the item is selected
+                                                            <FontAwesome name="check-circle" size={20} color="green" style={{ position: 'absolute', bottom: 5, right: 5 }} />
+                                                        )}
+                                                    </TouchableOpacity>
+                                                </View>
+                                            </TouchableOpacity>
+                                        )}
+                                    />
                                 </View>
 
                                 <Text className='text-xl font-bold mt-8'>Shelter</Text>
