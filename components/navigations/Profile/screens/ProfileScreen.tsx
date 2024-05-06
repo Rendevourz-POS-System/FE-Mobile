@@ -4,10 +4,10 @@ import { ScrollView, Text, View, StyleSheet, TouchableOpacity } from "react-nati
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { ProfileRootBottomTabCompositeScreenProps } from "../../CompositeNavigationProps";
 import { useAuth } from "../../../../app/context/AuthContext";
+import { Avatar } from "react-native-elements";
 
 export const ProfileScreen: FC<ProfileRootBottomTabCompositeScreenProps<'ProfileScreen'>> = ({ navigation }) => {
     const { authState, onLogout } = useAuth();
-    const username = authState?.username || "User";
     const [userType, setUserType] = useState("user");
 
     const handleSwitchUserType = () => {
@@ -18,11 +18,16 @@ export const ProfileScreen: FC<ProfileRootBottomTabCompositeScreenProps<'Profile
         <SafeAreaProvider style={styles.container}>
             <ScrollView>
                 <View className="my-10 mt-20">
-                    <View style={{ alignItems: 'center', marginBottom: 25 }}>
-                        <Ionicons name="person-circle-outline" size={120} color="black" />
-                        <Text className="text-3xl">{username}</Text>
+                    <View className='flex-row items-center justify-center'>
+                        <Avatar
+                            size={130}
+                            rounded
+                            source={{
+                                uri: 'https://randomuser.me/api/portraits/men/41.jpg',
+                            }}
+                        />
+                        <Text className='text-2xl font-bold ml-5' style={{ minWidth: '50%' }}>{authState?.username}</Text>
                     </View>
-
                 </View>
 
                 <View className="mx-5">
