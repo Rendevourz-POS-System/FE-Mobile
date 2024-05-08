@@ -3,7 +3,7 @@ import { PetData } from "../interface/IPetList";
 import { useDebounce } from "use-debounce";
 import { get } from "../functions/Fetch";
 import { BackendApiUri } from "../functions/BackendApiUri";
-import { ActivityIndicator, Image, StyleSheet, View } from "react-native";
+import { ActivityIndicator, Image, RefreshControl, StyleSheet, View } from "react-native";
 import { Searchbar, Text } from "react-native-paper";
 import { FontAwesome, FontAwesome6, MaterialCommunityIcons } from "@expo/vector-icons";
 import {
@@ -12,7 +12,7 @@ import {
     BottomSheetModalProvider,
     BottomSheetBackdrop,
 } from '@gorhom/bottom-sheet';
-import { TouchableOpacity } from "react-native-gesture-handler";
+import { ScrollView, TouchableOpacity } from "react-native-gesture-handler";
 import { FlashList } from "@shopify/flash-list";
 import { useNavigation } from "@react-navigation/native";
 import { RootBottomTabCompositeNavigationProp } from "./navigations/CompositeNavigationProps";
@@ -28,6 +28,16 @@ export const PetList = () => {
     const bottomSheetModalRef = useRef<BottomSheetModal>(null);
     const snapPoints = useMemo(() => ['50%', '75%'], []);
     const [selectedItems, setSelectedItems] = useState<string[]>([]);
+    const [refreshing, setRefreshing] = useState<boolean>(false);
+
+    const onRefresh = () => {
+        try { 
+            setRefreshing(true);
+            fetchData();
+        } catch(e) {
+            console.log(e);
+        }
+    };
 
     const handleFilterPress = useCallback(() => {
         bottomSheetModalRef.current?.present();
@@ -36,12 +46,6 @@ export const PetList = () => {
         console.log('handleSheetChanges', index);
     }, []);
 
-    const filterPet = [
-        {id: 'cat', name: 'Cat'},
-        {id: 'dog', name: 'Dog'},
-        {id: 'rabbit', name: 'Rabbit'},
-        {id: 'hamster', name: 'Hamster'}
-    ]
     const filterShelter = [
         {id: 'jakartaBarat', name: 'Jakarta Barat'},
         {id: 'jakartaTimur', name: 'Jakarta Timur'},
@@ -64,7 +68,9 @@ export const PetList = () => {
 
     useEffect(() => {
         fetchData();
-    }, [debounceValue]);
+        setRefreshing(false);
+    }, [debounceValue, refreshing]);
+
 
     const styles = StyleSheet.create({
         bottomSheetModal: {
@@ -109,6 +115,14 @@ export const PetList = () => {
 
     return (
         <>
+        <ScrollView
+            refreshControl={
+                <RefreshControl
+                    refreshing={refreshing}
+                    onRefresh={onRefresh}
+                />
+            }
+        >
             <View className=''>
                 <View className='flex-row items-center justify-around'>
                     <Searchbar
@@ -241,6 +255,7 @@ export const PetList = () => {
                         )}
                     />
             )}
+        </ScrollView>
         </>
     )
 
