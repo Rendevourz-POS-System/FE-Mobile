@@ -4,4 +4,5 @@ export type ProfileNavigationStackParams = {
     NotificationScreen: undefined;
     HistoryScreen: undefined;
     FavoriteScreen: undefined;
+    ChangePasswordScreen: undefined;
 }

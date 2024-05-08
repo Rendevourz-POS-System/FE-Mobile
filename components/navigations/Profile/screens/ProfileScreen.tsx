@@ -18,7 +18,7 @@ export const ProfileScreen: FC<ProfileRootBottomTabCompositeScreenProps<'Profile
         <SafeAreaProvider style={styles.container}>
             <ScrollView>
                 <View className="my-10 mt-20">
-                    <View className='flex-row items-center justify-center'>
+                    <View className='flex items-center justify-center'>
                         <Avatar
                             size={130}
                             rounded
@@ -26,7 +26,7 @@ export const ProfileScreen: FC<ProfileRootBottomTabCompositeScreenProps<'Profile
                                 uri: 'https://randomuser.me/api/portraits/men/41.jpg',
                             }}
                         />
-                        <Text className='text-2xl font-bold ml-5' style={{ minWidth: '50%' }}>{authState?.username}</Text>
+                        <Text className='text-2xl font-bold mt-2'>{authState?.username}</Text>
                     </View>
                 </View>
 
@@ -37,6 +37,15 @@ export const ProfileScreen: FC<ProfileRootBottomTabCompositeScreenProps<'Profile
                             <MaterialCommunityIcons name="account" color="white" size={25} />
                         </View>
                         <Text style={styles.text}>Manage Profile</Text>
+                        <View style={styles.nextIconContainer}>
+                            <MaterialIcons name="navigate-next" size={25} color="black" />
+                        </View>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.rowContainer} onPress={() => navigation.navigate("ChangePasswordScreen")}>
+                        <View style={styles.iconContainer}>
+                            <MaterialCommunityIcons name="account" color="white" size={25} />
+                        </View>
+                        <Text style={styles.text}>Change Password</Text>
                         <View style={styles.nextIconContainer}>
                             <MaterialIcons name="navigate-next" size={25} color="black" />
                         </View>
