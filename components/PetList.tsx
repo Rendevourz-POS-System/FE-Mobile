@@ -243,12 +243,16 @@ export const PetList = () => {
                                             <Text style={{ fontSize: 14, fontWeight: 'normal', marginLeft: 5 }}>{pet.PetType}</Text>
                                         </View>
                                         <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10 }}>
-                                            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', flex: 1 }}>
-                                                <FontAwesome6 name='cat' size={24} color='#8A8A8A' style={{ marginEnd: 5 }} />
-                                                <FontAwesome6 name='dog' size={24} color='#8A8A8A' style={{ marginEnd: 5 }} />
-                                                <MaterialCommunityIcons name='rabbit' size={29} color='#8A8A8A' style={{ marginEnd: 5 }} />
+                                            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', flex: 1, position: 'relative' }}>
+                                                <FontAwesome6 name='syringe' size={24} color='#8A8A8A' style={{ marginEnd: 5, zIndex: 1 }} />
+                                                {pet.IsVaccinated ? (
+                                                    <FontAwesome6 name='check' size={12} color='#8A8A8A' style={{ position: 'absolute', top: 15, right: 5, zIndex: 2 }} />
+                                                ) : (
+                                                    <FontAwesome6 name='xmark' size={12} color='#8A8A8A' style={{ position: 'absolute', top: 15, right: 5, zIndex: 2 }} />
+                                                )}
                                             </View>
                                         </View>
+
                                     </View>
                                 </View>
                             </TouchableOpacity>
