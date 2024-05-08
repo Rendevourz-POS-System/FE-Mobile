@@ -33,7 +33,6 @@ export const AuthProvider = ({children} : any) => {
     useEffect(() => {
         const loadToken = async () => {
             const token = await SecureStore.getItemAsync(TOKEN_KEY);
-            const test = token?.toString()
             if(token){
                 try{
                     const result = await axios.get(`${BackendApiUri.getUserData}`, {
@@ -52,7 +51,6 @@ export const AuthProvider = ({children} : any) => {
                     }
                 }
                 catch(e){
-                    console.log(e)
                 }
             } else {
                 setAuthState({
