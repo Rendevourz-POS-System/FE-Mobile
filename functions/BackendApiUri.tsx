@@ -4,7 +4,7 @@ export const BackendApiUri = {
     registerUser : '/user/register',
     loginUser : baseUrl + '/user/login',
 
-    getProvince : baseUrl,
+    getPetTypes : '/pet-types',
 
     getShelterList : '/shelter',
     getShelterFav : '/shelter/favorite',

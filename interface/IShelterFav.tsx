@@ -6,6 +6,7 @@ export interface ShelterFav {
     ShelterCapacity: number;
     ShelterContactNumber: string;
     ShelterDescription: string;
+    PetTypeAccepted : PetType[];
     TotalPet: number;
     BankAccountNumber: string;
     Pin: string;
@@ -13,4 +14,8 @@ export interface ShelterFav {
     CreatedAt: string;
     Type: "Shelter";
     isFav : boolean;
+}
+
+export interface PetType {
+    Id : string;
 }

@@ -1,3 +1,5 @@
+import { PetType } from "./IShelterFav";
+
 export interface ShelterData {
     Id: string;
     UserId: string;
@@ -6,6 +8,7 @@ export interface ShelterData {
     ShelterCapacity: number;
     ShelterContactNumber: string;
     ShelterDescription: string;
+    PetTypeAccepted : PetType[];
     TotalPet: number;
     BankAccountNumber: string;
     Pin: string;

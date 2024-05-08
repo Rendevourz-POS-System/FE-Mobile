@@ -12,6 +12,7 @@ import axios from "axios";
 import { Location } from "../../../../interface/ILocation";
 import { post } from "../../../../functions/Fetch";
 import { BackendApiUri } from "../../../../functions/BackendApiUri";
+import { getCity, getKabupaten, getProvince } from "../../../../functions/getLocation";
 
 const registerFormSchema = z.object({
     Username: z.string({ required_error: "Name cannot be empty" })
@@ -80,32 +81,18 @@ export const RegisterScreen: FC<RootNavigationStackScreenProps<'RegisterScreen'>
     }, []);
 
     const fetchProvinceData = async () => {
-        try {
-            const response = await axios.get("https://emsifa.github.io/api-wilayah-indonesia/api/provinces.json");
-            if(response.status === 200){
-                setProvinces(response.data);
-            }
-        } catch (error) {
-            console.error('Error fetching provinces:', error);
-        }
+        const res = await getProvince();
+        setProvinces(res?.data);
     };
 
     const fetchKabupatenData = async (provinceId : string) => {
-        try {
-            const response = await axios.get(`https://emsifa.github.io/api-wilayah-indonesia/api/regencies/${provinceId}.json`);
-            setKabupatens(response.data);
-        } catch (error) {
-            console.error('Error fetching cities:', error);
-        }
+        const res = await getKabupaten(provinceId);
+        setKabupatens(res?.data);
     };
 
     const fetchCityData = async (kabupatenId : string) => {
-        try {
-            const response = await axios.get(`https://emsifa.github.io/api-wilayah-indonesia/api/districts/${kabupatenId}.json`);
-            setCities(response.data);
-        } catch (error) {
-            console.error('Error fetching cities:', error);
-        }
+        const res = await getCity(kabupatenId);
+        setCities(res?.data);
     }
 
     const onKabupatenChange = (kabupatenId: string) => {
