@@ -16,6 +16,8 @@ import { get, post } from '../functions/Fetch';
 import { BackendApiUri } from '../functions/BackendApiUri';
 import { Searchbar } from 'react-native-paper';
 import { ShelterFav } from '../interface/IShelterFav';
+import { PetType } from '../interface/IPetType';
+import { getIconName } from '../functions/GetPetIconName';
 
 export const ShelterList = () => {
     const navigation = useNavigation<RootBottomTabCompositeNavigationProp<'Home'>>();
@@ -101,6 +103,15 @@ export const ShelterList = () => {
     };
 
     const [mergedData, setMergedData] = useState<ShelterFav[]>([]);
+    const [petTypes, setPetTypes] = useState<PetType[]>([]);
+    const fetchPetType = async () => {
+        try {
+            const res = await get(BackendApiUri.getPetTypes);
+            setPetTypes(res.data)
+        } catch(e) {
+            
+        }
+    }
 
     const fetchData =  () => {
         const data = mergeShelters();
@@ -134,6 +145,7 @@ export const ShelterList = () => {
     useEffect(() => {
         fetchShelter();
         fetchShelterFav();
+        fetchPetType();
     }, [debounceValue, refreshing]);
 
     const [selectedShelters, setSelectedShelters] = useState<string[]>([]);
@@ -291,11 +303,20 @@ export const ShelterList = () => {
                                                             <FontAwesome6 name='location-dot' size={20} color='#4689FD' />
                                                             <Text style={{ fontSize: 14, fontWeight: 'normal', marginLeft: 5 }}>{shelter.ShelterLocation}</Text>
                                                         </View>
+
                                                         <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10 }}>
                                                             <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', flex: 1 }}>
-                                                                <FontAwesome6 name='cat' size={24} color='#8A8A8A' style={{ marginEnd: 5 }} />
-                                                                <FontAwesome6 name='dog' size={24} color='#8A8A8A' style={{ marginEnd: 5 }} />
-                                                                <MaterialCommunityIcons name='rabbit' size={29} color='#8A8A8A' style={{ marginEnd: 5 }} />
+                                                                {shelter.PetTypeAccepted.map((itemId) => {
+                                                                    const matchingPet = petTypes.find((pet) => pet.Id === itemId.toString());
+                                                                    if (matchingPet) {
+                                                                        const iconName = getIconName(matchingPet.Type);
+                                                                        if (iconName === 'rabbit') {
+                                                                            return <MaterialCommunityIcons key={matchingPet.Id} name={iconName} size={29} color='#8A8A8A' style={{ marginEnd: 5 }} />;
+                                                                        }
+                                                                        return <FontAwesome6 key={matchingPet.Id} name={iconName} size={24} color='#8A8A8A' style={{ marginEnd: 5 }} />;
+                                                                    }
+                                                                    return null;
+                                                                })}
                                                             </View>
                                                         </View>
                                                     </View>
