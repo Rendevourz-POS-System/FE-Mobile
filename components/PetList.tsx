@@ -238,21 +238,32 @@ export const PetList = () => {
                                             <Text style={{ fontSize: 20, fontWeight: 'bold' }}>{pet.PetName}</Text>
                                             <FontAwesome name='heart' size={24} color="#4689FD" />
                                         </View>
-                                        <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10 }}>
-                                            <FontAwesome6 name='location-dot' size={20} color='#4689FD' />
-                                            <Text style={{ fontSize: 14, fontWeight: 'normal', marginLeft: 5 }}>{pet.PetType}</Text>
+                                        <View className="flex-row">
+                                            <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10, marginEnd:70 }}>
+                                                {pet.PetType === "Male" ? (
+                                                    <FontAwesome6 name='mars' size={20} color='#FF6EC7' />
+                                                ) : (
+                                                    <FontAwesome6 name='venus' size={20} color='#4689FD' />
+                                                )}
+                                                <Text style={{ fontSize: 14, fontWeight: 'normal', marginLeft: 5 }}>{pet.PetGender}</Text>
+                                            </View>
+                                            <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10 }}>
+                                                <FontAwesome6 name='calendar-days' size={20} color='#4689FD' />
+                                                <Text style={{ fontSize: 14, fontWeight: 'normal', marginLeft: 5 }}>
+                                                    {Math.floor(pet.PetAge / 12)} years, {pet.PetAge % 12} months
+                                                </Text>
+                                            </View>
                                         </View>
                                         <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10 }}>
                                             <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', flex: 1, position: 'relative' }}>
-                                                <FontAwesome6 name='syringe' size={24} color='#8A8A8A' style={{ marginEnd: 5, zIndex: 1 }} />
+                                                <FontAwesome6 name='syringe' size={24} color='#4689FD' style={{ marginEnd: 5, zIndex: 1 }} />
                                                 {pet.IsVaccinated ? (
-                                                    <FontAwesome6 name='check' size={12} color='#8A8A8A' style={{ position: 'absolute', top: 15, right: 5, zIndex: 2 }} />
+                                                    <FontAwesome6 name='check' size={12} color='green' style={{ position: 'absolute', top: 15, right: 5, zIndex: 2 }} />
                                                 ) : (
-                                                    <FontAwesome6 name='xmark' size={12} color='#8A8A8A' style={{ position: 'absolute', top: 15, right: 5, zIndex: 2 }} />
+                                                    <FontAwesome6 name='xmark' size={12} color='green' style={{ position: 'absolute', top: 15, right: 5, zIndex: 2 }} />
                                                 )}
                                             </View>
                                         </View>
-
                                     </View>
                                 </View>
                             </TouchableOpacity>
