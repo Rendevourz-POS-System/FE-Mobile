@@ -223,10 +223,10 @@ export const PetList = () => {
                             numColumns={2}
                             keyExtractor={item => item.Id.toString()}
                             renderItem={({ item: pet }) => (
-                                <View style={{ flex: 1 }}>
+                                <View style={{ flex: 1, marginBottom: 35 }}>
                                     <TouchableOpacity className="mx-2 justify-center" activeOpacity={1} onPress={() => navigation.navigate("PetDetailScreen")}>
-                                        <Image source={require('../assets/image.png')} className="w-full h-64 rounded-3xl"/>
-                                        <View style={{ position: 'absolute', top: 166, left: 0, right: 0, bottom: 0 }}>
+                                        <Image source={require('../assets/image.png')} className="w-full h-80 rounded-3xl"/>
+                                        <View style={{ position: 'absolute', top: 227, left: 0, right: 0, bottom: 0 }}>
                                             <View style={{ marginTop: 5, backgroundColor: "#FFFDFF", paddingHorizontal: 20, paddingVertical: 15, borderRadius: 15 }}>
                                                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
                                                     <Text style={{ fontSize: 20, fontWeight: 'bold' }}>{pet.PetName}</Text>
