@@ -112,17 +112,8 @@ export const PetList = () => {
         return selectedPets.includes(petId);
     };
 
-
     return (
         <>
-        <ScrollView
-            refreshControl={
-                <RefreshControl
-                    refreshing={refreshing}
-                    onRefresh={onRefresh}
-                />
-            }
-        >
             <View className=''>
                 <View className='flex-row items-center justify-around'>
                     <Searchbar
@@ -222,55 +213,44 @@ export const PetList = () => {
                     <ActivityIndicator color="blue" size="large"/>
                 </View>
                 ) : (
-                    <FlashList
-                        estimatedItemSize={50}
-                        data={petData || []}
-                        renderItem={({ item: pet }) => (
-                            <TouchableOpacity
-                                style={{ overflow: 'hidden' }}
-                                onPress={() => navigation.navigate("PetDetailScreen")}
-                                activeOpacity={1}
-                            >
-                                <Image source={require('../assets/image.png')} style={{ width: '100%', height: 290, marginBottom: 15, marginTop: 5, borderTopLeftRadius: 20, borderTopRightRadius: 20 }} />
-                                <View style={{ position: 'absolute', top: 170, left: 0, right: 0, bottom: 0 }}>
-                                    <View style={{ marginTop: 10, backgroundColor: "#FFFDFF", paddingHorizontal: 20, paddingVertical: 15, borderTopLeftRadius: 15, borderTopRightRadius: 15 }}>
-                                        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-                                            <Text style={{ fontSize: 20, fontWeight: 'bold' }}>{pet.PetName}</Text>
-                                            <FontAwesome name='heart' size={24} color="#4689FD" />
-                                        </View>
-                                        <View className="flex-row">
-                                            <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10, marginEnd:70 }}>
-                                                {pet.PetType === "Male" ? (
-                                                    <FontAwesome6 name='mars' size={20} color='#FF6EC7' />
-                                                ) : (
-                                                    <FontAwesome6 name='venus' size={20} color='#4689FD' />
-                                                )}
-                                                <Text style={{ fontSize: 14, fontWeight: 'normal', marginLeft: 5 }}>{pet.PetGender}</Text>
-                                            </View>
-                                            <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10 }}>
-                                                <FontAwesome6 name='calendar-days' size={20} color='#4689FD' />
-                                                <Text style={{ fontSize: 14, fontWeight: 'normal', marginLeft: 5 }}>
-                                                    {Math.floor(pet.PetAge / 12)} years, {pet.PetAge % 12} months
-                                                </Text>
-                                            </View>
-                                        </View>
-                                        <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10 }}>
-                                            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', flex: 1, position: 'relative' }}>
-                                                <FontAwesome6 name='syringe' size={24} color='#4689FD' style={{ marginEnd: 5, zIndex: 1 }} />
-                                                {pet.IsVaccinated ? (
-                                                    <FontAwesome6 name='check' size={12} color='green' style={{ position: 'absolute', top: 15, right: 5, zIndex: 2 }} />
-                                                ) : (
-                                                    <FontAwesome6 name='xmark' size={12} color='green' style={{ position: 'absolute', top: 15, right: 5, zIndex: 2 }} />
-                                                )}
+                    <View style={{ flex: 1 }}>
+                        <FlashList
+                            refreshControl={
+                                <RefreshControl refreshing={refreshing} onRefresh={onRefresh}/>
+                            }
+                            estimatedItemSize={50}
+                            data={petData || []}
+                            numColumns={2}
+                            keyExtractor={item => item.Id.toString()}
+                            renderItem={({ item: pet }) => (
+                                <View style={{ flex: 1 }}>
+                                    <TouchableOpacity className="mx-2 justify-center" activeOpacity={1} onPress={() => navigation.navigate("PetDetailScreen")}>
+                                        <Image source={require('../assets/image.png')} className="w-full h-64 rounded-3xl"/>
+                                        <View style={{ position: 'absolute', top: 166, left: 0, right: 0, bottom: 0 }}>
+                                            <View style={{ marginTop: 5, backgroundColor: "#FFFDFF", paddingHorizontal: 20, paddingVertical: 15, borderRadius: 15 }}>
+                                                <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                                                    <Text style={{ fontSize: 20, fontWeight: 'bold' }}>{pet.PetName}</Text>
+                                                    <FontAwesome name='heart' size={24} color="#4689FD" />
+                                                </View>
+                                                <View className="flex-row">
+                                                    <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10 }}>
+                                                        {pet.PetType === "Male" ? (
+                                                            <FontAwesome6 name='mars' size={20} color='#FF6EC7' />
+                                                        ) : (
+                                                            <FontAwesome6 name='venus' size={20} color='#4689FD' />
+                                                        )}
+                                                        <Text style={{ fontSize: 14, fontWeight: 'normal', marginLeft: 5 }}>{pet.PetGender}</Text>
+                                                    </View>
+                                                </View>
                                             </View>
                                         </View>
-                                    </View>
+                                    </TouchableOpacity>
                                 </View>
-                            </TouchableOpacity>
-                        )}
-                    />
+                            )}
+                        />
+                    </View>
+
             )}
-        </ScrollView>
         </>
     )
 
