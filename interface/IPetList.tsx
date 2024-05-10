@@ -7,7 +7,7 @@ export interface PetData {
     PetGender : string;
     PetStatus : boolean;
     PetDescription : string;
+    IsVaccinated : boolean;
     Image : [];
     CreatedAt : Date;
-    Type : "Pet";
 }
