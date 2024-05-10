@@ -20,7 +20,7 @@ const TopNavigation = () => {
                         source={{
                         uri: 'https://randomuser.me/api/portraits/men/41.jpg',
                         }}
-                        size="large"
+                        size="medium"
                     />
                     <Badge
                         status="success"
