@@ -14,13 +14,13 @@ export const PetDetailScreen: FC<RootNavigationStackScreenProps<'PetDetailScreen
 
 
     return (
-        <SafeAreaProvider className='flex-1'>
+        <SafeAreaProvider>
+            <Ionicons name="chevron-back" size={24} color="black" onPress={() => navigation.goBack()} style={[styles.nextIcon, { position: 'absolute', left: 20, top: 45, backgroundColor: 'white', borderRadius: 999, zIndex: 50 }]} />
             <ScrollView>
-                <View className="mt-1" style={styles.container}>
+                <View>
                     <Image source={require('../../../../assets/image.png')} style={{ width: '100%', height: 350 }} />
-                    <Ionicons name="chevron-back" size={24} color="black" onPress={() => navigation.goBack()} style={[styles.nextIcon, { position: 'absolute', left: 20, top: 45 }]} />
                 </View>
-                <View className='p-3 mb-24'>
+                <View className='pt-4 px-3 bottom-6 bg-white rounded-t-3xl'>
                     <View className='flex flex-row justify-between'>
                         <Text className='text-xl font-bold'>Doggy</Text>
                         <View className='items-center'>
@@ -56,8 +56,8 @@ export const PetDetailScreen: FC<RootNavigationStackScreenProps<'PetDetailScreen
                 </View>
             </ScrollView>
             <View className='mt-8 flex flex-row justify-evenly absolute bottom-0 left-0 right-0 pb-5 px-5'>
-                <TouchableOpacity style={styles.whatsappButton} className='w-1/5 mr-5'>
-                    <FontAwesome name="whatsapp" size={28} color="green" style={{ marginLeft: 20 }} />
+                <TouchableOpacity style={styles.whatsappButton} className='mr-5'>
+                    <FontAwesome name="whatsapp" size={28} color="green"/>
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.adopsiButton} onPress={() => navigation.navigate("AdoptionFormScreen")} className='w-4/5'>
                     <Text style={styles.fontButton} className='text-xl text-center'>Adopsi Sekarang</Text>

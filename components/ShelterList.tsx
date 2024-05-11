@@ -266,7 +266,7 @@ export const ShelterList = () => {
                                                                     <FontAwesome
                                                                         name='heart'
                                                                         size={24}
-                                                                        style={{color: '#4689FD'}}
+                                                                        style={{color: '#FF0000'}}
                                                                     />
                                                                 ) : (
                                                                     <FontAwesome
