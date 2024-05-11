@@ -1,5 +1,5 @@
 import React, { FC, useEffect, useState } from 'react';
-import { Image, ScrollView, TouchableOpacity, View, StyleSheet, Linking } from 'react-native';
+import { Image, ScrollView, TouchableOpacity, View, StyleSheet, Linking, ImageBackground } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { Text } from 'react-native-elements';
 import { FontAwesome, FontAwesome5, FontAwesome6, Ionicons, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
@@ -87,15 +87,13 @@ export const ShelterDetailScreen: FC<RootNavigationStackScreenProps<'ShelterDeta
     }
 
     return (
-        <SafeAreaProvider className='flex-1'>
+        <SafeAreaProvider className='bg-white'>
             <View style={[styles.nextIcon, { position: 'absolute', left: 20, top: 45, zIndex: 1 }]}>
                 <Ionicons name="chevron-back" size={24} color="black" onPress={() => navigation.goBack()} />
             </View>
             <ScrollView>
-                <View style={styles.container}>
-                    <Image source={require('../../../../assets/image.png')} style={{ width: '100%', height: 350 }} />
-                </View>
-                <View className='p-3 mb-24'>
+                <ImageBackground source={require('../../../../assets/image.png')} style={{ width: '100%', height: 350 }} />
+                <View className='pt-4 px-3 bottom-6 bg-white rounded-t-3xl'>
                     <View className='flex flex-row justify-between'>
                         <Text className='text-xl font-bold'>{data.Data.ShelterName}</Text>
                         <View className='flex flex-row items-center'>
@@ -128,6 +126,7 @@ export const ShelterDetailScreen: FC<RootNavigationStackScreenProps<'ShelterDeta
 
                     <Text className='mt-8 text-xl font-bold'>Tentang Kami</Text>
                     <Text className='mt-2 text-base ml-1 text-[#8A8A8A]'>{data.Data.ShelterDescription}</Text>
+                    <Text className='mt-2 text-base ml-1 text-[#8A8A8A]'>Lorem ipsum dolor sit amet consectetur, adipisicing elit. Molestias deleniti laboriosam odit dolorum ex voluptatibus fugit impedit, velit expedita iure rem ad quasi molestiae nesciunt consequatur numquam eaque. Laudantium facilis, id dignissimos distinctio exercitationem dolore ullam quidem corrupti repudiandae soluta nisi suscipit eos odit omnis asperiores ut magnam eum voluptatum voluptates aspernatur voluptatem perferendis? Eaque non corporis obcaecati voluptatibus aspernatur sed, omnis quas error. Adipisci doloribus rerum iure illum! Laboriosam laborum eius officiis eum animi facere modi minima beatae quod inventore possimus, sequi architecto iure, voluptas sit accusamus sapiente corrupti earum repudiandae veniam. Maxime in eos iste eligendi, deleniti quidem!</Text>
                 </View>
             </ScrollView>
             <View className='mt-8 flex flex-row justify-evenly absolute bottom-0 left-0 right-0 pb-5'>
