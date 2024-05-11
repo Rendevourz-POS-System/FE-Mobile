@@ -30,6 +30,11 @@ export const PetList = () => {
     const [selectedItems, setSelectedItems] = useState<string[]>([]);
     const [refreshing, setRefreshing] = useState<boolean>(false);
 
+    const [page, setPage] = useState<number>(1);
+    const pageSize = 10;
+    const orderBy = "ascending";
+    const sort = "";
+
     const onRefresh = () => {
         try { 
             setRefreshing(true);
@@ -55,7 +60,7 @@ export const PetList = () => {
 
     const fetchData = async () => {
         try{
-            const responsePet = await get(`${BackendApiUri.getPetList}`)
+            const responsePet = await get(`${BackendApiUri.getPetList}/?search=${search}&page=1&page_size=200&order_by=${orderBy}&sort=${sort}`)
             if(responsePet && responsePet.status === 200) {
                 setPetData(responsePet.data);
             }
@@ -241,7 +246,7 @@ export const PetList = () => {
                                             }}
                                         >
                                             <View className="rounded-full">
-                                                <FontAwesome name='heart' size={20} color="#4689FD" />
+                                                <FontAwesome name='heart' size={20} color="#FF0000" />
                                             </View>
                                         </TouchableHighlight>
 
