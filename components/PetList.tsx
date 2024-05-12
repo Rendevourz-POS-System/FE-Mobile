@@ -230,7 +230,10 @@ export const PetList = () => {
                             renderItem={({ item: pet }) => (
                                 <View style={{ flex: 1, marginBottom: 35 }}>
                                     <TouchableOpacity className="mx-2 justify-center" activeOpacity={1} onPress={() => navigation.navigate("PetDetailScreen", {petId : pet.Id})}>
-                                        <Image source={require('../assets/image.png')} className="w-full h-80 rounded-3xl"/>
+                                    <Image
+                                        source={{ uri: `data:image/png;base64,${pet.ImageBase64}` }}
+                                        className="w-full h-80 rounded-3xl"
+                                        />
                                         <TouchableHighlight
                                             style={{
                                                 position: 'absolute',
