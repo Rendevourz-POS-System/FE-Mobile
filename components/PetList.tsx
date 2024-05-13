@@ -109,7 +109,7 @@ export const PetList = () => {
 
     return (
         <>
-            <View className=''>
+            <View className='p-5'>
                 <View className='flex-row items-center justify-around'>
                     <Searchbar
                         placeholder='Text Here...'

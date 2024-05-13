@@ -43,7 +43,7 @@ export const ProfileScreen: FC<ProfileRootBottomTabCompositeScreenProps<'Profile
                     </TouchableOpacity>
                     <TouchableOpacity style={styles.rowContainer} onPress={() => navigation.navigate("ChangePasswordScreen")}>
                         <View style={styles.iconContainer}>
-                            <MaterialCommunityIcons name="account" color="white" size={25} />
+                            <MaterialCommunityIcons name="lock" size={25} color="white" />
                         </View>
                         <Text style={styles.text}>Change Password</Text>
                         <View style={styles.nextIconContainer}>

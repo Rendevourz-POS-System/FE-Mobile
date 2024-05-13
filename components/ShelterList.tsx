@@ -198,6 +198,7 @@ export const ShelterList = () => {
                         onRefresh={onRefresh}
                     />
                 }
+                className='p-5'
             >
                 <View className=''>
                     <View className='flex-row items-center justify-around'>

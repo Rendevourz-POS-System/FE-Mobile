@@ -81,6 +81,8 @@ export const ManageScreen: FC<ProfileRootBottomTabCompositeScreenProps<'ManageSc
             Province: data.Province,
             Email: userData?.Email,
             Username: userData?.Username,
+            Password: "Testing@123",
+            NewPassword: "Testing@123",
         }
         await put(`${BackendApiUri.putUserUpdate}`, payload);
         Alert.alert('Data Tersimpan', 'Data anda telah tersimpan.');
@@ -156,7 +158,7 @@ export const ManageScreen: FC<ProfileRootBottomTabCompositeScreenProps<'ManageSc
                     />
                     <FontAwesome6 name="edit" size={24} color="black" />
                 </View>
-                <Text style={styles.errorMessage}>{errors.Nik?.message}</Text>
+                <Text style={styles.errorMessage}>{errors.Email?.message}</Text>
 
                 <View style={styles.inputBox}>
                     <Controller
