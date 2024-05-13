@@ -10,3 +10,8 @@ export const post = async (url: string, body: any) => {
     const response = await axios.post(baseUrl + url, body);
     return response;
 }
+
+export const put = async (url: string, body: any) => {
+    const response = await axios.put(baseUrl + url, body);
+    return response;
+}

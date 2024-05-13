@@ -48,7 +48,7 @@ export const ShelterDetailScreen: FC<RootNavigationStackScreenProps<'ShelterDeta
         try {
             const shelterId = route.params.shelterId;
             const response = await get(`${BackendApiUri.getShelterDetail}/${shelterId}`);
-            if(response.status === 200) {
+            if (response.status === 200) {
                 setData({
                     Message: response.data.Message,
                     Data: {
@@ -128,21 +128,29 @@ export const ShelterDetailScreen: FC<RootNavigationStackScreenProps<'ShelterDeta
                     <Text className='mt-2 text-base ml-1 text-[#8A8A8A]'>{data.Data.ShelterDescription}</Text>
                     <Text className='mt-2 text-base ml-1 text-[#8A8A8A]'>Lorem ipsum dolor sit amet consectetur, adipisicing elit. Molestias deleniti laboriosam odit dolorum ex voluptatibus fugit impedit, velit expedita iure rem ad quasi molestiae nesciunt consequatur numquam eaque. Laudantium facilis, id dignissimos distinctio exercitationem dolore ullam quidem corrupti repudiandae soluta nisi suscipit eos odit omnis asperiores ut magnam eum voluptatum voluptates aspernatur voluptatem perferendis? Eaque non corporis obcaecati voluptatibus aspernatur sed, omnis quas error. Adipisci doloribus rerum iure illum! Laboriosam laborum eius officiis eum animi facere modi minima beatae quod inventore possimus, sequi architecto iure, voluptas sit accusamus sapiente corrupti earum repudiandae veniam. Maxime in eos iste eligendi, deleniti quidem!</Text>
                 </View>
+                <View className='mt-5'>
+                    <View className='flex-row justify-around'>
+                        <TouchableOpacity style={styles.buttonBox} onPress={() => navigation.navigate("HewanAdopsiScreen")}>
+                            <MaterialIcons name="pets" size={24} color="white" />
+                            <Text style={styles.fontButton} className='ml-3 text-s text-center'>Adoption Pet</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={styles.buttonBox} onPress={() => navigation.navigate("SurrenderFormScreen")}>
+                            <FontAwesome6 name="house-medical-circle-exclamation" size={24} color="white" />
+                            <Text style={styles.fontButton} className='ml-3 text-s text-center'>Surrender Pet</Text>
+                        </TouchableOpacity>
+                    </View>
+                    <View className='mt-3 flex-row justify-around'>
+                        <TouchableOpacity style={styles.buttonBox} onPress={() => navigation.navigate("DonateScreen")}>
+                            <FontAwesome6 name="hand-holding-heart" size={24} color="white" />
+                            <Text style={styles.fontButton} className='ml-3 text-s text-center'>Donation</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={styles.buttonBox} onPress={() => navigation.navigate("RescueFormScreen")}>
+                            <MaterialIcons name="warning" size={24} color="white" />
+                            <Text style={styles.fontButton} className='ml-3 text-s text-center'>Rescue</Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
             </ScrollView>
-            <View className='mt-8 flex flex-row justify-evenly absolute bottom-0 left-0 right-0 pb-5'>
-                <TouchableOpacity style={styles.donasiButton} onPress={() => navigation.navigate("DonateScreen")}>
-                    <Text style={styles.fontButton} className='text-xs text-center'>Donasi</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.adopsiButton} onPress={() => navigation.navigate("HewanAdopsiScreen")}>
-                    <Text style={styles.fontButton} className='text-xs text-center'>Hewan Adopsi</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.adopsiButton} onPress={() => navigation.navigate("SurrenderFormScreen")}>
-                    <Text style={styles.fontButton} className='text-xs text-center'>Surrender</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.laporButton} onPress={() => navigation.navigate("RescueFormScreen")}>
-                    <Text style={styles.fontButton} className='text-xs text-center'>Rescue</Text>
-                </TouchableOpacity>
-            </View>
         </SafeAreaProvider>
     );
 }
@@ -164,28 +172,12 @@ const styles = StyleSheet.create({
     fontButton: {
         color: 'white'
     },
-    donasiButton: {
+    buttonBox: {
         backgroundColor: "#4689FD",
         padding: 20,
-        borderBottomLeftRadius: 20,
-        borderTopLeftRadius: 20,
-        marginRight: 5,
-        width: 90,
-        height: 60
-    },
-    adopsiButton: {
-        backgroundColor: "#4689FD",
-        paddingVertical: 20,
-        marginRight: 5,
-        width: 90,
-        height: 60
-    },
-    laporButton: {
-        backgroundColor: "#4689FD",
-        padding: 20,
-        borderTopRightRadius: 20,
-        borderBottomRightRadius: 20,
-        width: 90,
-        height: 60
+        flexDirection: 'row',
+        alignItems: 'center',
+        width: 180,
+        borderRadius: 10
     }
 });

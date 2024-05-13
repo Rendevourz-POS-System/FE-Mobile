@@ -8,26 +8,31 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from 'react-hook-form';
 import { FontAwesome6 } from '@expo/vector-icons';
 import { BackendApiUri } from "../../../../functions/BackendApiUri";
-import axios from "axios";
-import { get } from "../../../../functions/Fetch";
+import { get, put } from "../../../../functions/Fetch";
 import * as ImagePicker from 'expo-image-picker';
 
 interface User {
     Username: string,
     Email: string;
     Address: string,
+    State: string,
     City: string,
     Nik: string,
     PhoneNumber: string,
+    District: string,
     PostalCode: number,
     Province: string,
 }
 
 const profileFormSchema = z.object({
+    Username: z.string({ required_error: "Username tidak boleh kosong" }).min(1, { message: "Username tidak boleh kosong" }),
+    Email: z.string({ required_error: "Email tidak boleh kosong" }).min(1, { message: "Email tidak boleh kosong" }),
     Nik: z.string({ required_error: "NIK tidak boleh kosong" }).regex(/^\d{16}$/, { message: "Format NIK tidak valid" }),
     PhoneNumber: z.string({ required_error: "Nomor telepon tidak boleh kosong" }).min(1, { message: "Nomor Telepon tidak boleh kosong" }).refine(value => /^\d+$/.test(value), { message: "Nomor telepon harus berupa angka (0-9)" }),
     Address: z.string({ required_error: "Alamat tidak boleh kosong" }).min(1, { message: "Alamat tidak boleh kosong" }),
+    State: z.string({ required_error: "Negara tidak boleh kosong" }).min(1, { message: "Negara tidak boleh kosong" }),
     City: z.string({ required_error: "Kabupaten/Kota tidak boleh kosong" }).min(1, { message: "Kabupaten/Kota tidak boleh kosong" }),
+    District: z.string({ required_error: "Daerah tidak boleh kosong" }).min(1, { message: "Daerah tidak boleh kosong" }),
     Province: z.string({ required_error: "Provinsi tidak boleh kosong" }).min(1, { message: "Provinsi tidak boleh kosong" }),
     PostalCode: z.number({ required_error: 'Kode pos tidak boleh kosong' }),
 })
@@ -38,15 +43,23 @@ export const ManageScreen: FC<ProfileRootBottomTabCompositeScreenProps<'ManageSc
     const [userData, setUserData] = useState<User>();
     const [image, setImage] = useState('');
 
+    const { control, setValue, handleSubmit, formState: { errors } } = useForm<ProfileFormType>({
+        resolver: zodResolver(profileFormSchema),
+    });
+
     useEffect(() => {
         const fetchData = async () => {
             try {
                 const response = await get(`${BackendApiUri.getUserData}`);
                 setUserData(response.data);
+                setValue("Username", response.data?.Username);
+                setValue("Email", response.data?.Email);
                 setValue("Nik", response.data?.Nik);
                 setValue("PhoneNumber", response.data?.PhoneNumber);
                 setValue("Address", response.data?.Address);
+                setValue("State", response.data?.State);
                 setValue("City", response.data?.City);
+                setValue("District", response.data?.District);
                 setValue("Province", response.data?.Province);
                 setValue("PostalCode", response.data?.PostalCode);
             } catch (error) {
@@ -56,24 +69,23 @@ export const ManageScreen: FC<ProfileRootBottomTabCompositeScreenProps<'ManageSc
         fetchData();
     }, []);
 
-    const { control, setValue, handleSubmit, formState: { errors } } = useForm<ProfileFormType>({
-        resolver: zodResolver(profileFormSchema)
-    });
-
     const onSubmit = async (data: ProfileFormType) => {
-        try {
-            setValue("Nik", data.Nik);
-            setValue("PhoneNumber", data.PhoneNumber);
-            setValue("Address", data.Address);
-            setValue("City", data.City);
-            setValue("Province", data.Province);
-            setValue("PostalCode", data.PostalCode);
-            console.log(data)
-            await axios.post(`${BackendApiUri.registerUser}`, data);
-            Alert.alert('Data Tersimpan', 'Data anda telah tersimpan.');
-        } catch (error) {
-            console.error("Error during registration:", error);
+        const payload = {
+            Nik: data.Nik,
+            PhoneNumber: data.PhoneNumber,
+            Address: data.Address,
+            State: data.State,
+            District: data.District,
+            City: data.City,
+            PostalCode: data.PostalCode,
+            Province: data.Province,
+            Email: userData?.Email,
+            Username: userData?.Username,
+            Password: "Testing@123",
+            NewPassword: "Testing@123",
         }
+        await put(`${BackendApiUri.putUserUpdate}`, payload);
+        Alert.alert('Data Tersimpan', 'Data anda telah tersimpan.');
     }
 
     const pickImage = async () => {
@@ -108,29 +120,45 @@ export const ManageScreen: FC<ProfileRootBottomTabCompositeScreenProps<'ManageSc
                                 <Image source={{ uri: image }} style={{ width: 100, height: 100, borderRadius: 50 }} />)
                                 :
                                 (<Ionicons name="camera" size={40} color="white" />
-                            )}
+                                )}
                         </TouchableOpacity>
                         <Text className="top-5 text-3xl">{userData?.Username}</Text>
                     </View>
                 </View>
 
-                <View style={styles.disabledInput}>
-                    <TextInput
-                        style={{ flex: 1 }}
-                        placeholder="Name"
-                        value={userData?.Username}
-                        editable={false}
+                <View style={styles.inputBox}>
+                    <Controller
+                        name="Username"
+                        control={control}
+                        render={({ field: { value } }) => (
+                            <TextInput
+                                style={{ flex: 1 }}
+                                placeholder="Username"
+                                onChangeText={(text: string) => setValue('Username', text)}
+                                value={value}
+                            />
+                        )}
                     />
+                    <FontAwesome6 name="edit" size={24} color="black" />
                 </View>
+                <Text style={styles.errorMessage}>{errors.Username?.message}</Text>
 
-                <View style={styles.disabledInput}>
-                    <TextInput
-                        style={{ flex: 1 }}
-                        placeholder="Email"
-                        value={userData?.Email}
-                        editable={false}
+                <View style={styles.inputBox}>
+                    <Controller
+                        name="Email"
+                        control={control}
+                        render={({ field: { value } }) => (
+                            <TextInput
+                                style={{ flex: 1 }}
+                                placeholder="Email"
+                                onChangeText={(text: string) => setValue('Email', text)}
+                                value={value}
+                            />
+                        )}
                     />
+                    <FontAwesome6 name="edit" size={24} color="black" />
                 </View>
+                <Text style={styles.errorMessage}>{errors.Email?.message}</Text>
 
                 <View style={styles.inputBox}>
                     <Controller
@@ -185,6 +213,23 @@ export const ManageScreen: FC<ProfileRootBottomTabCompositeScreenProps<'ManageSc
 
                 <View style={styles.inputBox}>
                     <Controller
+                        name="State"
+                        control={control}
+                        render={({ field: { value } }) => (
+                            <TextInput
+                                style={{ flex: 1 }}
+                                placeholder="Negara"
+                                onChangeText={(text: string) => setValue('State', text)}
+                                value={value}
+                            />
+                        )}
+                    />
+                    <FontAwesome6 name="edit" size={24} color="black" />
+                </View>
+                <Text style={styles.errorMessage}>{errors.State?.message}</Text>
+
+                <View style={styles.inputBox}>
+                    <Controller
                         name="City"
                         control={control}
                         render={({ field: { value } }) => (
@@ -202,12 +247,29 @@ export const ManageScreen: FC<ProfileRootBottomTabCompositeScreenProps<'ManageSc
 
                 <View style={styles.inputBox}>
                     <Controller
+                        name="District"
+                        control={control}
+                        render={({ field: { value } }) => (
+                            <TextInput
+                                style={{ flex: 1 }}
+                                placeholder="Daerah"
+                                onChangeText={(text: string) => setValue('District', text)}
+                                value={value}
+                            />
+                        )}
+                    />
+                    <FontAwesome6 name="edit" size={24} color="black" />
+                </View>
+                <Text style={styles.errorMessage}>{errors.District?.message}</Text>
+
+                <View style={styles.inputBox}>
+                    <Controller
                         name="Province"
                         control={control}
                         render={({ field: { value } }) => (
                             <TextInput
                                 style={{ flex: 1 }}
-                                placeholder="Kota"
+                                placeholder="Provinsi"
                                 onChangeText={(text: string) => setValue('Province', text)}
                                 value={value}
                             />
@@ -316,5 +378,9 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         top: 30,
         marginBottom: 60
+    },
+    passwordToggleIcon: {
+        flexDirection: 'row',
+        top: 5,
     },
 });
