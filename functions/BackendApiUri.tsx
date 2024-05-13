@@ -9,7 +9,7 @@ export const BackendApiUri = {
     getShelterList : '/shelter',
     getShelterFav : '/shelter/favorite',
     postShelterFav : '/shelter_favorite/update',
-    getPetList : '/pet/?search=&type=&age_start=&age_end=&location=&gender=&page=1&page_size=10&order_by=name&sort=Desc',
+    getPetList : '/pet',
     getShelterDetail : '/shelter',
     getUserData : '/user/data',
     putUserUpdate: '/user/update'

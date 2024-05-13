@@ -7,7 +7,6 @@ export const get = async (url: string) => {
 };
 
 export const post = async (url: string, body: any) => {
-    console.log(body)
     const response = await axios.post(baseUrl + url, body);
     return response;
 }
