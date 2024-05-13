@@ -93,42 +93,44 @@ export const ShelterDetailScreen: FC<RootNavigationStackScreenProps<'ShelterDeta
             </View>
             <ScrollView>
                 <ImageBackground source={require('../../../../assets/image.png')} style={{ width: '100%', height: 350 }} />
-                <View className='pt-4 px-3 bottom-6 bg-white rounded-t-3xl'>
+                <View className='pt-8 px-6 bottom-6 bg-white rounded-t-3xl'>
                     <View className='flex flex-row justify-between'>
-                        <Text className='text-xl font-bold'>{data.Data.ShelterName}</Text>
+                        <Text className='text-3xl font-bold'>{data.Data.ShelterName}</Text>
                         <View className='flex flex-row items-center'>
                             <FontAwesome name="whatsapp" size={28} color="green" style={{ marginRight: 15 }} onPress={() => handleWhatsApp(data.Data.ShelterContactNumber)} />
                             <FontAwesome name={isFavorite ? 'heart' : 'heart-o'} size={24} color="#4689FD" onPress={handlePressFavorite} />
                         </View>
                     </View>
 
-                    <View className='mt-5 flex flex-row items-center'>
+                    <View className='mt-2 flex flex-row items-center'>
                         <FontAwesome6 name='location-dot' size={20} color='#4689FD' style={{ marginLeft: 2 }} />
-                        <Text className='text-base ml-3 text-[#8A8A8A]'>{data.Data.ShelterLocation}</Text>
+                        <Text className='text-base ml-2 text-[#8A8A8A]'>Jakarta Barat</Text>
                     </View>
 
-                    <View className='mt-5 flex flex-row items-center justify-between'>
-                        <View className='flex flex-row items-center'>
-                            <MaterialIcons name="pets" size={21} color="#4689FD" />
-                            <Text className='text-base ml-2 text-[#8A8A8A]'>{data.Data.ShelterCapacity}</Text>
+                    <View className='flex flex-row justify-center items-center gap-5 mt-1'>
+                        <View className='border-2 px-6 py-3 text-center flex justify-center items-center border-gray-400 rounded-xl'>
+                            <Text className='text-gray-500'>Total Hewan</Text>
+                            <Text className='text-black font-bold'>{data.Data.TotalPet}</Text>
                         </View>
-                        <View className='flex flex-row items-center'>
-                            <FontAwesome6 name='cat' size={21} color='#8A8A8A' style={{ marginEnd: 5 }} />
-                            <FontAwesome6 name='dog' size={21} color='#8A8A8A' style={{ marginEnd: 5 }} />
-                            <MaterialCommunityIcons name='rabbit' size={26} color='#8A8A8A' />
+                        <View className='border-2 px-6 py-3 text-center flex justify-center items-center border-gray-400 rounded-xl'>
+                            <Text className='text-gray-500'>Hewan Adopsi Available</Text>
+                            <Text className='text-black font-bold'>{data.Data.ShelterCapacity}</Text>
                         </View>
-                    </View>
-
-                    <View className='mt-5 flex flex-row items-center'>
-                        <FontAwesome5 name="calendar-alt" size={21} color="#4689FD" style={{ marginLeft: 3 }} />
-                        <Text className='text-base ml-2 text-[#8A8A8A]'>{new Date(data.Data.CreatedAt).getFullYear()}</Text>
+                        <View className='border-2 px-6 py-2 text-center flex justify-center items-center border-gray-400 rounded-xl'>
+                            <Text className='text-gray-500'>Menerima Hewan</Text>
+                            <View className='flex flex-row justify-center items-center'>
+                                <FontAwesome6 name='cat' size={21} color='black' style={{ marginRight: 5 }} />
+                                <FontAwesome6 name='dog' size={21} color='black' style={{ marginRight: 5 }} />
+                                <MaterialCommunityIcons name='rabbit' size={26} color='black' />
+                            </View>
+                        </View>
                     </View>
 
                     <Text className='mt-8 text-xl font-bold'>Tentang Kami</Text>
                     <Text className='mt-2 text-base ml-1 text-[#8A8A8A]'>{data.Data.ShelterDescription}</Text>
-                    <Text className='mt-2 text-base ml-1 text-[#8A8A8A]'>Lorem ipsum dolor sit amet consectetur, adipisicing elit. Molestias deleniti laboriosam odit dolorum ex voluptatibus fugit impedit, velit expedita iure rem ad quasi molestiae nesciunt consequatur numquam eaque. Laudantium facilis, id dignissimos distinctio exercitationem dolore ullam quidem corrupti repudiandae soluta nisi suscipit eos odit omnis asperiores ut magnam eum voluptatum voluptates aspernatur voluptatem perferendis? Eaque non corporis obcaecati voluptatibus aspernatur sed, omnis quas error. Adipisci doloribus rerum iure illum! Laboriosam laborum eius officiis eum animi facere modi minima beatae quod inventore possimus, sequi architecto iure, voluptas sit accusamus sapiente corrupti earum repudiandae veniam. Maxime in eos iste eligendi, deleniti quidem!</Text>
+                    <Text className='mt-2 text-base ml-1 text-[#8A8A8A]'>Lorem ipsum dolor sit amet consectetur adipisicing elit. Accusamus molestiae repudiandae nemo voluptate ipsam nobis. Numquam quae porro fugiat odit magni aliquam repudiandae quaerat quos nam, delectus sint consequatur adipisci facilis tenetur tempore repellendus quod voluptas assumenda? Accusamus quasi nostrum quidem, aut repudiandae mollitia, maiores culpa, fugiat possimus nihil earum itaque asperiores neque. Quos hic quasi enim? Molestias non possimus est nulla, dolore quas libero molestiae recusandae eius labore similique officia, autem fugit asperiores dignissimos quos porro veniam tempora magni. Cumque, assumenda labore. Quia, maxime. Iure commodi pariatur sunt magni iusto dolore quisquam obcaecati nihil officiis alias deserunt, vitae quos accusamus natus consectetur deleniti sint. Voluptatum, magni alias esse vero atque praesentium? Possimus iure facere tenetur distinctio accusantium, illum aut unde blanditiis ducimus fugit soluta nostrum provident quam quidem, voluptatum porro repudiandae dolores nam, incidunt quibusdam eum culpa iusto consequuntur enim. Dolore officiis architecto ducimus? Libero blanditiis sint adipisci tempora culpa quam, amet iusto quis nam quisquam dolore laudantium dicta esse. Fugiat deserunt id quas itaque facere! Nulla voluptatum nihil iste dolorum? Magni maiores aut tempore illo consequuntur consequatur reprehenderit excepturi voluptates dolorem? Ullam architecto odio voluptatem consequatur, inventore repudiandae modi recusandae at corrupti debitis repellendus esse, voluptatum cum ipsum.</Text>
                 </View>
-                <View className='mt-5'>
+                <View className='my-3'>
                     <View className='flex-row justify-around'>
                         <TouchableOpacity style={styles.buttonBox} onPress={() => navigation.navigate("HewanAdopsiScreen")}>
                             <MaterialIcons name="pets" size={24} color="white" />
@@ -139,8 +141,9 @@ export const ShelterDetailScreen: FC<RootNavigationStackScreenProps<'ShelterDeta
                             <Text style={styles.fontButton} className='ml-3 text-s text-center'>Surrender Pet</Text>
                         </TouchableOpacity>
                     </View>
+                    
                     <View className='mt-3 flex-row justify-around'>
-                        <TouchableOpacity style={styles.buttonBox} onPress={() => navigation.navigate("DonateScreen")}>
+                        <TouchableOpacity disabled={data.Data.BankAccountNumber === ""} style={styles.buttonBox} onPress={() => navigation.navigate("DonateScreen", {bankNumber : data.Data.BankAccountNumber})}>
                             <FontAwesome6 name="hand-holding-heart" size={24} color="white" />
                             <Text style={styles.fontButton} className='ml-3 text-s text-center'>Donation</Text>
                         </TouchableOpacity>

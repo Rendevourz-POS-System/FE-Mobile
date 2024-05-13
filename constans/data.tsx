@@ -48,140 +48,140 @@ export const dataSpesiesHewan = {
 export const dataProvinsi = {
     data : [
         {
-            "id": "11",
-            "name": "ACEH"
+            "key": "11",
+            "value": "ACEH"
         },
         {
-            "id": "12",
-            "name": "SUMATERA UTARA"
+            "key": "12",
+            "value": "SUMATERA UTARA"
         },
         {
-            "id": "13",
-            "name": "SUMATERA BARAT"
+            "key": "13",
+            "value": "SUMATERA BARAT"
         },
         {
-            "id": "14",
-            "name": "RIAU"
+            "key": "14",
+            "value": "RIAU"
         },
         {
-            "id": "15",
-            "name": "JAMBI"
+            "key": "15",
+            "value": "JAMBI"
         },
         {
-            "id": "16",
-            "name": "SUMATERA SELATAN"
+            "key": "16",
+            "value": "SUMATERA SELATAN"
         },
         {
-            "id": "17",
-            "name": "BENGKULU"
+            "key": "17",
+            "value": "BENGKULU"
         },
         {
-            "id": "18",
-            "name": "LAMPUNG"
+            "key": "18",
+            "value": "LAMPUNG"
         },
         {
-            "id": "19",
-            "name": "KEPULAUAN BANGKA BELITUNG"
+            "key": "19",
+            "value": "KEPULAUAN BANGKA BELITUNG"
         },
         {
-            "id": "21",
-            "name": "KEPULAUAN RIAU"
+            "key": "21",
+            "value": "KEPULAUAN RIAU"
         },
         {
-            "id": "31",
-            "name": "DKI JAKARTA"
+            "key": "31",
+            "value": "DKI JAKARTA"
         },
         {
-            "id": "32",
-            "name": "JAWA BARAT"
+            "key": "32",
+            "value": "JAWA BARAT"
         },
         {
-            "id": "33",
-            "name": "JAWA TENGAH"
+            "key": "33",
+            "value": "JAWA TENGAH"
         },
         {
-            "id": "34",
-            "name": "DI YOGYAKARTA"
+            "key": "34",
+            "value": "DI YOGYAKARTA"
         },
         {
-            "id": "35",
-            "name": "JAWA TIMUR"
+            "key": "35",
+            "value": "JAWA TIMUR"
         },
         {
-            "id": "36",
-            "name": "BANTEN"
+            "key": "36",
+            "value": "BANTEN"
         },
         {
-            "id": "51",
-            "name": "BALI"
+            "key": "51",
+            "value": "BALI"
         },
         {
-            "id": "52",
-            "name": "NUSA TENGGARA BARAT"
+            "key": "52",
+            "value": "NUSA TENGGARA BARAT"
         },
         {
-            "id": "53",
-            "name": "NUSA TENGGARA TIMUR"
+            "key": "53",
+            "value": "NUSA TENGGARA TIMUR"
         },
         {
-            "id": "61",
-            "name": "KALIMANTAN BARAT"
+            "key": "61",
+            "value": "KALIMANTAN BARAT"
         },
         {
-            "id": "62",
-            "name": "KALIMANTAN TENGAH"
+            "key": "62",
+            "value": "KALIMANTAN TENGAH"
         },
         {
-            "id": "63",
-            "name": "KALIMANTAN SELATAN"
+            "key": "63",
+            "value": "KALIMANTAN SELATAN"
         },
         {
-            "id": "64",
-            "name": "KALIMANTAN TIMUR"
+            "key": "64",
+            "value": "KALIMANTAN TIMUR"
         },
         {
-            "id": "65",
-            "name": "KALIMANTAN UTARA"
+            "key": "65",
+            "value": "KALIMANTAN UTARA"
         },
         {
-            "id": "71",
-            "name": "SULAWESI UTARA"
+            "key": "71",
+            "value": "SULAWESI UTARA"
         },
         {
-            "id": "72",
-            "name": "SULAWESI TENGAH"
+            "key": "72",
+            "value": "SULAWESI TENGAH"
         },
         {
-            "id": "73",
-            "name": "SULAWESI SELATAN"
+            "key": "73",
+            "value": "SULAWESI SELATAN"
         },
         {
-            "id": "74",
-            "name": "SULAWESI TENGGARA"
+            "key": "74",
+            "value": "SULAWESI TENGGARA"
         },
         {
-            "id": "75",
-            "name": "GORONTALO"
+            "key": "75",
+            "value": "GORONTALO"
         },
         {
-            "id": "76",
-            "name": "SULAWESI BARAT"
+            "key": "76",
+            "value": "SULAWESI BARAT"
         },
         {
-            "id": "81",
-            "name": "MALUKU"
+            "key": "81",
+            "value": "MALUKU"
         },
         {
-            "id": "82",
-            "name": "MALUKU UTARA"
+            "key": "82",
+            "value": "MALUKU UTARA"
         },
         {
-            "id": "91",
-            "name": "PAPUA BARAT"
+            "key": "91",
+            "value": "PAPUA BARAT"
         },
         {
-            "id": "94",
-            "name": "PAPUA"
+            "key": "94",
+            "value": "PAPUA"
         }
     ]
 }
