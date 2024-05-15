@@ -230,20 +230,20 @@ export const ManageScreen: FC<ProfileRootBottomTabCompositeScreenProps<'ManageSc
 
                 <View style={styles.inputBox}>
                     <Controller
-                        name="City"
+                        name="Province"
                         control={control}
                         render={({ field: { value } }) => (
                             <TextInput
                                 style={{ flex: 1 }}
-                                placeholder="Kota"
-                                onChangeText={(text: string) => setValue('City', text)}
+                                placeholder="Provinsi"
+                                onChangeText={(text: string) => setValue('Province', text)}
                                 value={value}
                             />
                         )}
                     />
                     <FontAwesome6 name="edit" size={24} color="black" />
                 </View>
-                <Text style={styles.errorMessage}>{errors.City?.message}</Text>
+                <Text style={styles.errorMessage}>{errors.Province?.message}</Text>
 
                 <View style={styles.inputBox}>
                     <Controller
@@ -261,23 +261,6 @@ export const ManageScreen: FC<ProfileRootBottomTabCompositeScreenProps<'ManageSc
                     <FontAwesome6 name="edit" size={24} color="black" />
                 </View>
                 <Text style={styles.errorMessage}>{errors.District?.message}</Text>
-
-                <View style={styles.inputBox}>
-                    <Controller
-                        name="Province"
-                        control={control}
-                        render={({ field: { value } }) => (
-                            <TextInput
-                                style={{ flex: 1 }}
-                                placeholder="Provinsi"
-                                onChangeText={(text: string) => setValue('Province', text)}
-                                value={value}
-                            />
-                        )}
-                    />
-                    <FontAwesome6 name="edit" size={24} color="black" />
-                </View>
-                <Text style={styles.errorMessage}>{errors.Province?.message}</Text>
 
                 <View style={styles.inputBox}>
                     <Controller
