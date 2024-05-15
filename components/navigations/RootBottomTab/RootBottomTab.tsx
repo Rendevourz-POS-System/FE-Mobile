@@ -6,7 +6,6 @@ import { FC } from 'react';
 import { Platform, StyleSheet } from 'react-native';
 import { ProfileNavigationStack } from '../Profile/ProfileNavigationStack';
 import { HomeScreen } from './screens/HomeScreen';
-import { PublishNavigationStack } from '../Publish/PublishNavigationStack';
 
 const Tab = createBottomTabNavigator<RootBottomTabParams>();
 
@@ -16,15 +15,6 @@ const homeTabOptions : BottomTabNavigationOptions = {
     tabBarLabelStyle: { color: '#4689FD' },
     tabBarIcon : ({size}) => (
         <MaterialCommunityIcons name="home" color={"#4689FD"} size={size} />
-    )
-}
-
-const publishTabOptions : BottomTabNavigationOptions = {
-    headerShown : false,
-    tabBarLabel : 'Publish',
-    tabBarLabelStyle: { color: '#4689FD' },
-    tabBarIcon : ({size}) => (
-        <MaterialCommunityIcons name="plus" color={"#4689FD"} size={size} />
     )
 }
 
@@ -48,7 +38,6 @@ const RootBottomTab : FC<unknown> = () => {
             
         >
             <Tab.Screen name="Home" component={HomeScreen} options={homeTabOptions} />
-            <Tab.Screen name="Publish" component={PublishNavigationStack} options={publishTabOptions} />
             <Tab.Screen name="Profile" component={ProfileNavigationStack} options={profileTabOptions} />
         </Tab.Navigator>
     );
