@@ -7,14 +7,16 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from 'react-hook-form';
 import { Icon } from "react-native-elements";
+import { BackendApiUri } from "../../../../functions/BackendApiUri";
+import { put } from "../../../../functions/Fetch";
 
 const changePasswordFormSchema = z.object({
-    CurrentPassword: z.string({ required_error: "Current password cannot be empty" }).min(5, { message: "Must be more than 5 character" }),
-    NewPassword: z.string({ required_error: "New password cannot be empty" }).min(5, { message: "Must be more than 5 character" }),
-    ConfirmPassword: z.string({ required_error: "Confirm password cannot be empty" }).min(5, { message: "Must be more than 5 character" })
+    Password: z.string({ required_error: "Current password cannot be empty" }).min(8, { message: "Must be more than 5 character" }),
+    NewPassword: z.string({ required_error: "New password cannot be empty" }).min(8, { message: "Must be more than 5 character" }),
+    ConfirmPassword: z.string({ required_error: "Confirm password cannot be empty" }).min(8, { message: "Must be more than 5 character" })
 }).refine((data) => data.NewPassword === data.ConfirmPassword, {
-    message: "New Password don't match",
-    path: ['confirmPassword'],
+    message: "Confirm Password tidak sama dengan New Password",
+    path: ['ConfirmPassword'],
 });
 
 type changePasswordFormType = z.infer<typeof changePasswordFormSchema>
@@ -28,8 +30,14 @@ export const ChangePasswordScreen: FC<ProfileRootBottomTabCompositeScreenProps<'
         resolver: zodResolver(changePasswordFormSchema),
     });
 
-    const onSubmit = (data: changePasswordFormType) => {
-        console.log(data)
+    const onSubmit = async (data: changePasswordFormType) => {
+        try {
+            console.log(data);
+            await put(BackendApiUri.putUserUpdatePw, data);
+            Alert.alert('Password Berhasil Berubah', 'Password anda telah berhasil berubah.');
+        } catch (e) {
+            Alert.alert('Password Masih salah', 'Password anda masih tidak sesuai.');
+        }
     }
 
     return (
@@ -42,14 +50,14 @@ export const ChangePasswordScreen: FC<ProfileRootBottomTabCompositeScreenProps<'
             <ScrollView className="mt-10">
                 <View style={styles.inputBox}>
                     <Controller
-                        name="CurrentPassword"
+                        name="Password"
                         control={control}
                         render={() => (
                             <TextInput
                                 placeholder="Current Password"
                                 style={{ flex: 1 }}
-                                onChangeText={(text: string) => setValue('CurrentPassword', text)}
-                                secureTextEntry={!showPassword}
+                                onChangeText={(text: string) => setValue('Password', text)}
+                                secureTextEntry={showPassword}
                             />
                         )}
                     />
@@ -57,7 +65,7 @@ export const ChangePasswordScreen: FC<ProfileRootBottomTabCompositeScreenProps<'
                         <Icon name={showPassword ? 'eye-slash' : 'eye'} type="font-awesome" size={18} color="#666" />
                     </TouchableOpacity>
                 </View>
-                <Text style={styles.errorMessage}>{errors.CurrentPassword?.message}</Text>
+                <Text style={styles.errorMessage}>{errors.Password?.message}</Text>
 
                 <View style={styles.inputBox}>
                     <Controller
@@ -68,11 +76,11 @@ export const ChangePasswordScreen: FC<ProfileRootBottomTabCompositeScreenProps<'
                                 placeholder="New Password"
                                 style={{ flex: 1 }}
                                 onChangeText={(text: string) => setValue('NewPassword', text)}
-                                secureTextEntry={!showNewPassword}
+                                secureTextEntry={showNewPassword}
                             />
                         )}
                     />
-                    <TouchableOpacity onPress={() => setShowConfirmPassword(!showNewPassword)} style={styles.passwordToggleIcon}>
+                    <TouchableOpacity onPress={() => setShowNewPassword(!showNewPassword)} style={styles.passwordToggleIcon}>
                         <Icon name={showNewPassword ? 'eye-slash' : 'eye'} type="font-awesome" size={18} color="#666" />
                     </TouchableOpacity>
                 </View>
@@ -88,11 +96,11 @@ export const ChangePasswordScreen: FC<ProfileRootBottomTabCompositeScreenProps<'
                                 placeholder="Confirm Password"
                                 style={{ flex: 1 }}
                                 onChangeText={(text: string) => setValue('ConfirmPassword', text)}
-                                secureTextEntry={!showConfirmPassword}
+                                secureTextEntry={showConfirmPassword}
                             />
                         )}
                     />
-                    <TouchableOpacity onPress={() => setShowNewPassword(!showConfirmPassword)} style={styles.passwordToggleIcon}>
+                    <TouchableOpacity onPress={() => setShowConfirmPassword(!showConfirmPassword)} style={styles.passwordToggleIcon}>
                         <Icon name={showConfirmPassword ? 'eye-slash' : 'eye'} type="font-awesome" size={18} color="#666" />
                     </TouchableOpacity>
                 </View>
