@@ -4,7 +4,6 @@ import { RootBottomTabParams } from "./RootBottomTab/RootBottomTabParams";
 import { RootNavigationStackParams } from "./Root/RootNavigationStackParams";
 import { CompositeNavigationProp, CompositeScreenProps } from "@react-navigation/native";
 import { ProfileNavigationStackParams } from "./Profile/ProfileNavigationStackParams";
-import { PublishNavigationStackParams } from "./Publish/PublishNavigationStackParams";
 
 export type RootBottomTabCompositeNavigationProp<T extends keyof RootBottomTabParams> = CompositeNavigationProp<
     BottomTabNavigationProp<RootBottomTabParams, T>,
@@ -16,13 +15,5 @@ export type ProfileRootBottomTabCompositeScreenProps<T extends keyof ProfileNavi
     CompositeScreenProps<
         BottomTabScreenProps<RootBottomTabParams>,
         NativeStackScreenProps<ProfileNavigationStackParams>
-    >
->;
-
-export type PublishRootBottomTabCompositeScreenProps<T extends keyof PublishNavigationStackParams> = CompositeScreenProps<
-    NativeStackScreenProps<PublishNavigationStackParams, T>,
-    CompositeScreenProps<
-        BottomTabScreenProps<RootBottomTabParams>,
-        NativeStackScreenProps<PublishNavigationStackParams>
     >
 >;

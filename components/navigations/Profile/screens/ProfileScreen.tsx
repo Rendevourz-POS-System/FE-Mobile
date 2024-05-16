@@ -8,11 +8,6 @@ import { Avatar } from "react-native-elements";
 
 export const ProfileScreen: FC<ProfileRootBottomTabCompositeScreenProps<'ProfileScreen'>> = ({ navigation }) => {
     const { authState, onLogout } = useAuth();
-    const [userType, setUserType] = useState("user");
-
-    const handleSwitchUserType = () => {
-        setUserType(prevUserType => prevUserType === 'user' ? 'shelter' : 'user');
-    };
 
     return (
         <SafeAreaProvider style={styles.container}>
@@ -50,12 +45,11 @@ export const ProfileScreen: FC<ProfileRootBottomTabCompositeScreenProps<'Profile
                             <MaterialIcons name="navigate-next" size={25} color="black" />
                         </View>
                     </TouchableOpacity>
-                    <TouchableOpacity style={styles.rowContainer} onPress={handleSwitchUserType}>
+                    <TouchableOpacity style={styles.rowContainer} onPress={() => navigation.navigate("ShelterScreen")}>
                         <View style={styles.iconContainer}>
                             <Octicons name="arrow-switch" size={25} color="white" />
                         </View>
-                        {userType == 'user' && (<Text style={styles.text}>Switch to Shelter</Text>)}
-                        {userType == 'shelter' && (<Text style={styles.text}>Switch to User</Text>)}
+                        <Text style={styles.text}>Switch to Shelter</Text>
                         <View style={styles.nextIconContainer}>
                             <MaterialIcons name="navigate-next" size={25} color="black" />
                         </View>
@@ -82,37 +76,15 @@ export const ProfileScreen: FC<ProfileRootBottomTabCompositeScreenProps<'Profile
                             <MaterialIcons name="navigate-next" size={25} color="black" />
                         </View>
                     </TouchableOpacity>
-                    {userType == 'user' && (
-                        <TouchableOpacity style={styles.rowContainer} onPress={() => navigation.navigate("FavoriteScreen")}>
-                            <View style={styles.iconContainer}>
-                                <FontAwesome name={'heart'} size={24} color="white" />
-                            </View>
-                            <Text style={styles.text}>Favorite</Text>
-                            <View style={styles.nextIconContainer}>
-                                <MaterialIcons name="navigate-next" size={25} color="black" />
-                            </View>
-                        </TouchableOpacity>
-                    )}
-                    {userType == 'shelter' && (<>
-                        <TouchableOpacity style={styles.rowContainer}>
-                            <View style={styles.iconContainer}>
-                                <Octicons name="checklist" size={22} color="white" />
-                            </View>
-                            <Text style={styles.text}>Approval List</Text>
-                            <View style={styles.nextIconContainer}>
-                                <MaterialIcons name="navigate-next" size={25} color="black" />
-                            </View>
-                        </TouchableOpacity>
-                        <TouchableOpacity style={styles.rowContainer}>
-                            <View style={styles.iconContainer}>
-                                <MaterialCommunityIcons name="bone" size={25} color="white" />
-                            </View>
-                            <Text style={styles.text}>Pet List</Text>
-                            <View style={styles.nextIconContainer}>
-                                <MaterialIcons name="navigate-next" size={25} color="black" />
-                            </View>
-                        </TouchableOpacity>
-                    </>)}
+                    <TouchableOpacity style={styles.rowContainer} onPress={() => navigation.navigate("FavoriteScreen")}>
+                        <View style={styles.iconContainer}>
+                            <FontAwesome name={'heart'} size={24} color="white" />
+                        </View>
+                        <Text style={styles.text}>Favorite</Text>
+                        <View style={styles.nextIconContainer}>
+                            <MaterialIcons name="navigate-next" size={25} color="black" />
+                        </View>
+                    </TouchableOpacity>
                 </View>
 
                 <TouchableOpacity style={styles.signOutButton} onPress={onLogout}>

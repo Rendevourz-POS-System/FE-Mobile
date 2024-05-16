@@ -8,7 +8,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from 'react-hook-form';
 import { FontAwesome6 } from '@expo/vector-icons';
 import { BackendApiUri } from "../../../../functions/BackendApiUri";
-import { get, put } from "../../../../functions/Fetch";
+import { get, putForm } from "../../../../functions/Fetch";
 import * as ImagePicker from 'expo-image-picker';
 
 interface User {
@@ -22,12 +22,14 @@ interface User {
     District: string,
     PostalCode: number,
     Province: string,
+    Image: string,
+    ImageBase64: []
 }
 
 const profileFormSchema = z.object({
     Username: z.string({ required_error: "Username tidak boleh kosong" }).min(1, { message: "Username tidak boleh kosong" }),
     Email: z.string({ required_error: "Email tidak boleh kosong" }).min(1, { message: "Email tidak boleh kosong" }),
-    Nik: z.string({ required_error: "NIK tidak boleh kosong" }).regex(/^\d{16}$/, { message: "Format NIK tidak valid" }),
+    Nik: z.string({ required_error: "NIK tidak boleh kosong" }),
     PhoneNumber: z.string({ required_error: "Nomor telepon tidak boleh kosong" }).min(1, { message: "Nomor Telepon tidak boleh kosong" }).refine(value => /^\d+$/.test(value), { message: "Nomor telepon harus berupa angka (0-9)" }),
     Address: z.string({ required_error: "Alamat tidak boleh kosong" }).min(1, { message: "Alamat tidak boleh kosong" }),
     State: z.string({ required_error: "Negara tidak boleh kosong" }).min(1, { message: "Negara tidak boleh kosong" }),
@@ -70,21 +72,11 @@ export const ManageScreen: FC<ProfileRootBottomTabCompositeScreenProps<'ManageSc
     }, []);
 
     const onSubmit = async (data: ProfileFormType) => {
-        const payload = {
-            Nik: data.Nik,
-            PhoneNumber: data.PhoneNumber,
-            Address: data.Address,
-            State: data.State,
-            District: data.District,
-            City: data.City,
-            PostalCode: data.PostalCode,
-            Province: data.Province,
-            Email: userData?.Email,
-            Username: userData?.Username,
-            Password: "Testing@123",
-            NewPassword: "Testing@123",
-        }
-        await put(`${BackendApiUri.putUserUpdate}`, payload);
+        let payloadString = JSON.stringify(data);
+        const formData = new FormData();
+        formData.append('file', image);
+        formData.append('data', payloadString);
+        const res = await putForm(`${BackendApiUri.putUserUpdate}`, formData);
         Alert.alert('Data Tersimpan', 'Data anda telah tersimpan.');
     }
 
@@ -116,6 +108,7 @@ export const ManageScreen: FC<ProfileRootBottomTabCompositeScreenProps<'ManageSc
                             onPress={pickImage}
                             disabled={image ? true : false}
                         >
+                            
                             {image ? (
                                 <Image source={{ uri: image }} style={{ width: 100, height: 100, borderRadius: 50 }} />)
                                 :
@@ -230,20 +223,20 @@ export const ManageScreen: FC<ProfileRootBottomTabCompositeScreenProps<'ManageSc
 
                 <View style={styles.inputBox}>
                     <Controller
-                        name="City"
+                        name="Province"
                         control={control}
                         render={({ field: { value } }) => (
                             <TextInput
                                 style={{ flex: 1 }}
-                                placeholder="Kota"
-                                onChangeText={(text: string) => setValue('City', text)}
+                                placeholder="Provinsi"
+                                onChangeText={(text: string) => setValue('Province', text)}
                                 value={value}
                             />
                         )}
                     />
                     <FontAwesome6 name="edit" size={24} color="black" />
                 </View>
-                <Text style={styles.errorMessage}>{errors.City?.message}</Text>
+                <Text style={styles.errorMessage}>{errors.Province?.message}</Text>
 
                 <View style={styles.inputBox}>
                     <Controller
@@ -261,23 +254,6 @@ export const ManageScreen: FC<ProfileRootBottomTabCompositeScreenProps<'ManageSc
                     <FontAwesome6 name="edit" size={24} color="black" />
                 </View>
                 <Text style={styles.errorMessage}>{errors.District?.message}</Text>
-
-                <View style={styles.inputBox}>
-                    <Controller
-                        name="Province"
-                        control={control}
-                        render={({ field: { value } }) => (
-                            <TextInput
-                                style={{ flex: 1 }}
-                                placeholder="Provinsi"
-                                onChangeText={(text: string) => setValue('Province', text)}
-                                value={value}
-                            />
-                        )}
-                    />
-                    <FontAwesome6 name="edit" size={24} color="black" />
-                </View>
-                <Text style={styles.errorMessage}>{errors.Province?.message}</Text>
 
                 <View style={styles.inputBox}>
                     <Controller

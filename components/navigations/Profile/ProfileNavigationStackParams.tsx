@@ -5,4 +5,5 @@ export type ProfileNavigationStackParams = {
     HistoryScreen: undefined;
     FavoriteScreen: undefined;
     ChangePasswordScreen: undefined;
+    ShelterScreen: undefined; 
 }

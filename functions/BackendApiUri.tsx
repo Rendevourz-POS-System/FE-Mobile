@@ -5,6 +5,7 @@ export const BackendApiUri = {
     loginUser : baseUrl + '/user/login',
 
     getPetTypes : '/pet-types',
+    getLocation: '/shelter-location',
 
     getShelterList : '/shelter',
     getShelterFav : '/shelter/favorite',
@@ -12,5 +13,7 @@ export const BackendApiUri = {
     getPetList : '/pet',
     getShelterDetail : '/shelter',
     getUserData : '/user/data',
-    putUserUpdate: '/user/update'
+    putUserUpdate: '/user/update',
+    putUserUpdatePw: '/user/update-pw',
+    postShelterRegister: '/shelter/register'
 }
