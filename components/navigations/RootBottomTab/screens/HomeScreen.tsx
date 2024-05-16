@@ -5,6 +5,7 @@ import TopNavigation from '../../../TopNavigation';
 import HomeCarousel from '../../../HomeCarousel';
 import { HomeUser } from '../../HomeUser';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { RootBottomTabCompositeNavigationProp } from '../../CompositeNavigationProps';
 
 interface ShelterData {
     Id: string;
@@ -22,12 +23,13 @@ interface ShelterData {
 }
 
 
-export const HomeScreen: FC<{}> = () => {
+export const HomeScreen: FC<RootBottomTabCompositeNavigationProp<'Home'>> = ({navigation, route} : any) => {
+    const refFav = route.params?.refFav ? true : false;
     return (
         <SafeAreaProvider className='flex-1'>
             <GestureHandlerRootView style={{ flex: 1 }}>
                 <TopNavigation />
-                <HomeUser/>
+                <HomeUser refFav={refFav}/>
             </GestureHandlerRootView>
         </SafeAreaProvider>
     );

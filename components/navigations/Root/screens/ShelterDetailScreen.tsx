@@ -115,7 +115,9 @@ export const ShelterDetailScreen: FC<RootNavigationStackScreenProps<'ShelterDeta
     return (
         <SafeAreaProvider className='bg-white'>
             <View style={[styles.nextIcon, { position: 'absolute', left: 20, top: 45, zIndex: 1 }]}>
-                <Ionicons name="chevron-back" size={24} color="black" onPress={() => navigation.goBack()} />
+                {/* DONT REMOVE THIS COMMENT
+                Passing refFav to HomeScreen to trigger refresh if not the list shelter not updated */}
+                <Ionicons name="chevron-back" size={24} color="black" onPress={() => navigation.navigate("HomeScreen", {screen: "Home", params : {refFav : isFavorite}})} />
             </View>
             <ScrollView>
                 <ImageBackground source={require('../../../../assets/image.png')} style={{ width: '100%', height: 350 }} />
