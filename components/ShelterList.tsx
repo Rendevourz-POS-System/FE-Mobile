@@ -27,7 +27,7 @@ interface Item {
     value: string;
   }
 
-export const ShelterList = ({refFav} : any) => {
+export const ShelterList = ({favAttempt} : any) => {
     const navigation = useNavigation<RootBottomTabCompositeNavigationProp<'Home'>>();
     const [shelterData, setShelterData] = useState<ShelterData[]>([]);
     const [shelterFav, setShelterFav] = useState<ShelterData[]>([]);
@@ -85,6 +85,7 @@ export const ShelterList = ({refFav} : any) => {
             setIsLoading(false);
         }
     };
+
 
     const fetchShelterFav = async () => {
         try{
@@ -155,7 +156,7 @@ export const ShelterList = ({refFav} : any) => {
         fetchShelter();
         fetchShelterFav();
         fetchPetType();
-    }, [debounceValue, refreshing, refFav]);
+    }, [debounceValue, refreshing, favAttempt]);
 
     const [selectedShelters, setSelectedShelters] = useState<string[]>([]);
 

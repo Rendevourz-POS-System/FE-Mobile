@@ -26,6 +26,7 @@ interface ShelterProps {
 }
 export const ShelterDetailScreen: FC<RootNavigationStackScreenProps<'ShelterDetailScreen'>> = ({ navigation, route }: any) => {
     const [isFavorite, setIsFavorite] = useState<Boolean>();
+    const [favAttempt, setFavAttempt] = useState<number>(0);
     const [data, setData] = useState<ShelterProps>({
         Message: "",
         Data: {
@@ -104,6 +105,8 @@ export const ShelterDetailScreen: FC<RootNavigationStackScreenProps<'ShelterDeta
             }
         } catch (error) {
             console.error('Error:', error); // Handle error
+        } finally {
+            setFavAttempt(prev => prev + 1);
         }
     };
 
@@ -117,7 +120,7 @@ export const ShelterDetailScreen: FC<RootNavigationStackScreenProps<'ShelterDeta
             <View style={[styles.nextIcon, { position: 'absolute', left: 20, top: 45, zIndex: 1 }]}>
                 {/* DONT REMOVE THIS COMMENT
                 Passing refFav to HomeScreen to trigger refresh if not the list shelter not updated */}
-                <Ionicons name="chevron-back" size={24} color="black" onPress={() => navigation.navigate("HomeScreen", {screen: "Home", params : {refFav : isFavorite}})} />
+                <Ionicons name="chevron-back" size={24} color="black" onPress={() => navigation.navigate("HomeScreen", {screen: "Home", params : {favAttempt : favAttempt}})} />
             </View>
             <ScrollView>
                 <ImageBackground source={require('../../../../assets/image.png')} style={{ width: '100%', height: 350 }} />
