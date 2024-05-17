@@ -140,21 +140,21 @@ export const ShelterDetailScreen: FC<RootNavigationStackScreenProps<'ShelterDeta
                         <Text className='text-base ml-2 text-[#8A8A8A]'>Jakarta Barat</Text>
                     </View>
 
-                    <View className='flex flex-row justify-center items-center gap-5 mt-1'>
-                        <View className='border-2 px-6 py-3 text-center flex justify-center items-center border-gray-400 rounded-xl'>
-                            <Text className='text-gray-500'>Total Hewan</Text>
-                            <Text className='text-black font-bold'>{data.Data.TotalPet}</Text>
+                    <View className="flex flex-row justify-between items-center mt-4">
+                        <View className="flex-1 border-2 border-gray-300 px-4 py-3 mx-1 rounded-xl items-center">
+                            <Text className="text-gray-500 text-center">Total Hewan</Text>
+                            <Text className="text-black font-bold">{data.Data.TotalPet}</Text>
                         </View>
-                        <View className='border-2 px-6 py-3 text-center flex justify-center items-center border-gray-400 rounded-xl'>
-                            <Text className='text-gray-500'>Hewan Adopsi Available</Text>
-                            <Text className='text-black font-bold'>{data.Data.ShelterCapacity}</Text>
+                        <View className="flex-1 border-2 border-gray-300 px-4 py-3 mx-1 text-center rounded-xl items-center">
+                            <Text className="text-gray-500 text-center">Adopsi Available</Text>
+                            <Text className="text-black font-bold">{data.Data.ShelterCapacity}</Text>
                         </View>
-                        <View className='border-2 px-6 py-2 text-center flex justify-center items-center border-gray-400 rounded-xl'>
-                            <Text className='text-gray-500'>Menerima Hewan</Text>
-                            <View className='flex flex-row justify-center items-center'>
-                                <FontAwesome6 name='cat' size={21} color='black' style={{ marginRight: 5 }} />
-                                <FontAwesome6 name='dog' size={21} color='black' style={{ marginRight: 5 }} />
-                                <MaterialCommunityIcons name='rabbit' size={26} color='black' />
+                        <View className="flex-1 border-2 border-gray-300 px-4 py-[6] mx-1 text-center rounded-xl items-center">
+                            <Text className="text-gray-500 text-center">Menerima Hewan</Text>
+                            <View className="flex flex-row justify-center items-center mt-1">
+                                <FontAwesome6 name="cat" size={21} color="black" style={{ marginRight: 5 }} />
+                                <FontAwesome6 name="dog" size={21} color="black" style={{ marginRight: 5 }} />
+                                <MaterialCommunityIcons name="rabbit" size={26} color="black" />
                             </View>
                         </View>
                     </View>
