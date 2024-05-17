@@ -7,7 +7,7 @@ import {
 import { ShelterList } from '../ShelterList';
 import { PetList } from '../PetList';
 
-export const HomeUser = () => {
+export const HomeUser = ({ refFav }: any) => {
     const data = [
         { id: 'home', name: 'Shelter', icon: 'home' },
         { id: 'paw', name: 'Pets', icon: 'paw' },
@@ -43,7 +43,7 @@ export const HomeUser = () => {
                     ))}
                 </View>
                 {selectedShelter === 'Shelter' ? (
-                    <ShelterList/>
+                    <ShelterList refFav={refFav}/>
                 ) : (
                     <PetList/>
                 )}

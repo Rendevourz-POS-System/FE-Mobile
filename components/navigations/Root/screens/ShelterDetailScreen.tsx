@@ -1,11 +1,11 @@
 import React, { FC, useEffect, useState } from 'react';
-import { Image, ScrollView, TouchableOpacity, View, StyleSheet, Linking, ImageBackground } from 'react-native';
+import { ScrollView, TouchableOpacity, View, StyleSheet, Linking, ImageBackground, TouchableHighlight } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { Text } from 'react-native-elements';
 import { FontAwesome, FontAwesome5, FontAwesome6, Ionicons, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 import { RootNavigationStackScreenProps } from '../../StackScreenProps';
 import { BackendApiUri } from '../../../../functions/BackendApiUri';
-import { get } from '../../../../functions/Fetch';
+import { get, post } from '../../../../functions/Fetch';
 interface ShelterData {
     Id: string,
     UserId: string,
@@ -25,7 +25,7 @@ interface ShelterProps {
     Data: ShelterData
 }
 export const ShelterDetailScreen: FC<RootNavigationStackScreenProps<'ShelterDetailScreen'>> = ({ navigation, route }: any) => {
-    const [isFavorite, setIsFavorite] = useState(false);
+    const [isFavorite, setIsFavorite] = useState<Boolean>();
     const [data, setData] = useState<ShelterProps>({
         Message: "",
         Data: {
@@ -73,12 +73,38 @@ export const ShelterDetailScreen: FC<RootNavigationStackScreenProps<'ShelterDeta
         }
     }
 
+    const shelterFavData = async () => {
+        try {
+            const res = await get(`${BackendApiUri.getShelterFav}`);
+            if(res && res.status === 200) {
+                const detail = await res.data.find((shelter : ShelterData) => shelter.Id === data.Data.Id);
+                if(detail != null) {
+                    setIsFavorite(true);
+                }
+            }
+        } catch (e) {
+            console.log(e)
+        }
+    }
+
     useEffect(() => {
         detailData();
     }, [route.params.shelterId]);
 
-    const handlePressFavorite = () => {
-        setIsFavorite(!isFavorite);
+    useEffect(() => {
+        shelterFavData();
+    }, [data.Data.Id]);
+
+    const handlePressFavorite = async (shelterId : string) => {
+        try {
+            const body = { "ShelterId": shelterId }; // Body as an array containing an object
+            const res = await post(BackendApiUri.postShelterFav, body);
+            if(res && res.status === 200) {
+                setIsFavorite(!isFavorite);
+            }
+        } catch (error) {
+            console.error('Error:', error); // Handle error
+        }
     };
 
     const handleWhatsApp = (phoneNumber: string) => {
@@ -89,7 +115,9 @@ export const ShelterDetailScreen: FC<RootNavigationStackScreenProps<'ShelterDeta
     return (
         <SafeAreaProvider className='bg-white'>
             <View style={[styles.nextIcon, { position: 'absolute', left: 20, top: 45, zIndex: 1 }]}>
-                <Ionicons name="chevron-back" size={24} color="black" onPress={() => navigation.goBack()} />
+                {/* DONT REMOVE THIS COMMENT
+                Passing refFav to HomeScreen to trigger refresh if not the list shelter not updated */}
+                <Ionicons name="chevron-back" size={24} color="black" onPress={() => navigation.navigate("HomeScreen", {screen: "Home", params : {refFav : isFavorite}})} />
             </View>
             <ScrollView>
                 <ImageBackground source={require('../../../../assets/image.png')} style={{ width: '100%', height: 350 }} />
@@ -98,7 +126,12 @@ export const ShelterDetailScreen: FC<RootNavigationStackScreenProps<'ShelterDeta
                         <Text className='text-3xl font-bold'>{data.Data.ShelterName}</Text>
                         <View className='flex flex-row items-center'>
                             <FontAwesome name="whatsapp" size={28} color="green" style={{ marginRight: 15 }} onPress={() => handleWhatsApp(data.Data.ShelterContactNumber)} />
-                            <FontAwesome name={isFavorite ? 'heart' : 'heart-o'} size={24} color="#4689FD" onPress={handlePressFavorite} />
+                            <TouchableHighlight
+                                onPress={() => handlePressFavorite(data.Data.Id)}
+                                underlayColor="transparent"
+                                >
+                                <FontAwesome name={isFavorite ? 'heart' : 'heart-o'} size={24} style={{ color: isFavorite ? '#FF0000' : '#4689FD' }}  />
+                            </TouchableHighlight>
                         </View>
                     </View>
 
