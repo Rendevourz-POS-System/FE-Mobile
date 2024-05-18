@@ -16,19 +16,24 @@ import { ScrollView, TouchableOpacity } from "react-native-gesture-handler";
 import { FlashList } from "@shopify/flash-list";
 import { useNavigation } from "@react-navigation/native";
 import { RootBottomTabCompositeNavigationProp } from "./navigations/CompositeNavigationProps";
-import { dataJenisHewan } from "../constans/data";
+import { dataJenisHewan, dataProvinsi } from "../constans/data";
+import { Button } from "react-native-elements";
+import { Location } from "../interface/ILocation";
+import { Dropdown } from "react-native-element-dropdown";
 
 
 export const PetList = () => {
     const navigation = useNavigation<RootBottomTabCompositeNavigationProp<'Home'>>();
+    const [filterLocation, setFilterLocation] = useState<string>();
     const [petData, setPetData] = useState<PetData[]>([]);
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [search, setSearch] = useState<string>('');
     const [debounceValue] = useDebounce(search, 1000);
     const bottomSheetModalRef = useRef<BottomSheetModal>(null);
-    const snapPoints = useMemo(() => ['50%', '75%'], []);
     const [selectedItems, setSelectedItems] = useState<string[]>([]);
     const [refreshing, setRefreshing] = useState<boolean>(false);
+    const [, updateState] = useState({});
+    const forceUpdate = useCallback(() => updateState({}), []);
 
     const [page, setPage] = useState<number>(1);
     const pageSize = 10;
@@ -47,16 +52,6 @@ export const PetList = () => {
     const handleFilterPress = useCallback(() => {
         bottomSheetModalRef.current?.present();
     }, []);
-    const handleSheetChanges = useCallback((index: number) => {
-        console.log('handleSheetChanges', index);
-    }, []);
-
-    const filterShelter = [
-        {id: 'jakartaBarat', name: 'Jakarta Barat'},
-        {id: 'jakartaTimur', name: 'Jakarta Timur'},
-        {id: 'jakartaSelatan', name: 'Jakarta Selatan'},
-        {id: 'jakartaUtara', name: 'Jakarta Utara'}
-    ]
 
     const fetchData = async () => {
         try{
@@ -72,18 +67,13 @@ export const PetList = () => {
     };
 
     useEffect(() => {
+        forceUpdate();
+    }, [selectedItems]);
+
+    useEffect(() => {
         fetchData();
         setRefreshing(false);
     }, [debounceValue, refreshing]);
-
-
-    const styles = StyleSheet.create({
-        bottomSheetModal: {
-            borderTopLeftRadius: 20,
-            borderTopRightRadius: 20,
-            backgroundColor: 'white',
-        }
-    });
 
     const [selectedShelters, setSelectedShelters] = useState<string[]>([]);
 
@@ -117,6 +107,16 @@ export const PetList = () => {
         return selectedPets.includes(petId);
     };
 
+    const renderItem = (item : Location) => {
+        return (
+            <View className="p-4 flex-row justify-between items-center">
+                <Text className="flex-1 text-base">{item.value}</Text>
+            </View>
+        );
+    };
+
+    console.log(selectedItems)
+
     return (
         <>
             <View className='p-5'>
@@ -134,40 +134,46 @@ export const PetList = () => {
                     />
                     <BottomSheetModal
                         ref={bottomSheetModalRef}
-                        index={1}
-                        snapPoints={snapPoints}
-                        onChange={handleSheetChanges}
-                        backdropComponent={BottomSheetBackdrop}
+                        index={0}
+                        snapPoints={['75%']}
+                        backdropComponent={(props) => (
+                            <BottomSheetBackdrop
+                                {...props}
+                                disappearsOnIndex={-1}
+                                appearsOnIndex={0}
+                                pressBehavior="close"
+                            />
+                        )}
                         style={styles.bottomSheetModal}
                         >
-                        <BottomSheetView>
-                            <View className='mx-5'>
-                                <Text className='text-xl font-bold'>Filter</Text>
-                                <Text className='text-xl font-bold mt-8'>Pet</Text>
-                                <View className='flex flex-row flex-wrap'>
-                                    {/* {filterPet.map((pet) => (
-                                        <TouchableOpacity
-                                            key={pet.id}
-                                            onPress={() => togglePetSelection(pet.id)}
-                                            className={`rounded-full px-4 py-2 m-2 ${isPetSelected(pet.id) ? 'bg-blue-500' : 'bg-gray-200'}`}
-                                        >
-                                            <Text className={`text-gray-700 ${isPetSelected(pet.id) ? 'text-white' : ''}`}>
-                                                {pet.name}
-                                            </Text>
-                                        </TouchableOpacity>
-                                    ))} */}
-                                    <FlashList
-                                        estimatedItemSize={5}
-                                        data={dataJenisHewan}
-                                        horizontal={true}
-                                        renderItem={({ item }) => (
+                        <BottomSheetView style={{flex :1}}>
+                            <View style={{flex: 1}}>
+
+                                <View className='mx-5'>
+                                    <Text className='text-xl font-bold'>Filter</Text>
+                                    <Text className='text-xl font-bold mt-8'>Pet</Text>
+                                    <View className='flex flex-row flex-wrap'>
+                                        {/* {filterPet.map((pet) => (
                                             <TouchableOpacity
-                                                key={item.key}
-                                                activeOpacity={1}
-                                                className="mx-2"
+                                                key={pet.id}
+                                                onPress={() => togglePetSelection(pet.id)}
+                                                className={`rounded-full px-4 py-2 m-2 ${isPetSelected(pet.id) ? 'bg-blue-500' : 'bg-gray-200'}`}
                                             >
-                                                <View className="flex justify-center items-center">
-                                                    <TouchableOpacity 
+                                                <Text className={`text-gray-700 ${isPetSelected(pet.id) ? 'text-white' : ''}`}>
+                                                    {pet.name}
+                                                </Text>
+                                            </TouchableOpacity>
+                                        ))} */}
+                                        <FlashList
+                                            key={selectedItems.join('-')} // Key based on selectedItems
+                                            estimatedItemSize={5}
+                                            data={dataJenisHewan}
+                                            horizontal={true}
+                                            renderItem={({ item }) => (
+                                                <TouchableOpacity
+                                                    key={item.key}
+                                                    activeOpacity={1}
+                                                    className="mx-2"
                                                     onPress={() => {
                                                         // Toggle selection of the item
                                                         setSelectedItems(prevState => {
@@ -177,36 +183,57 @@ export const PetList = () => {
                                                                 return [...prevState, item.value];
                                                             }
                                                         });
-                                                    }}>
-                                                        <Image
-                                                            source={require(`../assets/icon_${"Cat"}.jpg`)}
-                                                            style={{ width: 80, height: 80, borderRadius: 100 }}
-                                                        />
-                                                        <Text>{item.value}</Text>
-                                                        {selectedItems.includes(item.value) && ( // Conditionally render the checklist icon if the item is selected
-                                                            <FontAwesome name="check-circle" size={20} color="green" style={{ position: 'absolute', bottom: 5, right: 5 }} />
-                                                        )}
-                                                    </TouchableOpacity>
-                                                </View>
-                                            </TouchableOpacity>
-                                        )}
+                                                    }}
+                                                >
+                                                    <View className="flex items-center">
+                                                        <View>
+                                                            <Image
+                                                                source={require(`../assets/icon_${"Cat"}.jpg`)}
+                                                                style={{ width: 80, height: 80, borderRadius: 30 }}
+                                                            />
+                                                            {selectedItems.includes(item.value) && (
+                                                                <View className="absolute right-0 bottom-0 bg-white rounded-3xl">
+                                                                    <FontAwesome6 name='circle-check' solid size={25} color='#5BBCFF'/>
+                                                                </View>
+                                                            )}
+                                                        </View>
+                                                        <Text className="text-center">{item.value}</Text>
+                                                    </View>
+                                                </TouchableOpacity>
+                                            )}
+                                        />
+
+                                    </View>
+
+                                    <Text className='text-xl font-bold mt-8'>Shelter Location</Text>
+                                    <Dropdown
+                                        style={{borderWidth: 1, paddingHorizontal: 8, paddingVertical: 5, borderRadius: 10}}
+                                        containerStyle={{borderWidth: 10}}
+                                        placeholderStyle={styles.placeholderStyle}
+                                        selectedTextStyle={styles.selectedTextStyle}
+                                        inputSearchStyle={styles.inputSearchStyle}
+                                        iconStyle={styles.iconStyle}
+                                        data={dataProvinsi.data.map(item => ({ label: item.key, value: item.value }))}
+                                        search
+                                        maxHeight={300}
+                                        labelField="value"
+                                        valueField="value"
+                                        placeholder="Select item"
+                                        searchPlaceholder="Search..."
+                                        value={filterLocation}
+                                        onChange={item => {
+                                            setFilterLocation(item.value);
+                                        }}
+                                        renderItem={renderItem}
                                     />
                                 </View>
-
-                                <Text className='text-xl font-bold mt-8'>Shelter</Text>
-                                <View className='flex flex-row flex-wrap'>
-                                    {filterShelter.map((shelter) => (
-                                        <TouchableOpacity
-                                            key={shelter.id}
-                                            onPress={() => toggleShelterSelection(shelter.id)}
-                                            className={`rounded-full px-4 py-2 m-2 ${isShelterSelected(shelter.id) ? 'bg-blue-500' : 'bg-gray-200'}`}
-                                        >
-                                            <Text className={`text-gray-700 ${isShelterSelected(shelter.id) ? 'text-white' : ''}`}>
-                                                {shelter.name}
-                                            </Text>
-                                        </TouchableOpacity>
-                                    ))}
-                                </View>
+                            </View>
+                            <View className='items-center my-5'>
+                                <Button
+                                    title="Apply"
+                                    accessibilityLabel='Apply this'
+                                    containerStyle={{ width: '35%' }}
+                                />
                             </View>
                         </BottomSheetView>
                     </BottomSheetModal>
@@ -281,6 +308,26 @@ export const PetList = () => {
         </>
     )
 
-
-
+    
 }
+const styles = StyleSheet.create({
+    bottomSheetModal: {
+        borderTopLeftRadius: 20,
+        borderTopRightRadius: 20,
+        backgroundColor: 'white',
+    },
+    placeholderStyle: {
+        fontSize: 16,
+    },
+    selectedTextStyle: {
+        fontSize: 16,
+    },
+    iconStyle: {
+        width: 20,
+        height: 20,
+    },
+    inputSearchStyle: {
+        height: 40,
+        fontSize: 16,
+    },
+})

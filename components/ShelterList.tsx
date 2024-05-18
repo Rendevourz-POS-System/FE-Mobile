@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Image, TouchableOpacity, View, StyleSheet, ActivityIndicator, ScrollView, RefreshControl } from 'react-native';
-import { Text } from 'react-native-elements';
+import { Button, Text } from 'react-native-elements';
 import { FontAwesome,FontAwesome6, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { useDebounce } from 'use-debounce';
@@ -18,14 +18,9 @@ import { Searchbar } from 'react-native-paper';
 import { ShelterFav } from '../interface/IShelterFav';
 import { PetType } from '../interface/IPetType';
 import { getIconName } from '../functions/GetPetIconName';
-import { SelectList } from 'react-native-dropdown-select-list';
 import { dataProvinsi } from '../constans/data';
 import { Dropdown } from 'react-native-element-dropdown';
-
-interface Item {
-    label: string;
-    value: string;
-  }
+import { Location } from '../interface/ILocation';
 
 export const ShelterList = ({favAttempt} : any) => {
     const navigation = useNavigation<RootBottomTabCompositeNavigationProp<'Home'>>();
@@ -36,17 +31,16 @@ export const ShelterList = ({favAttempt} : any) => {
     const [search, setSearch] = useState<string>('');
     const [debounceValue] = useDebounce(search, 1000);
     const bottomSheetModalRef = useRef<BottomSheetModal>(null);
-    const snapPoints = useMemo(() => ['50%', '75%'], []);
     const [page, setPage] = useState<number>(1);
     const pageSize = 10;
     const orderBy = "ascending";
     const sort = "";
     const [refreshing, setRefreshing] = useState(false);
 
-    const onRefresh = () => {
+    const onRefresh = async () => {
         try{
             setRefreshing(true);
-            fetchData();
+            await fetchData();
         } catch(e){
             console.log(e);
         }
@@ -75,12 +69,12 @@ export const ShelterList = ({favAttempt} : any) => {
 
     const fetchShelter = async () => {
         try{
-            const response = await get(`${BackendApiUri.getShelterList}/?search=${search}&page=${page}&page_size=${pageSize}&order_by=${orderBy}&sort=${sort}`);
+            const response = await get(`${BackendApiUri.getShelterList}/?search=${search}&page=${page}&page_size=${pageSize}`);
             if(response && response.status === 200) {
                 setShelterData(response.data);
             }
         } catch(e) {
-            throw Error;
+            console.error(e)
         } finally {
             setIsLoading(false);
         }
@@ -95,7 +89,7 @@ export const ShelterList = ({favAttempt} : any) => {
                 setShelterFav(response.data);
             }
         } catch(e) {
-            console.log(e)
+            console.error(e)
         }
     }
 
@@ -119,7 +113,7 @@ export const ShelterList = ({favAttempt} : any) => {
             const res = await get(BackendApiUri.getPetTypes);
             setPetTypes(res.data)
         } catch(e) {
-            
+            console.error(e)
         }
     }
 
@@ -242,7 +236,7 @@ export const ShelterList = ({favAttempt} : any) => {
         },
     });
     
-    const renderItem = (item : Item) => {
+    const renderItem = (item : Location) => {
         return (
             <View className="p-4 flex-row justify-between items-center">
                 <Text className="flex-1 text-base">{item.value}</Text>
@@ -267,43 +261,59 @@ export const ShelterList = ({favAttempt} : any) => {
                     />
                     <BottomSheetModal
                         ref={bottomSheetModalRef}
-                        index={1}
-                        snapPoints={snapPoints}
-                        backdropComponent={BottomSheetBackdrop}
+                        index={0}
+                        snapPoints={['30%']}
+                        backdropComponent={(props) => (
+                            <BottomSheetBackdrop
+                                {...props}
+                                disappearsOnIndex={-1}
+                                appearsOnIndex={0}
+                                pressBehavior="close"
+                            />
+                        )}
                         style={styles.bottomSheetModal}
+                        
                         >
-                        <BottomSheetView>
-                            <View className='mx-5'>
-                                <Text className='text-xl font-bold'>Filter</Text>
-
-                                <Text className='text-xl font-bold mt-8 mb-2'>Location</Text>
-                                <Dropdown
-                                    style={{borderWidth: 1, paddingHorizontal: 8, paddingVertical: 5, borderRadius: 10}}
-                                    containerStyle={{borderWidth: 10}}
-                                    placeholderStyle={styles.placeholderStyle}
-                                    selectedTextStyle={styles.selectedTextStyle}
-                                    inputSearchStyle={styles.inputSearchStyle}
-                                    iconStyle={styles.iconStyle}
-                                    data={dataProvinsi.data.map(item => ({ label: item.key, value: item.value }))}
-                                    search
-                                    maxHeight={300}
-                                    labelField="value"
-                                    valueField="value"
-                                    placeholder="Select item"
-                                    searchPlaceholder="Search..."
-                                    value={filterLocation}
-                                    onChange={item => {
-                                        setFilterLocation(item.value);
-                                    }}
-                                    renderItem={renderItem}
+                        <BottomSheetView style={{ flex: 1 }}>
+                            <View style={{ flex: 1 }}>
+                                <View className='mx-5'>
+                                    <Text className='text-xl font-bold'>Filter</Text>
+                                    <Text className='text-xl font-bold mt-6 mb-2'>Location</Text>
+                                    <Dropdown
+                                        style={{borderWidth: 1, paddingHorizontal: 8, paddingVertical: 5, borderRadius: 10}}
+                                        containerStyle={{borderWidth: 10}}
+                                        placeholderStyle={styles.placeholderStyle}
+                                        selectedTextStyle={styles.selectedTextStyle}
+                                        inputSearchStyle={styles.inputSearchStyle}
+                                        iconStyle={styles.iconStyle}
+                                        data={dataProvinsi.data.map(item => ({ label: item.key, value: item.value }))}
+                                        search
+                                        maxHeight={300}
+                                        labelField="value"
+                                        valueField="value"
+                                        placeholder="Select item"
+                                        searchPlaceholder="Search..."
+                                        value={filterLocation}
+                                        onChange={item => {
+                                            setFilterLocation(item.value);
+                                        }}
+                                        renderItem={renderItem}
+                                    />
+                                </View>
+                            </View>
+                            <View className='items-center my-5'>
+                                <Button
+                                    title="Apply"
+                                    accessibilityLabel='Apply this'
+                                    containerStyle={{ width: '35%' }}
                                 />
-
                             </View>
                         </BottomSheetView>
+
+
                     </BottomSheetModal>
                 </View>
             </View>
-
             <>
                 {isLoading ? (
                     <View className='flex-1 justify-center items-center'>
