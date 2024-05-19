@@ -12,6 +12,7 @@ export interface ShelterData {
     PetTypeAccepted : PetType[];
     TotalPet: number;
     BankAccountNumber: string;
+    ImageBase64 : [],
     Pin: string;
     ShelterVerified: boolean;
     CreatedAt: string;
