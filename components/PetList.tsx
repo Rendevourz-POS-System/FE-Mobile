@@ -115,8 +115,6 @@ export const PetList = () => {
         );
     };
 
-    console.log(selectedItems)
-
     return (
         <>
             <View className='p-5'>
@@ -153,17 +151,6 @@ export const PetList = () => {
                                     <Text className='text-xl font-bold'>Filter</Text>
                                     <Text className='text-xl font-bold mt-8'>Pet</Text>
                                     <View className='flex flex-row flex-wrap'>
-                                        {/* {filterPet.map((pet) => (
-                                            <TouchableOpacity
-                                                key={pet.id}
-                                                onPress={() => togglePetSelection(pet.id)}
-                                                className={`rounded-full px-4 py-2 m-2 ${isPetSelected(pet.id) ? 'bg-blue-500' : 'bg-gray-200'}`}
-                                            >
-                                                <Text className={`text-gray-700 ${isPetSelected(pet.id) ? 'text-white' : ''}`}>
-                                                    {pet.name}
-                                                </Text>
-                                            </TouchableOpacity>
-                                        ))} */}
                                         <FlashList
                                             key={selectedItems.join('-')} // Key based on selectedItems
                                             estimatedItemSize={5}
