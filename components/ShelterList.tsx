@@ -26,7 +26,8 @@ export const ShelterList = ({favAttempt} : any) => {
     const navigation = useNavigation<RootBottomTabCompositeNavigationProp<'Home'>>();
     const [shelterData, setShelterData] = useState<ShelterData[]>([]);
     const [shelterFav, setShelterFav] = useState<ShelterData[]>([]);
-    const [filterLocation, setFilterLocation] = useState<string>();
+    const [filterLocation, setFilterLocation] = useState<string>("");
+    const [applyPressed, setApplyPressed] = useState<boolean>(false);
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [search, setSearch] = useState<string>('');
     const [debounceValue] = useDebounce(search, 1000);
@@ -69,9 +70,11 @@ export const ShelterList = ({favAttempt} : any) => {
 
     const fetchShelter = async () => {
         try{
-            const response = await get(`${BackendApiUri.getShelterList}/?search=${search}&page=${page}&page_size=${pageSize}`);
+            const response = await get(`${BackendApiUri.getShelterList}/?search=${search}&page=${page}&page_size=${pageSize}&location_name=${filterLocation}`);
             if(response && response.status === 200) {
                 setShelterData(response.data);
+            } else {
+                setShelterData([]);
             }
         } catch(e) {
             console.error(e)
@@ -94,7 +97,10 @@ export const ShelterList = ({favAttempt} : any) => {
     }
 
     function mergeShelters() {
-        if (!shelterFav || shelterFav.length === 0) {
+        if (!shelterData || shelterData.length === 0) {
+            // If shelterData is null or empty, return an empty array
+            return [];
+        } else if (!shelterFav || shelterFav.length === 0) {
             // If shelterFav is null or empty, return shelterData without marking any as favorites
             return shelterData.map(data => ({ ...data, isFav: false }));
         } else {
@@ -105,6 +111,7 @@ export const ShelterList = ({favAttempt} : any) => {
             });
         }
     };
+    
 
     const [mergedData, setMergedData] = useState<ShelterFav[]>([]);
     const [petTypes, setPetTypes] = useState<PetType[]>([]);
@@ -150,7 +157,8 @@ export const ShelterList = ({favAttempt} : any) => {
         fetchShelter();
         fetchShelterFav();
         fetchPetType();
-    }, [debounceValue, refreshing, favAttempt]);
+        setApplyPressed(false)
+    }, [debounceValue, refreshing, favAttempt, applyPressed]);
 
     const [selectedShelters, setSelectedShelters] = useState<string[]>([]);
 
@@ -244,6 +252,11 @@ export const ShelterList = ({favAttempt} : any) => {
         );
     };
 
+    const handleApplyPress = () => {
+        setApplyPressed(true);
+        bottomSheetModalRef.current?.dismiss();
+    };
+
     return (
         <>
             <View className=''>
@@ -262,7 +275,7 @@ export const ShelterList = ({favAttempt} : any) => {
                     <BottomSheetModal
                         ref={bottomSheetModalRef}
                         index={0}
-                        snapPoints={['30%']}
+                        snapPoints={['45%']}
                         backdropComponent={(props) => (
                             <BottomSheetBackdrop
                                 {...props}
@@ -278,7 +291,12 @@ export const ShelterList = ({favAttempt} : any) => {
                             <View style={{ flex: 1 }}>
                                 <View className='mx-5'>
                                     <Text className='text-xl font-bold'>Filter</Text>
-                                    <Text className='text-xl font-bold mt-6 mb-2'>Location</Text>
+                                    <View className='flex flex-row items-center justify-between'>
+                                        <Text className='text-xl font-bold mt-6 mb-2'>Location</Text>
+                                        <TouchableOpacity className='mt-6 mb-2 px-10 py-3 rounded-2xl' onPress={() => setFilterLocation("")}>
+                                            <Text className='text-[#4689FD] text-lg font-bold'>Reset</Text>
+                                        </TouchableOpacity>
+                                    </View>
                                     <Dropdown
                                         style={{borderWidth: 1, paddingHorizontal: 8, paddingVertical: 5, borderRadius: 10}}
                                         containerStyle={{borderWidth: 10}}
@@ -306,6 +324,7 @@ export const ShelterList = ({favAttempt} : any) => {
                                     title="Apply"
                                     accessibilityLabel='Apply this'
                                     containerStyle={{ width: '35%' }}
+                                    onPress={handleApplyPress}
                                 />
                             </View>
                         </BottomSheetView>
@@ -321,7 +340,7 @@ export const ShelterList = ({favAttempt} : any) => {
                     </View>
                 ) : (
                     <>
-                        {shelterData && shelterData.length > 0 ? (
+                        {shelterData !== null && shelterData.length > 0 ? (
                             <FlashList
                                 refreshControl={
                                     <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
