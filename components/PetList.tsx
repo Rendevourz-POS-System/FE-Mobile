@@ -153,8 +153,9 @@ export const PetList = () => {
                                     <View className='flex flex-row flex-wrap'>
                                         <FlashList
                                             key={selectedItems.join('-')} // Key based on selectedItems
-                                            estimatedItemSize={5}
+                                            estimatedItemSize={600}
                                             data={dataJenisHewan}
+                                            showsHorizontalScrollIndicator={false}
                                             horizontal={true}
                                             renderItem={({ item }) => (
                                                 <TouchableOpacity
@@ -179,8 +180,8 @@ export const PetList = () => {
                                                                 style={{ width: 80, height: 80, borderRadius: 30 }}
                                                             />
                                                             {selectedItems.includes(item.value) && (
-                                                                <View className="absolute right-0 bottom-0 bg-white rounded-3xl">
-                                                                    <FontAwesome6 name='circle-check' solid size={25} color='#5BBCFF'/>
+                                                                <View className="absolute right-0 -bottom-1 bg-white rounded-3xl overflow-hidden">
+                                                                    <FontAwesome6 name='circle-check' solid size={27} color='#5BBCFF'/>
                                                                 </View>
                                                             )}
                                                         </View>
