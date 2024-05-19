@@ -5,12 +5,14 @@ export interface ShelterData {
     UserId: string;
     ShelterName: string;
     ShelterLocation: string;
+    ShelterLocationName : string;
     ShelterCapacity: number;
     ShelterContactNumber: string;
     ShelterDescription: string;
     PetTypeAccepted : PetType[];
     TotalPet: number;
     BankAccountNumber: string;
+    ImageBase64 : [],
     Pin: string;
     ShelterVerified: boolean;
     CreatedAt: string;

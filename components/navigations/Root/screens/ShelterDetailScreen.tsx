@@ -6,6 +6,8 @@ import { FontAwesome, FontAwesome5, FontAwesome6, Ionicons, MaterialCommunityIco
 import { RootNavigationStackScreenProps } from '../../StackScreenProps';
 import { BackendApiUri } from '../../../../functions/BackendApiUri';
 import { get, post } from '../../../../functions/Fetch';
+import { PetType } from '../../../../interface/IPetType';
+import { getIconName } from '../../../../functions/GetPetIconName';
 interface ShelterData {
     Id: string,
     UserId: string,
@@ -16,6 +18,7 @@ interface ShelterData {
     ShelterDescription: string,
     TotalPet: number,
     BankAccountNumber: string,
+    PetTypeAccepted : [],
     Pin: string,
     ShelterVertified: boolean,
     CreatedAt: Date
@@ -39,6 +42,7 @@ export const ShelterDetailScreen: FC<RootNavigationStackScreenProps<'ShelterDeta
             ShelterDescription: "",
             TotalPet: 0,
             BankAccountNumber: "",
+            PetTypeAccepted: [],
             Pin: "",
             ShelterVertified: false,
             CreatedAt: new Date(),
@@ -62,6 +66,7 @@ export const ShelterDetailScreen: FC<RootNavigationStackScreenProps<'ShelterDeta
                         ShelterDescription: response.data.Data.ShelterDescription,
                         TotalPet: response.data.Data.TotalPet,
                         BankAccountNumber: response.data.Data.BankAccountNumber,
+                        PetTypeAccepted : response.data.Data.PetTypeAccepted,
                         Pin: response.data.Data.Pin,
                         ShelterVertified: response.data.Data.ShelterVertified,
                         CreatedAt: response.data.Data.CreatedAt
@@ -88,12 +93,23 @@ export const ShelterDetailScreen: FC<RootNavigationStackScreenProps<'ShelterDeta
         }
     }
 
+    const [petTypes, setPetTypes] = useState<PetType[]>([]);
+    const fetchPetType = async () => {
+        try {
+            const res = await get(BackendApiUri.getPetTypes);
+            setPetTypes(res.data)
+        } catch(e) {
+            console.error(e)
+        }
+    }
+
     useEffect(() => {
         detailData();
     }, [route.params.shelterId]);
 
     useEffect(() => {
         shelterFavData();
+        fetchPetType();
     }, [data.Data.Id]);
 
     const handlePressFavorite = async (shelterId : string) => {
@@ -155,16 +171,26 @@ export const ShelterDetailScreen: FC<RootNavigationStackScreenProps<'ShelterDeta
                         <View className="flex-1 border-2 border-gray-300 px-4 py-[6] mx-1 text-center rounded-xl items-center">
                             <Text className="text-gray-500 text-center">Menerima Hewan</Text>
                             <View className="flex flex-row justify-center items-center mt-1">
-                                <FontAwesome6 name="cat" size={21} color="black" style={{ marginRight: 5 }} />
+                                {/* <FontAwesome6 name="cat" size={21} color="black" style={{ marginRight: 5 }} />
                                 <FontAwesome6 name="dog" size={21} color="black" style={{ marginRight: 5 }} />
-                                <MaterialCommunityIcons name="rabbit" size={26} color="black" />
+                                <MaterialCommunityIcons name="rabbit" size={26} color="black" /> */}
+                                {data.Data.PetTypeAccepted.map((item) => {
+                                    const matchingPet = petTypes.find((pet) => pet.Id === item);
+                                    if (matchingPet) {
+                                        const iconName = getIconName(matchingPet.Type);
+                                        if (iconName === 'rabbit') {
+                                            return <MaterialCommunityIcons key={matchingPet.Id} name={iconName} size={29} color='#8A8A8A' style={{ marginEnd: 5 }} />;
+                                        }
+                                        return <FontAwesome6 key={matchingPet.Id} name={iconName} size={24} color='#8A8A8A' style={{ marginEnd: 5 }} />;
+                                    }
+                                    return null;
+                                })}
                             </View>
                         </View>
                     </View>
 
                     <Text className='mt-8 text-xl font-bold'>Tentang Kami</Text>
                     <Text className='mt-2 text-base ml-1 text-[#8A8A8A]'>{data.Data.ShelterDescription}</Text>
-                    <Text className='mt-2 text-base ml-1 text-[#8A8A8A]'>Lorem ipsum dolor sit amet consectetur adipisicing elit. Accusamus molestiae repudiandae nemo voluptate ipsam nobis. Numquam quae porro fugiat odit magni aliquam repudiandae quaerat quos nam, delectus sint consequatur adipisci facilis tenetur tempore repellendus quod voluptas assumenda? Accusamus quasi nostrum quidem, aut repudiandae mollitia, maiores culpa, fugiat possimus nihil earum itaque asperiores neque. Quos hic quasi enim? Molestias non possimus est nulla, dolore quas libero molestiae recusandae eius labore similique officia, autem fugit asperiores dignissimos quos porro veniam tempora magni. Cumque, assumenda labore. Quia, maxime. Iure commodi pariatur sunt magni iusto dolore quisquam obcaecati nihil officiis alias deserunt, vitae quos accusamus natus consectetur deleniti sint. Voluptatum, magni alias esse vero atque praesentium? Possimus iure facere tenetur distinctio accusantium, illum aut unde blanditiis ducimus fugit soluta nostrum provident quam quidem, voluptatum porro repudiandae dolores nam, incidunt quibusdam eum culpa iusto consequuntur enim. Dolore officiis architecto ducimus? Libero blanditiis sint adipisci tempora culpa quam, amet iusto quis nam quisquam dolore laudantium dicta esse. Fugiat deserunt id quas itaque facere! Nulla voluptatum nihil iste dolorum? Magni maiores aut tempore illo consequuntur consequatur reprehenderit excepturi voluptates dolorem? Ullam architecto odio voluptatem consequatur, inventore repudiandae modi recusandae at corrupti debitis repellendus esse, voluptatum cum ipsum.</Text>
                 </View>
                 <View className='my-3'>
                     <View className='flex-row justify-around'>
