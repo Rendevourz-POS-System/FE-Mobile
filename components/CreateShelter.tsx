@@ -9,7 +9,7 @@ import { BackendApiUri } from "../functions/BackendApiUri";
 import { get, postForm } from "../functions/Fetch";
 import { PetType, ShelterLocation } from "../interface/IPetType";
 import * as ImagePicker from 'expo-image-picker';
-import { ProfileRootBottomTabCompositeScreenProps } from "./navigations/CompositeNavigationProps";
+import { ProfileRootBottomTabCompositeScreenProps, RootBottomTabCompositeNavigationProp } from "./navigations/CompositeNavigationProps";
 import { useNavigation } from "@react-navigation/native";
 
 const createShelterFormSchema = z.object({
@@ -28,6 +28,7 @@ const createShelterFormSchema = z.object({
 type CreateShelterFormType = z.infer<typeof createShelterFormSchema>
 
 export const CreateShelter = () => {
+    const navigation = useNavigation<RootBottomTabCompositeNavigationProp<'Profile'>>();
     const [inputValue, setInputValue] = useState<number | undefined>(undefined);
     const [inputTotalPetValue, setInputTotalPetValue] = useState<number | undefined>(undefined);
     const [petTypes, setPetTypes] = useState<PetType[]>([]);
@@ -93,7 +94,12 @@ export const CreateShelter = () => {
         formData.append('data', payloadString);
         const res = await postForm(BackendApiUri.postShelterRegister, formData);
         if (res.status === 200) {
-            Alert.alert("Shelter Created", "Shelter Berhasil dibuat");
+            Alert.alert("Shelter Created", "Shelter Berhasil dibuat", [
+                {
+                    text: "OK",
+                    onPress: () => navigation.goBack()
+                }
+            ]);
         }else{
             Alert.alert("Shelter Gagal", "Shelter gagal dibuat, mohon diisi dengan yang benar");
         }
