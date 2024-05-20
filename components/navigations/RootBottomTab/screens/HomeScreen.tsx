@@ -23,13 +23,13 @@ interface ShelterData {
 }
 
 
-export const HomeScreen: FC<RootBottomTabCompositeNavigationProp<'Home'>> = ({navigation, route} : any) => {
-    const refFav = route.params?.refFav ? true : false;
+export const HomeScreen: FC<{}> = ({navigation, route} : any) => {
+    const favAttempt = route.params;
     return (
         <SafeAreaProvider className='flex-1'>
             <GestureHandlerRootView style={{ flex: 1 }}>
                 <TopNavigation />
-                <HomeUser refFav={refFav}/>
+                <HomeUser favAttempt={favAttempt}/>
             </GestureHandlerRootView>
         </SafeAreaProvider>
     );

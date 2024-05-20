@@ -8,11 +8,12 @@ import { get } from '../../../../functions/Fetch';
 import { ProfileRootBottomTabCompositeScreenProps } from '../../CompositeNavigationProps';
 import { ShelterData } from '../../../../interface/IShelterList';
 import { FlashList } from '@shopify/flash-list';
+import { PetType } from '../../../../interface/IPetType';
+import { getIconName } from '../../../../functions/GetPetIconName';
 
 export const FavoriteScreen: FC<ProfileRootBottomTabCompositeScreenProps<'FavoriteScreen'>> = ({ navigation }: any) => {
     const [shelterData, setShelterData] = useState<ShelterData[]>([]);
     const [isLoading, setIsLoading] = useState<boolean>(true);
-
     const fetchData = async () => {
         try {
             const response = await get(`${BackendApiUri.getShelterFav}`);
@@ -25,9 +26,19 @@ export const FavoriteScreen: FC<ProfileRootBottomTabCompositeScreenProps<'Favori
             setIsLoading(false);
         }
     };
+    const [petTypes, setPetTypes] = useState<PetType[]>([]);
+    const fetchPetType = async () => {
+        try {
+            const res = await get(BackendApiUri.getPetTypes);
+            setPetTypes(res.data)
+        } catch(e) {
+            console.error(e)
+        }
+    }
 
     useEffect(() => {
         fetchData();
+        fetchPetType();
     }, []);
 
     return (
@@ -57,7 +68,7 @@ export const FavoriteScreen: FC<ProfileRootBottomTabCompositeScreenProps<'Favori
                                             <View style={{ marginTop: 10, backgroundColor: "#FFFDFF", paddingHorizontal: 20, paddingVertical: 15, borderTopLeftRadius: 15, borderTopRightRadius: 15 }}>
                                                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
                                                     <Text style={{ fontSize: 20, fontWeight: 'bold' }}>{shelter.ShelterName}</Text>
-                                                    <FontAwesome name='heart' size={24} color="#4689FD" />
+                                                    <FontAwesome name='heart' size={24} color="#FF0000" />
                                                 </View>
                                                 <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10 }}>
                                                     <FontAwesome6 name='location-dot' size={20} color='#4689FD' />
@@ -65,9 +76,17 @@ export const FavoriteScreen: FC<ProfileRootBottomTabCompositeScreenProps<'Favori
                                                 </View>
                                                 <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10 }}>
                                                     <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', flex: 1 }}>
-                                                        <FontAwesome6 name='cat' size={24} color='#8A8A8A' style={{ marginEnd: 5 }} />
-                                                        <FontAwesome6 name='dog' size={24} color='#8A8A8A' style={{ marginEnd: 5 }} />
-                                                        <MaterialCommunityIcons name='rabbit' size={29} color='#8A8A8A' style={{ marginEnd: 5 }} />
+                                                        {shelter.PetTypeAccepted.map((itemId) => {
+                                                            const matchingPet = petTypes.find((pet) => pet.Id === itemId.toString());
+                                                            if (matchingPet) {
+                                                                const iconName = getIconName(matchingPet.Type);
+                                                                if (iconName === 'rabbit') {
+                                                                    return <MaterialCommunityIcons key={matchingPet.Id} name={iconName} size={29} color='#8A8A8A' style={{ marginEnd: 5 }} />;
+                                                                }
+                                                                return <FontAwesome6 key={matchingPet.Id} name={iconName} size={24} color='#8A8A8A' style={{ marginEnd: 5 }} />;
+                                                            }
+                                                            return null;
+                                                        })}
                                                     </View>
                                                 </View>
                                             </View>

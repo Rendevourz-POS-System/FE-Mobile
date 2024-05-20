@@ -10,6 +10,7 @@ export interface ShelterFav {
     TotalPet: number;
     BankAccountNumber: string;
     Pin: string;
+    ImageBase64 : [],
     ShelterVerified: boolean;
     CreatedAt: string;
     Type: "Shelter";

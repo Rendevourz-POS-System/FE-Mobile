@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Image, TouchableOpacity, View, StyleSheet, ActivityIndicator, ScrollView, RefreshControl } from 'react-native';
-import { Text } from 'react-native-elements';
+import { Button, Text } from 'react-native-elements';
 import { FontAwesome,FontAwesome6, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { useDebounce } from 'use-debounce';
@@ -18,35 +18,30 @@ import { Searchbar } from 'react-native-paper';
 import { ShelterFav } from '../interface/IShelterFav';
 import { PetType } from '../interface/IPetType';
 import { getIconName } from '../functions/GetPetIconName';
-import { SelectList } from 'react-native-dropdown-select-list';
 import { dataProvinsi } from '../constans/data';
 import { Dropdown } from 'react-native-element-dropdown';
+import { Location } from '../interface/ILocation';
 
-interface Item {
-    label: string;
-    value: string;
-  }
-
-export const ShelterList = ({refFav} : any) => {
+export const ShelterList = ({favAttempt} : any) => {
     const navigation = useNavigation<RootBottomTabCompositeNavigationProp<'Home'>>();
     const [shelterData, setShelterData] = useState<ShelterData[]>([]);
     const [shelterFav, setShelterFav] = useState<ShelterData[]>([]);
-    const [filterLocation, setFilterLocation] = useState<string>();
+    const [filterLocation, setFilterLocation] = useState<string>("");
+    const [applyPressed, setApplyPressed] = useState<boolean>(false);
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [search, setSearch] = useState<string>('');
     const [debounceValue] = useDebounce(search, 1000);
     const bottomSheetModalRef = useRef<BottomSheetModal>(null);
-    const snapPoints = useMemo(() => ['50%', '75%'], []);
     const [page, setPage] = useState<number>(1);
     const pageSize = 10;
     const orderBy = "ascending";
     const sort = "";
     const [refreshing, setRefreshing] = useState(false);
 
-    const onRefresh = () => {
+    const onRefresh = async () => {
         try{
             setRefreshing(true);
-            fetchData();
+            await fetchData();
         } catch(e){
             console.log(e);
         }
@@ -75,16 +70,19 @@ export const ShelterList = ({refFav} : any) => {
 
     const fetchShelter = async () => {
         try{
-            const response = await get(`${BackendApiUri.getShelterList}/?search=${search}&page=${page}&page_size=${pageSize}&order_by=${orderBy}&sort=${sort}`);
+            const response = await get(`${BackendApiUri.getShelterList}/?search=${search}&page=${page}&page_size=${pageSize}&location_name=${filterLocation}`);
             if(response && response.status === 200) {
                 setShelterData(response.data);
+            } else {
+                setShelterData([]);
             }
         } catch(e) {
-            throw Error;
+            console.error(e)
         } finally {
             setIsLoading(false);
         }
     };
+
 
     const fetchShelterFav = async () => {
         try{
@@ -94,12 +92,15 @@ export const ShelterList = ({refFav} : any) => {
                 setShelterFav(response.data);
             }
         } catch(e) {
-            console.log(e)
+            console.error(e)
         }
     }
 
     function mergeShelters() {
-        if (!shelterFav || shelterFav.length === 0) {
+        if (!shelterData || shelterData.length === 0) {
+            // If shelterData is null or empty, return an empty array
+            return [];
+        } else if (!shelterFav || shelterFav.length === 0) {
             // If shelterFav is null or empty, return shelterData without marking any as favorites
             return shelterData.map(data => ({ ...data, isFav: false }));
         } else {
@@ -110,6 +111,7 @@ export const ShelterList = ({refFav} : any) => {
             });
         }
     };
+    
 
     const [mergedData, setMergedData] = useState<ShelterFav[]>([]);
     const [petTypes, setPetTypes] = useState<PetType[]>([]);
@@ -118,7 +120,7 @@ export const ShelterList = ({refFav} : any) => {
             const res = await get(BackendApiUri.getPetTypes);
             setPetTypes(res.data)
         } catch(e) {
-            
+            console.error(e)
         }
     }
 
@@ -155,7 +157,8 @@ export const ShelterList = ({refFav} : any) => {
         fetchShelter();
         fetchShelterFav();
         fetchPetType();
-    }, [debounceValue, refreshing, refFav]);
+        setApplyPressed(false)
+    }, [debounceValue, refreshing, favAttempt, applyPressed]);
 
     const [selectedShelters, setSelectedShelters] = useState<string[]>([]);
 
@@ -241,12 +244,17 @@ export const ShelterList = ({refFav} : any) => {
         },
     });
     
-    const renderItem = (item : Item) => {
+    const renderItem = (item : Location) => {
         return (
             <View className="p-4 flex-row justify-between items-center">
                 <Text className="flex-1 text-base">{item.value}</Text>
             </View>
         );
+    };
+
+    const handleApplyPress = () => {
+        setApplyPressed(true);
+        bottomSheetModalRef.current?.dismiss();
     };
 
     return (
@@ -266,43 +274,65 @@ export const ShelterList = ({refFav} : any) => {
                     />
                     <BottomSheetModal
                         ref={bottomSheetModalRef}
-                        index={1}
-                        snapPoints={snapPoints}
-                        backdropComponent={BottomSheetBackdrop}
+                        index={0}
+                        snapPoints={['45%']}
+                        backdropComponent={(props) => (
+                            <BottomSheetBackdrop
+                                {...props}
+                                disappearsOnIndex={-1}
+                                appearsOnIndex={0}
+                                pressBehavior="close"
+                            />
+                        )}
                         style={styles.bottomSheetModal}
+                        
                         >
-                        <BottomSheetView>
-                            <View className='mx-5'>
-                                <Text className='text-xl font-bold'>Filter</Text>
-
-                                <Text className='text-xl font-bold mt-8 mb-2'>Location</Text>
-                                <Dropdown
-                                    style={{borderWidth: 1, paddingHorizontal: 8, paddingVertical: 5, borderRadius: 10}}
-                                    containerStyle={{borderWidth: 10}}
-                                    placeholderStyle={styles.placeholderStyle}
-                                    selectedTextStyle={styles.selectedTextStyle}
-                                    inputSearchStyle={styles.inputSearchStyle}
-                                    iconStyle={styles.iconStyle}
-                                    data={dataProvinsi.data.map(item => ({ label: item.key, value: item.value }))}
-                                    search
-                                    maxHeight={300}
-                                    labelField="value"
-                                    valueField="value"
-                                    placeholder="Select item"
-                                    searchPlaceholder="Search..."
-                                    value={filterLocation}
-                                    onChange={item => {
-                                        setFilterLocation(item.value);
-                                    }}
-                                    renderItem={renderItem}
+                        <BottomSheetView style={{ flex: 1 }}>
+                            <View style={{ flex: 1 }}>
+                                <View className='mx-5'>
+                                    <Text className='text-xl font-bold'>Filter</Text>
+                                    <View className='flex flex-row items-center justify-between'>
+                                        <Text className='text-xl font-bold mt-6 mb-2'>Location</Text>
+                                        <TouchableOpacity className='mt-6 mb-2 px-10 py-3 rounded-2xl' onPress={() => setFilterLocation("")}>
+                                            <Text className='text-[#4689FD] text-lg font-bold'>Reset</Text>
+                                        </TouchableOpacity>
+                                    </View>
+                                    <Dropdown
+                                        style={{borderWidth: 1, paddingHorizontal: 8, paddingVertical: 5, borderRadius: 10}}
+                                        containerStyle={{borderWidth: 10}}
+                                        placeholderStyle={styles.placeholderStyle}
+                                        selectedTextStyle={styles.selectedTextStyle}
+                                        inputSearchStyle={styles.inputSearchStyle}
+                                        iconStyle={styles.iconStyle}
+                                        data={dataProvinsi.data.map(item => ({ label: item.key, value: item.value }))}
+                                        search
+                                        maxHeight={300}
+                                        labelField="value"
+                                        valueField="value"
+                                        placeholder="Select item"
+                                        searchPlaceholder="Search..."
+                                        value={filterLocation}
+                                        onChange={item => {
+                                            setFilterLocation(item.value);
+                                        }}
+                                        renderItem={renderItem}
+                                    />
+                                </View>
+                            </View>
+                            <View className='items-center my-5'>
+                                <Button
+                                    title="Apply"
+                                    accessibilityLabel='Apply this'
+                                    containerStyle={{ width: '35%' }}
+                                    onPress={handleApplyPress}
                                 />
-
                             </View>
                         </BottomSheetView>
+
+
                     </BottomSheetModal>
                 </View>
             </View>
-
             <>
                 {isLoading ? (
                     <View className='flex-1 justify-center items-center'>
@@ -310,7 +340,7 @@ export const ShelterList = ({refFav} : any) => {
                     </View>
                 ) : (
                     <>
-                        {shelterData && shelterData.length > 0 ? (
+                        {shelterData !== null && shelterData.length > 0 ? (
                             <FlashList
                                 refreshControl={
                                     <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
@@ -322,7 +352,9 @@ export const ShelterList = ({refFav} : any) => {
                                         style={{ overflow: 'hidden' }} 
                                         onPress={() => navigation.navigate("ShelterDetailScreen", { shelterId: shelter.Id })}
                                         activeOpacity={1}>
-                                            <Image source={require('../assets/image.png')} style={{ width: '100%', height: 290, marginBottom: 15, marginTop: 5, borderTopLeftRadius: 20, borderTopRightRadius: 20 }} />
+                                            <Image source={{ uri: `data:image/*;base64,${shelter.ImageBase64}` }} 
+                                            resizeMode='contain'
+                                            style={{ width: '100%', height: 290, marginBottom: 15, marginTop: 5, borderTopLeftRadius: 20, borderTopRightRadius: 20 }} />
                                             <View style={{ position: 'absolute', top: 170, left: 0, right: 0, bottom: 0}}>
                                                 <View style={{ marginTop: 10, backgroundColor: "#FFFDFF", paddingHorizontal: 20, paddingVertical: 15, borderTopLeftRadius: 15, borderTopRightRadius: 15}}>
                                                     <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
