@@ -18,13 +18,18 @@ export const put = async (url: string, body: any) => {
 
 export const putForm = async (url: string, body: FormData) => {
     const response = await axios.put(baseUrl + url, body, {
-        // param:{
-        //     data: body,
-        //     files: image ? image : ""
-        // },
         headers: {
             'Content-Type': 'multipart/form-data',
         }
     });
     return response.data;
+}
+
+export const postForm = async (url: string, body: FormData) => {
+    const response = await axios.post(baseUrl + url, body, {
+        headers: {
+            'Content-Type': 'multipart/form-data',
+        }
+    });
+    return response;
 }

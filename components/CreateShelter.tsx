@@ -1,31 +1,39 @@
 import { FontAwesome, Ionicons } from "@expo/vector-icons";
 import React, { FC, useEffect, useState } from "react";
-import { ScrollView, Text, View, StyleSheet, TouchableOpacity, TextInput, Alert } from "react-native";
+import { ScrollView, Text, View, StyleSheet, TouchableOpacity, TextInput, Alert, Image } from "react-native";
 import { z } from "zod";
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Controller, useForm } from 'react-hook-form';
 import { MultipleSelectList, SelectList } from "react-native-dropdown-select-list";
 import { BackendApiUri } from "../functions/BackendApiUri";
-import { get, post } from "../functions/Fetch";
+import { get, postForm } from "../functions/Fetch";
 import { PetType, ShelterLocation } from "../interface/IPetType";
+import * as ImagePicker from 'expo-image-picker';
+import { ProfileRootBottomTabCompositeScreenProps } from "./navigations/CompositeNavigationProps";
+import { useNavigation } from "@react-navigation/native";
 
 const createShelterFormSchema = z.object({
     ShelterName: z.string({ required_error: "Nama shelter tidak boleh kosong" }).min(1, { message: "Nama shelter tidak boleh kosong" }),
     ShelterLocation: z.string({ required_error: "Lokasi shelter tidak boleh kosong" }).min(10, { message: 'Lokasi shelter tidak boleh kosong' }),
     ShelterAddress: z.string({ required_error: "Alamat shelter tidak boleh kosong" }).min(1, { message: "Alamat shelter tidak boleh kosong" }),
-    ShelterCapacity: z.number().int().positive().nonnegative("Kapasitas shelter harus merupakan bilangan bulat positif"),
+    ShelterCapacity: z.number({ required_error: "Kapasitas shelter tidak boleh kosong" }).int().positive().nonnegative("Kapasitas shelter harus merupakan bilangan bulat positif"),
     ShelterContactNumber: z.string({ required_error: "Kontak shelter tidak boleh kosong" }),
     ShelterDescription: z.string({ required_error: 'Deskripsi shelter tidak boleh kosong' }),
     PetTypeAccepted: z.string().array().nonempty(),
-    Pin: z.string({ required_error: "Pin tidak boleh kosong" }).min(5, { message: "Pin tidak boleh kurang dari 5 karakter" }).refine(value => /^\d+$/.test(value), { message: "Pin harus berupa angka (0-9)" }),
+    TotalPet: z.number({ required_error: "Total hewan tidak boleh kosong" }).int().positive().nonnegative("Total hewan harus merupakan bilangan bulat positif"),
+    BankAccountNumber: z.string({ required_error: 'Nomor rekening bank tidak boleh kosong' }).min(10, { message: 'Nomor rekening harus lebih dari 10 digit' }).refine(value => /^\d+$/.test(value), { message: "Nomor rekening harus berupa angka (0-9)" }),
+    Pin: z.string({ required_error: "Pin tidak boleh kosong" }).min(6, { message: "Pin tidak boleh kurang dari 6 karakter" }).refine(value => /^\d+$/.test(value), { message: "Pin harus berupa angka (0-9)" }),
 })
 
 type CreateShelterFormType = z.infer<typeof createShelterFormSchema>
 
 export const CreateShelter = () => {
     const [inputValue, setInputValue] = useState<number | undefined>(undefined);
+    const [inputTotalPetValue, setInputTotalPetValue] = useState<number | undefined>(undefined);
     const [petTypes, setPetTypes] = useState<PetType[]>([]);
     const [shelterLocation, setShelterLocation] = useState<ShelterLocation[]>([]);
+    const [selected, setSelected] = useState<string[]>([]);
+    const [image, setImage] = useState('');
     const { control, handleSubmit, setValue, formState: { errors } } = useForm<CreateShelterFormType>({
         resolver: zodResolver(createShelterFormSchema),
         defaultValues: {
@@ -53,16 +61,6 @@ export const CreateShelter = () => {
         value: item.LocationName,
     }));
 
-    const onSubmit = async (data: CreateShelterFormType) => {
-        console.log(data);
-        const res = await post(BackendApiUri.postShelterRegister, data);
-        if (res.status == 200) {
-            Alert.alert("Shelter Created", "Shelter Berhasil dibuat");
-        }
-    }
-
-    const [selected, setSelected] = useState<string[]>([]);
-
     useEffect(() => {
         fetchPetType();
         fetchShelterLocation();
@@ -74,6 +72,32 @@ export const CreateShelter = () => {
             setValue('PetTypeAccepted', selectedValue);
         }
     }, [selected, setValue]);
+
+    const pickImage = async () => {
+        let result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.All,
+            allowsEditing: true,
+            aspect: [1, 1],
+            quality: 1,
+        })
+
+        if (!result.canceled) {
+            setImage(result.assets[0].uri)
+        }
+    };
+
+    const onSubmit = async (data: CreateShelterFormType) => {
+        let payloadString = JSON.stringify(data);
+        const formData = new FormData();
+        formData.append("files", image);
+        formData.append('data', payloadString);
+        const res = await postForm(BackendApiUri.postShelterRegister, formData);
+        if (res.status === 200) {
+            Alert.alert("Shelter Created", "Shelter Berhasil dibuat");
+        }else{
+            Alert.alert("Shelter Gagal", "Shelter gagal dibuat, mohon diisi dengan yang benar");
+        }
+    }
 
     return (
         <ScrollView className="mt-5">
@@ -169,6 +193,46 @@ export const CreateShelter = () => {
             </View>
             <Text style={styles.errorMessage}>{errors.ShelterContactNumber?.message}</Text>
 
+            <Text style={styles.textColor}>Total Hewan Shelter<Text className='text-[#ff0000]'>*</Text></Text>
+            <View style={styles.inputBox}>
+                <Controller
+                    name="TotalPet"
+                    control={control}
+                    render={() => (
+                        <TextInput
+                            style={{ flex: 1 }}
+                            placeholder="Masukkan Total Hewan Shelter"
+                            keyboardType="numeric"
+                            value={inputTotalPetValue?.toString() ?? ''}
+                            onChangeText={(text) => {
+                                const numericValue = parseFloat(text);
+                                if (!isNaN(numericValue)) {
+                                    setInputTotalPetValue(numericValue);
+                                    setValue("TotalPet", numericValue)
+                                }
+                            }}
+                        />
+                    )}
+                />
+            </View>
+            <Text style={styles.errorMessage}>{errors.TotalPet?.message}</Text>
+
+            <Text style={styles.textColor}>Nomor Rekening Shelter<Text className='text-[#ff0000]'>*</Text></Text>
+            <View style={styles.inputBox}>
+                <Controller
+                    name="BankAccountNumber"
+                    control={control}
+                    render={() => (
+                        <TextInput
+                            placeholder="Masukkan Nomor Rekening"
+                            style={{ flex: 1 }}
+                            onChangeText={(text: string) => setValue('BankAccountNumber', text)}
+                        />
+                    )}
+                />
+            </View>
+            <Text style={styles.errorMessage}>{errors.BankAccountNumber?.message}</Text>
+
             <Text style={styles.textColor}>Deskripsi Shelter<Text className='text-[#ff0000]'>*</Text></Text>
             <View style={styles.inputBox}>
                 <Controller
@@ -219,6 +283,13 @@ export const CreateShelter = () => {
                 />
             </View>
             <Text style={styles.errorMessage}>{errors.Pin?.message}</Text>
+
+            <Text style={styles.textColor}>Gambar<Text className='text-[#ff0000]'>*</Text></Text>
+            <TouchableOpacity onPress={pickImage} style={styles.imageBox}>
+                <Text className='text-center text-gray-500'>Pilih Gambar</Text>
+            </TouchableOpacity>
+            {image ? (<Image source={{ uri: image }} style={{ width: 100, height: 100, marginHorizontal: 35, marginTop: 10, borderRadius: 10 }} />) : (<Ionicons name="camera" size={40} color="white" />)}
+
 
             <TouchableOpacity style={[styles.button]} onPress={handleSubmit(onSubmit)}>
                 <Text className="text-center font-bold text-white">Save</Text>
@@ -272,5 +343,13 @@ const styles = StyleSheet.create({
         borderWidth: 2,
         borderRadius: 25,
         flexDirection: 'row'
+    },
+    imageBox: {
+        borderColor: "#CECECE",
+        borderWidth: 2,
+        borderRadius: 15,
+        padding: 10,
+        marginHorizontal: 30,
+        width: 150
     },
 });
