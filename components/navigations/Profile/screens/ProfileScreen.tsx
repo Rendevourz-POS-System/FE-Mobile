@@ -1,6 +1,5 @@
 import { FontAwesome, Ionicons, MaterialCommunityIcons, MaterialIcons, Octicons } from "@expo/vector-icons";
 import React, { FC, useEffect, useState } from "react";
-import React, { FC, useEffect, useState } from "react";
 import { ScrollView, Text, View, StyleSheet, TouchableOpacity } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { ProfileRootBottomTabCompositeScreenProps } from "../../CompositeNavigationProps";
@@ -8,6 +7,7 @@ import { useAuth } from "../../../../app/context/AuthContext";
 import { Avatar } from "react-native-elements";
 import { BackendApiUri } from "../../../../functions/BackendApiUri";
 import axios from "axios";
+import { get } from "../../../../functions/Fetch";
 
 interface IProfile {
     ImageBase64 : string
@@ -16,14 +16,10 @@ interface IProfile {
 export const ProfileScreen: FC<ProfileRootBottomTabCompositeScreenProps<'ProfileScreen'>> = ({ navigation }) => {
     const { authState, onLogout } = useAuth();
     const [data, setData] = useState<IProfile>();
+    const [flag, setFlag] = useState<number>(0);
 
     const fetchProfile = async () => {
-        const res = await axios.get(`${BackendApiUri.getUserDetail}`, {
-            headers : {
-                Authorization : `Bearer ${authState?.token}`
-            }
-        })
-        console.log(res.data)
+        const res = await get(BackendApiUri.getUserShelter);
         if(res && res.status === 200) {
             setData({
                 ImageBase64 : res.data.ImageBase64,
@@ -32,8 +28,9 @@ export const ProfileScreen: FC<ProfileRootBottomTabCompositeScreenProps<'Profile
     }
 
     useEffect(() => {
-        fetchProfile()
-    }, []);
+        fetchProfile();
+        if(data) setFlag(1);
+    }, [data]);
 
     return (
         <SafeAreaProvider style={styles.container}>
