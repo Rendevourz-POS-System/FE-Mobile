@@ -3,6 +3,7 @@ export const baseUrl = "http://192.168.18.3:8080"
 export const BackendApiUri = {
     registerUser : '/user/register',
     loginUser : baseUrl + '/user/login',
+    getUserDetail : baseUrl + '/user/data',
 
     getPetTypes : '/pet-types',
     getLocation: '/shelter-location',

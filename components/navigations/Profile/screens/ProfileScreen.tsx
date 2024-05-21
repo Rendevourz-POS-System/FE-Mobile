@@ -5,37 +5,43 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 import { ProfileRootBottomTabCompositeScreenProps } from "../../CompositeNavigationProps";
 import { useAuth } from "../../../../app/context/AuthContext";
 import { Avatar } from "react-native-elements";
-import { ShelterUser } from "../../../../interface/IShelter";
 import { BackendApiUri } from "../../../../functions/BackendApiUri";
 import { get } from "../../../../functions/Fetch";
 
+interface IProfile {
+    ImageBase64 : string
+}
+
 export const ProfileScreen: FC<ProfileRootBottomTabCompositeScreenProps<'ProfileScreen'>> = ({ navigation }) => {
     const { authState, onLogout } = useAuth();
-    const [data, setData] = useState<ShelterUser>();
-    const [flag, setFlag] = useState(0);
+    const [data, setData] = useState<IProfile>();
+    const [flag, setFlag] = useState<number>(0);
 
-    const fetchUserShelter = async () => {
+    const fetchProfile = async () => {
         const res = await get(BackendApiUri.getUserShelter);
-        setData(res.data);
+        console.log(res.data)
+        if(res && res.status === 200) {
+            setData({
+                ImageBase64 : res.data.ImageBase64,
+            })
+        }
     }
 
     useEffect(() => {
-        fetchUserShelter();
-        if (data) { setFlag(1) };
-    }, [data])
+        fetchProfile();
+        if(data) setFlag(1);
+    }, []);
 
     return (
         <SafeAreaProvider style={styles.container}>
             <ScrollView>
                 <View className="my-10 mt-20">
                     <View className='flex items-center justify-center'>
-                        <Avatar
-                            size={130}
-                            rounded
-                            source={{
-                                uri: 'https://randomuser.me/api/portraits/men/41.jpg',
-                            }}
-                        />
+                    <Avatar
+                        size={130}
+                        rounded
+                        source={data?.ImageBase64 ? { uri: `data:image/*;base64,${data.ImageBase64}` } : { uri: 'https://randomuser.me/api/portraits/men/41.jpg'}}
+                    />
                         <Text className='text-2xl font-bold mt-2'>{authState?.username}</Text>
                     </View>
                 </View>

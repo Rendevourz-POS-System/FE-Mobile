@@ -3,6 +3,7 @@ export interface ShelterFav {
     UserId: string;
     ShelterName: string;
     ShelterLocation: string;
+    ShelterLocationName : string;
     ShelterCapacity: number;
     ShelterContactNumber: string;
     ShelterDescription: string;
