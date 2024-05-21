@@ -50,24 +50,6 @@ export const ShelterList = ({favAttempt} : any) => {
     const handleFilterPress = useCallback(() => {
         bottomSheetModalRef.current?.present();
     }, []);
-    const handleSheetChanges = useCallback((index: number) => {
-        console.log('handleSheetChanges', index);
-    }, []);
-
-    const filterPet = [
-        {id: 'cat', name: 'Cat'},
-        {id: 'dog', name: 'Dog'},
-        {id: 'rabbit', name: 'Rabbit'},
-        {id: 'hamster', name: 'Hamster'}
-    ]
-
-    const filterShelter = [
-        {id: 'jakartaBarat', name: 'Jakarta Barat'},
-        {id: 'jakartaTimur', name: 'Jakarta Timur'},
-        {id: 'jakartaSelatan', name: 'Jakarta Selatan'},
-        {id: 'jakartaUtara', name: 'Jakarta Utara'}
-    ]
-
     const fetchShelter = async () => {
         try{
             const response = await get(`${BackendApiUri.getShelterList}/?search=${search}&page=${page}&page_size=${pageSize}&location_name=${filterLocation}`);
@@ -380,7 +362,7 @@ export const ShelterList = ({favAttempt} : any) => {
                                                     </View>
                                                     <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10 }}>
                                                         <FontAwesome6 name='location-dot' size={20} color='#4689FD' />
-                                                        <Text style={{ fontSize: 14, fontWeight: 'normal', marginLeft: 5 }}>{shelter.ShelterLocation}</Text>
+                                                        <Text style={{ fontSize: 14, fontWeight: 'normal', marginLeft: 5 }}>{shelter.ShelterLocationName}</Text>
                                                     </View>
 
                                                     <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10 }}>

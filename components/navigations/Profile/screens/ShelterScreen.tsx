@@ -27,7 +27,7 @@ export const ShelterScreen: FC<ProfileRootBottomTabCompositeScreenProps<'Shelter
         if (data?.Data) {
             setFlag(1);
         }
-    }, [data])
+    }, [])
 
     const handleInputChange = (text: string) => {
         setInputValue(text);

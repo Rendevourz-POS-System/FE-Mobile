@@ -6,7 +6,6 @@ import { ProfileRootBottomTabCompositeScreenProps } from "../../CompositeNavigat
 import { useAuth } from "../../../../app/context/AuthContext";
 import { Avatar } from "react-native-elements";
 import { BackendApiUri } from "../../../../functions/BackendApiUri";
-import axios from "axios";
 import { get } from "../../../../functions/Fetch";
 
 interface IProfile {
@@ -20,6 +19,7 @@ export const ProfileScreen: FC<ProfileRootBottomTabCompositeScreenProps<'Profile
 
     const fetchProfile = async () => {
         const res = await get(BackendApiUri.getUserShelter);
+        console.log(res.data)
         if(res && res.status === 200) {
             setData({
                 ImageBase64 : res.data.ImageBase64,
@@ -30,7 +30,7 @@ export const ProfileScreen: FC<ProfileRootBottomTabCompositeScreenProps<'Profile
     useEffect(() => {
         fetchProfile();
         if(data) setFlag(1);
-    }, [data]);
+    }, []);
 
     return (
         <SafeAreaProvider style={styles.container}>
