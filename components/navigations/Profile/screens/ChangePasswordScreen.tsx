@@ -11,9 +11,9 @@ import { BackendApiUri } from "../../../../functions/BackendApiUri";
 import { put } from "../../../../functions/Fetch";
 
 const changePasswordFormSchema = z.object({
-    Password: z.string({ required_error: "Current password cannot be empty" }).min(8, { message: "Must be more than 5 character" }),
-    NewPassword: z.string({ required_error: "New password cannot be empty" }).min(8, { message: "Must be more than 5 character" }),
-    ConfirmPassword: z.string({ required_error: "Confirm password cannot be empty" }).min(8, { message: "Must be more than 5 character" })
+    Password: z.string({ required_error: "Current password tidak kosong" }).min(8, { message: "Harus lebih dari 8 karakter" }).regex(/[^A-Za-z0-9]/, { message: "Harus mengandung minimal 1 simbol" }),
+    NewPassword: z.string({ required_error: "New password tidak kosong" }).min(8, { message: "Harus lebih dari 8 karakter" }).regex(/[^A-Za-z0-9]/, { message: "Harus mengandung minimal 1 simbol" }),
+    ConfirmPassword: z.string({ required_error: "Confirm password tidak kosong" }).min(8, { message: "Harus lebih dari 8 karakter" }).regex(/[^A-Za-z0-9]/, { message: "Harus mengandung minimal 1 simbol" })
 }).refine((data) => data.NewPassword === data.ConfirmPassword, {
     message: "Confirm Password tidak sama dengan New Password",
     path: ['ConfirmPassword'],
@@ -36,7 +36,7 @@ export const ChangePasswordScreen: FC<ProfileRootBottomTabCompositeScreenProps<'
             await put(BackendApiUri.putUserUpdatePw, data);
             Alert.alert('Password Berhasil Berubah', 'Password anda telah berhasil berubah.');
         } catch (e) {
-            Alert.alert('Password Masih salah', 'Password anda masih tidak sesuai.');
+            Alert.alert('Password Masih Salah', 'Password anda masih tidak sesuai.');
         }
     }
 

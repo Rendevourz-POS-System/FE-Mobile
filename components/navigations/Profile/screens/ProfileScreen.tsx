@@ -1,5 +1,6 @@
 import { FontAwesome, Ionicons, MaterialCommunityIcons, MaterialIcons, Octicons } from "@expo/vector-icons";
 import React, { FC, useEffect, useState } from "react";
+import React, { FC, useEffect, useState } from "react";
 import { ScrollView, Text, View, StyleSheet, TouchableOpacity } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { ProfileRootBottomTabCompositeScreenProps } from "../../CompositeNavigationProps";
@@ -70,9 +71,9 @@ export const ProfileScreen: FC<ProfileRootBottomTabCompositeScreenProps<'Profile
                     </TouchableOpacity>
                     <TouchableOpacity style={styles.rowContainer} onPress={() => navigation.navigate("ShelterScreen")}>
                         <View style={styles.iconContainer}>
-                            <Octicons name="arrow-switch" size={25} color="white" />
+                            {flag == 1 ? <Octicons name="arrow-switch" size={25} color="white" /> : <MaterialIcons name="create" size={25} color="white" />}
                         </View>
-                        <Text style={styles.text}>Switch to Shelter</Text>
+                        <Text style={styles.text}>{flag == 1 ? "Switch to Shelter" : "Create Shelter"}</Text>
                         <View style={styles.nextIconContainer}>
                             <MaterialIcons name="navigate-next" size={25} color="black" />
                         </View>
