@@ -1,26 +1,49 @@
 import { FontAwesome, Ionicons, MaterialCommunityIcons, MaterialIcons, Octicons } from "@expo/vector-icons";
-import React, { FC, useState } from "react";
+import React, { FC, useEffect, useState } from "react";
 import { ScrollView, Text, View, StyleSheet, TouchableOpacity } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { ProfileRootBottomTabCompositeScreenProps } from "../../CompositeNavigationProps";
 import { useAuth } from "../../../../app/context/AuthContext";
 import { Avatar } from "react-native-elements";
+import { BackendApiUri } from "../../../../functions/BackendApiUri";
+import axios from "axios";
+
+interface IProfile {
+    ImageBase64 : string
+}
 
 export const ProfileScreen: FC<ProfileRootBottomTabCompositeScreenProps<'ProfileScreen'>> = ({ navigation }) => {
     const { authState, onLogout } = useAuth();
+    const [data, setData] = useState<IProfile>();
+
+    const fetchProfile = async () => {
+        const res = await axios.get(`${BackendApiUri.getUserDetail}`, {
+            headers : {
+                Authorization : `Bearer ${authState?.token}`
+            }
+        })
+        console.log(res.data)
+        if(res && res.status === 200) {
+            setData({
+                ImageBase64 : res.data.ImageBase64,
+            })
+        }
+    }
+
+    useEffect(() => {
+        fetchProfile()
+    }, []);
 
     return (
         <SafeAreaProvider style={styles.container}>
             <ScrollView>
                 <View className="my-10 mt-20">
                     <View className='flex items-center justify-center'>
-                        <Avatar
-                            size={130}
-                            rounded
-                            source={{
-                                uri: 'https://randomuser.me/api/portraits/men/41.jpg',
-                            }}
-                        />
+                    <Avatar
+                        size={130}
+                        rounded
+                        source={data?.ImageBase64 ? { uri: `data:image/*;base64,${data.ImageBase64}` } : { uri: 'https://randomuser.me/api/portraits/men/41.jpg'}}
+                    />
                         <Text className='text-2xl font-bold mt-2'>{authState?.username}</Text>
                     </View>
                 </View>
