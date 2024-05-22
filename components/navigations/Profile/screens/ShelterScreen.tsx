@@ -31,8 +31,6 @@ export const ShelterScreen: FC<ProfileRootBottomTabCompositeScreenProps<'Shelter
         } 
     };
 
-    console.log(data);
-
     useEffect(() => {
         fetchProfile();
     }, [])
