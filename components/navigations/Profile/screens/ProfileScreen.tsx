@@ -14,22 +14,27 @@ interface IProfile {
 
 export const ProfileScreen: FC<ProfileRootBottomTabCompositeScreenProps<'ProfileScreen'>> = ({ navigation }) => {
     const { authState, onLogout } = useAuth();
-    const [data, setData] = useState<IProfile>();
+    const [data, setData] = useState<IProfile | null>(null);
     const [flag, setFlag] = useState<number>(0);
 
     const fetchProfile = async () => {
-        const res = await get(BackendApiUri.getUserShelter);
-        console.log(res.data)
-        if(res && res.status === 200) {
-            setData({
-                ImageBase64 : res.data.ImageBase64,
-            })
-        }
-    }
+        try {
+            const res = await get(BackendApiUri.getUserShelter);
+            if (!res.data.Error) {
+            } 
+            if(res.data.Data.ImageBase64) {
+                setData({
+                    ImageBase64 : res.data.ImageBase64
+                });
+            }
+            if(res.data.Data) setFlag(1);
+        } catch (error) {
+            console.log(error)
+        } 
+    };
 
     useEffect(() => {
         fetchProfile();
-        if(data) setFlag(1);
     }, []);
 
     return (
@@ -40,7 +45,7 @@ export const ProfileScreen: FC<ProfileRootBottomTabCompositeScreenProps<'Profile
                     <Avatar
                         size={130}
                         rounded
-                        source={data?.ImageBase64 ? { uri: `data:image/*;base64,${data.ImageBase64}` } : { uri: 'https://randomuser.me/api/portraits/men/41.jpg'}}
+                        source={data?.ImageBase64 != undefined ? { uri: `data:image/*;base64,${data.ImageBase64}` } : { uri: 'https://randomuser.me/api/portraits/men/41.jpg'}}
                     />
                         <Text className='text-2xl font-bold mt-2'>{authState?.username}</Text>
                     </View>
