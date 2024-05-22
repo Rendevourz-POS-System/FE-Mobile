@@ -18,12 +18,13 @@ import { Searchbar } from 'react-native-paper';
 import { ShelterFav } from '../interface/IShelterFav';
 import { PetType } from '../interface/IPetType';
 import { getIconName } from '../functions/GetPetIconName';
-import { dataProvinsi } from '../constans/data';
 import { Dropdown } from 'react-native-element-dropdown';
 import { Location } from '../interface/ILocation';
+import { myProvince } from '../functions/getLocation';
 
 export const ShelterList = ({favAttempt} : any) => {
     const navigation = useNavigation<RootBottomTabCompositeNavigationProp<'Home'>>();
+    const [provinceData, setProvinceData] = useState<Location[]>([]);
     const [shelterData, setShelterData] = useState<ShelterData[]>([]);
     const [shelterFav, setShelterFav] = useState<ShelterData[]>([]);
     const [filterLocation, setFilterLocation] = useState<string>("");
@@ -47,6 +48,24 @@ export const ShelterList = ({favAttempt} : any) => {
         }
     };
 
+    const getMyProvince = async () => {
+        try {
+            const res = await myProvince();
+            if (res?.data && res.status === 200) {
+                // Transform data to match Location interface
+                const transformedData: Location[] = res.data.map((item: { Id: string; LocationName: string }) => ({
+                    label: item.LocationName,
+                    value: item.Id
+                }));                
+                // Set provinceData state with transformed data
+                setProvinceData(transformedData);
+            }
+        } catch (e) {
+            console.error(e);
+        }
+    };
+    
+
     const handleFilterPress = useCallback(() => {
         bottomSheetModalRef.current?.present();
     }, []);
@@ -64,7 +83,6 @@ export const ShelterList = ({favAttempt} : any) => {
             setIsLoading(false);
         }
     };
-
 
     const fetchShelterFav = async () => {
         try{
@@ -115,6 +133,10 @@ export const ShelterList = ({favAttempt} : any) => {
         fetchData();
         setRefreshing(false);
     }, [shelterFav, shelterData]);
+
+    useEffect(() => {
+        getMyProvince();
+    },[]);
 
     const onPressFav = async (shelterId: string) => {
         try {
@@ -174,7 +196,6 @@ export const ShelterList = ({favAttempt} : any) => {
         return selectedPets.includes(petId);
     };
 
-
     const styles = StyleSheet.create({
         bottomSheetModal: {
             borderTopLeftRadius: 20,
@@ -224,12 +245,12 @@ export const ShelterList = ({favAttempt} : any) => {
             height: 40,
             fontSize: 16,
         },
-    });
+    }); 
     
     const renderItem = (item : Location) => {
         return (
             <View className="p-4 flex-row justify-between items-center">
-                <Text className="flex-1 text-base">{item.value}</Text>
+                <Text className="flex-1 text-base">{item.label}</Text>
             </View>
         );
     };
@@ -238,7 +259,7 @@ export const ShelterList = ({favAttempt} : any) => {
         setApplyPressed(true);
         bottomSheetModalRef.current?.dismiss();
     };
-
+    
     return (
         <>
             <View className=''>
@@ -280,25 +301,26 @@ export const ShelterList = ({favAttempt} : any) => {
                                         </TouchableOpacity>
                                     </View>
                                     <Dropdown
-                                        style={{borderWidth: 1, paddingHorizontal: 8, paddingVertical: 5, borderRadius: 10}}
-                                        containerStyle={{borderWidth: 10}}
+                                        style={{ borderWidth: 1, paddingHorizontal: 8, paddingVertical: 5, borderRadius: 10 }}
+                                        containerStyle={{ borderWidth: 10 }}
                                         placeholderStyle={styles.placeholderStyle}
                                         selectedTextStyle={styles.selectedTextStyle}
                                         inputSearchStyle={styles.inputSearchStyle}
                                         iconStyle={styles.iconStyle}
-                                        data={dataProvinsi.data.map(item => ({ label: item.key, value: item.value }))}
+                                        data={provinceData.map(item => ({ label: item.label, value: item.value }))}
                                         search
                                         maxHeight={300}
-                                        labelField="value"
+                                        labelField="label"
                                         valueField="value"
                                         placeholder="Select item"
                                         searchPlaceholder="Search..."
                                         value={filterLocation}
                                         onChange={item => {
-                                            setFilterLocation(item.value);
+                                            setFilterLocation(item.label);
                                         }}
                                         renderItem={renderItem}
                                     />
+
                                 </View>
                             </View>
                             <View className='items-center my-5'>
