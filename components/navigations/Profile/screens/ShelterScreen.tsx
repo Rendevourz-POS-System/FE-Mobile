@@ -10,25 +10,25 @@ import { ShelterUser } from "../../../../interface/IShelter";
 import { Searchbar } from "react-native-paper";
 
 export const ShelterScreen: FC<ProfileRootBottomTabCompositeScreenProps<'ShelterScreen'>> = ({ navigation }) => {
-    const [data, setData] = useState<ShelterUser| null>(null);
+    const [data, setData] = useState<ShelterUser | null>(null);
     const [flag, setFlag] = useState(0);
     const [search, setSearch] = useState<string>('');
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [inputValue, setInputValue] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
-    
+
     const fetchProfile = async () => {
         try {
             const res = await get(BackendApiUri.getUserShelter);
             if (!res.data.Error) {
-            } 
-            if(res.data.Data) {
-                setData(res.data.Data)
+            }
+            if (res.data.Data) {
+                setData(res.data)
                 setFlag(1);
             }
         } catch (error) {
             console.log(error)
-        } 
+        }
     };
 
     useEffect(() => {
@@ -38,15 +38,15 @@ export const ShelterScreen: FC<ProfileRootBottomTabCompositeScreenProps<'Shelter
     const handleInputChange = (text: string) => {
         setInputValue(text);
     };
-
     const handleSubmitModal = () => {
-        if (inputValue == data?.Data.Pin) {
-            console.log(inputValue, data)
-            setIsModalOpen(false);
-            setInputValue("");
-            navigation.navigate("FavoriteScreen");
-        } else {
-            setErrorMessage("Pin Salah")
+        if (data) {
+            if (inputValue == data?.Data.Pin) {
+                setIsModalOpen(false);
+                setInputValue("");
+                navigation.navigate("ManageShelterScreen");
+            } else {
+                setErrorMessage("Pin Salah")
+            }
         }
     }
 
@@ -211,13 +211,13 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         padding: 30
     },
-    buttonCancel:{
+    buttonCancel: {
         backgroundColor: '#F2B61D',
         padding: 5,
         paddingHorizontal: 40,
         borderRadius: 10,
     },
-    buttonOke:{
+    buttonOke: {
         backgroundColor: '#4689FD',
         padding: 5,
         paddingHorizontal: 40,

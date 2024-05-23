@@ -6,12 +6,12 @@ import { ProfileRootBottomTabCompositeScreenProps } from "../../CompositeNavigat
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from 'react-hook-form';
-import { FontAwesome6 } from '@expo/vector-icons';
 import { BackendApiUri } from "../../../../functions/BackendApiUri";
-import { get, putForm } from "../../../../functions/Fetch";
+import { get } from "../../../../functions/Fetch";
 import * as ImagePicker from 'expo-image-picker';
-import { ShelterUser } from "../../../../interface/IShelter";
-import { MultipleSelectList } from "react-native-dropdown-select-list";
+import { SelectList } from "react-native-dropdown-select-list";
+import { PetType, ShelterLocation } from "../../../../interface/IPetType";
+import { Checkbox } from "react-native-paper";
 
 const editShelterFormSchema = z.object({
     ShelterName: z.string({ required_error: "Nama shelter tidak boleh kosong" }).min(1, { message: "Nama shelter tidak boleh kosong" }),
@@ -29,8 +29,10 @@ const editShelterFormSchema = z.object({
 type CreateShelterFormType = z.infer<typeof editShelterFormSchema>
 
 export const ManageShelterScreen: FC<ProfileRootBottomTabCompositeScreenProps<'ManageShelterScreen'>> = ({ navigation }) => {
-    const [shelterData, setShelterData] = useState<ShelterUser>();
     const [image, setImage] = useState('');
+    const [selected, setSelected] = useState<string[]>();
+    const [shelterLocation, setShelterLocation] = useState<ShelterLocation[]>([]);
+    const [petTypes, setPetTypes] = useState<PetType[]>([]);
 
     const { control, setValue, handleSubmit, formState: { errors } } = useForm<CreateShelterFormType>({
         resolver: zodResolver(editShelterFormSchema),
@@ -40,10 +42,17 @@ export const ManageShelterScreen: FC<ProfileRootBottomTabCompositeScreenProps<'M
         const fetchData = async () => {
             try {
                 const response = await get(`${BackendApiUri.getUserShelter}`);
-                setShelterData(response.data);
                 setValue("ShelterName", response.data.Data.ShelterName)
                 setValue("ShelterLocation", response.data.Data.ShelterLocation);
                 setValue("ShelterAddress", response.data.Data.ShelterAddress)
+                setValue("ShelterCapacity", response.data.Data.ShelterCapacity);
+                setValue("ShelterContactNumber", response.data.Data.ShelterContactNumber);
+                setValue("ShelterDescription", response.data.Data.ShelterDescription);
+                setValue("TotalPet", response.data.Data.TotalPet);
+                setValue("BankAccountNumber", response.data.Data.BankAccountNumber);
+                setValue("Pin", response.data.Data.Pin);
+
+                setSelected(response.data.Data.PetTypeAccepted)
             } catch (error) {
                 console.error("Error fetching shelter data:", error);
             }
@@ -56,6 +65,7 @@ export const ManageShelterScreen: FC<ProfileRootBottomTabCompositeScreenProps<'M
         const formData = new FormData();
         formData.append('file', image);
         formData.append('data', payloadString);
+        console.log(payloadString)
         // const res = await putForm(`${BackendApiUri.putUserUpdate}`, formData);
         Alert.alert('Data Tersimpan', 'Data anda telah tersimpan.');
     }
@@ -73,6 +83,39 @@ export const ManageShelterScreen: FC<ProfileRootBottomTabCompositeScreenProps<'M
         }
     };
 
+    const fetchPetType = async () => {
+        const res = await get(BackendApiUri.getPetTypes);
+        setPetTypes(res.data)
+    }
+
+    const fetchShelterLocation = async () => {
+        const res = await get(BackendApiUri.getLocation);
+        setShelterLocation(res.data)
+    }
+
+    const petTypeData = petTypes.map((item) => ({
+        key: item.Id,
+        value: item.Type,
+    }));
+
+    const shelterLocationData = shelterLocation.map((item) => ({
+        key: item.Id,
+        value: item.LocationName,
+    }));
+
+    useEffect(() => {
+        fetchPetType();
+        fetchShelterLocation();
+    }, []);
+
+    useEffect(() => {
+        if (selected && selected.length > 0) {
+            const selectedValue: [string, ...string[]] = [selected[0], ...selected.slice(1)];
+            console.log("tessL ", selected)
+            setValue('PetTypeAccepted', selectedValue);
+        }
+    }, [selected, setValue]);
+
     return (
         <SafeAreaProvider style={styles.container}>
             <View className="mt-14 flex-row items-center justify-center mb-3">
@@ -81,23 +124,32 @@ export const ManageShelterScreen: FC<ProfileRootBottomTabCompositeScreenProps<'M
             </View>
 
             <ScrollView>
-                <Text style={styles.textColor}>Gambar<Text className='text-[#ff0000]'>*</Text></Text>
-                <TouchableOpacity onPress={pickImage}>
-                    <Text className='text-center text-gray-500'>Pilih Gambar</Text>
-                </TouchableOpacity>
-                {image ? (<Image source={{ uri: image }} style={{ width: 100, height: 100, marginHorizontal: 35, marginTop: 10, borderRadius: 10 }} />) : (<Ionicons name="camera" size={40} color="white" />)}
+                <View style={styles.rowContainer} className="justify-around mt-5 mb-5">
+                    <TouchableOpacity
+                        style={{ width: 550, height: 200, backgroundColor: '#2E3A59', borderRadius: 10, justifyContent: 'center', alignItems: 'center' }}
+                        onPress={pickImage}
+                        disabled={image ? true : false}
+                    >
 
+                        {image ? (
+                            <Image source={{ uri: image }} style={{ width: 550, height: 200, borderRadius: 10 }} />)
+                            :
+                            (<Ionicons name="camera" size={40} color="white" />
+                            )}
+                    </TouchableOpacity>
+                </View>
 
                 <Text style={styles.textColor}>Nama Shelter<Text className='text-[#ff0000]'>*</Text></Text>
                 <View style={styles.inputBox}>
                     <Controller
                         name="ShelterName"
                         control={control}
-                        render={() => (
+                        render={({ field: { value } }) => (
                             <TextInput
                                 placeholder="Masukkan Nama Shelter"
                                 style={{ flex: 1 }}
                                 onChangeText={(text: string) => setValue('ShelterName', text)}
+                                value={value}
                             />
                         )}
                     />
@@ -105,10 +157,10 @@ export const ManageShelterScreen: FC<ProfileRootBottomTabCompositeScreenProps<'M
                 <Text style={styles.errorMessage}>{errors.ShelterName?.message}</Text>
 
                 <Text style={styles.textColor}>Lokasi Shelter<Text className='text-[#ff0000]'>*</Text></Text>
-                {/* <Controller
+                <Controller
                     name="ShelterLocation"
                     control={control}
-                    render={() => (
+                    render={({ field: { value } }) => (
                         <SelectList
                             setSelected={(text: string) => setValue('ShelterLocation', text)}
                             data={shelterLocationData}
@@ -119,9 +171,10 @@ export const ManageShelterScreen: FC<ProfileRootBottomTabCompositeScreenProps<'M
                             inputStyles={{ padding: 3 }}
                             arrowicon={<FontAwesome name="chevron-down" size={12} color={'#808080'} style={{ padding: 3 }} />}
                             placeholder="Masukkan Lokasi Shelter"
+                            defaultOption={shelterLocationData.find(item => item.key === value)}
                         />
                     )}
-                /> */}
+                />
                 <Text style={styles.errorMessage}>{errors.ShelterLocation?.message}</Text>
 
                 <Text style={styles.textColor}>Alamat Shelter<Text className='text-[#ff0000]'>*</Text></Text>
@@ -129,11 +182,12 @@ export const ManageShelterScreen: FC<ProfileRootBottomTabCompositeScreenProps<'M
                     <Controller
                         name="ShelterAddress"
                         control={control}
-                        render={() => (
+                        render={({ field: { value } }) => (
                             <TextInput
                                 placeholder="Masukkan Alamat Shelter"
                                 style={{ flex: 1 }}
                                 onChangeText={(text: string) => setValue('ShelterAddress', text)}
+                                value={value}
                             />
                         )}
                     />
@@ -142,25 +196,24 @@ export const ManageShelterScreen: FC<ProfileRootBottomTabCompositeScreenProps<'M
 
                 <Text style={styles.textColor}>Kapasitas Shelter<Text className='text-[#ff0000]'>*</Text></Text>
                 <View style={styles.inputBox}>
-                    {/* <Controller
+                    <Controller
                         name="ShelterCapacity"
                         control={control}
-                        render={() => (
+                        render={({ field: { value } }) => (
                             <TextInput
                                 style={{ flex: 1 }}
-                                placeholder="Masukkan Kapasitas Shelter"
-                                keyboardType="numeric"
-                                value={inputValue?.toString() ?? ''}
-                                onChangeText={(text) => {
-                                    const numericValue = parseFloat(text);
+                                placeholder="Kapasitas Shelter"
+                                onChangeText={(text: string) => {
+                                    const numericValue = parseInt(text);
                                     if (!isNaN(numericValue)) {
-                                        setInputValue(numericValue);
-                                        setValue("ShelterCapacity", numericValue)
+                                        setValue('ShelterCapacity', numericValue);
                                     }
                                 }}
+                                value={value?.toString()}
+                                keyboardType="numeric"
                             />
                         )}
-                    /> */}
+                    />
                 </View>
                 <Text style={styles.errorMessage}>{errors.ShelterCapacity?.message}</Text>
 
@@ -169,11 +222,12 @@ export const ManageShelterScreen: FC<ProfileRootBottomTabCompositeScreenProps<'M
                     <Controller
                         name="ShelterContactNumber"
                         control={control}
-                        render={() => (
+                        render={({ field: { value } }) => (
                             <TextInput
                                 placeholder="Masukkan Kontak Shelter"
                                 style={{ flex: 1 }}
                                 onChangeText={(text: string) => setValue('ShelterContactNumber', text)}
+                                value={value}
                             />
                         )}
                     />
@@ -182,25 +236,24 @@ export const ManageShelterScreen: FC<ProfileRootBottomTabCompositeScreenProps<'M
 
                 <Text style={styles.textColor}>Total Hewan Shelter<Text className='text-[#ff0000]'>*</Text></Text>
                 <View style={styles.inputBox}>
-                    {/* <Controller
+                    <Controller
                         name="TotalPet"
                         control={control}
-                        render={() => (
+                        render={({ field: { value } }) => (
                             <TextInput
                                 style={{ flex: 1 }}
-                                placeholder="Masukkan Total Hewan Shelter"
-                                keyboardType="numeric"
-                                value={inputTotalPetValue?.toString() ?? ''}
-                                onChangeText={(text) => {
-                                    const numericValue = parseFloat(text);
+                                placeholder="Total hewan"
+                                onChangeText={(text: string) => {
+                                    const numericValue = parseInt(text);
                                     if (!isNaN(numericValue)) {
-                                        setInputTotalPetValue(numericValue);
-                                        setValue("TotalPet", numericValue)
+                                        setValue('TotalPet', numericValue);
                                     }
                                 }}
+                                value={value?.toString()}
+                                keyboardType="numeric"
                             />
                         )}
-                    /> */}
+                    />
                 </View>
                 <Text style={styles.errorMessage}>{errors.TotalPet?.message}</Text>
 
@@ -209,11 +262,12 @@ export const ManageShelterScreen: FC<ProfileRootBottomTabCompositeScreenProps<'M
                     <Controller
                         name="BankAccountNumber"
                         control={control}
-                        render={() => (
+                        render={({ field: { value } }) => (
                             <TextInput
                                 placeholder="Masukkan Nomor Rekening"
                                 style={{ flex: 1 }}
                                 onChangeText={(text: string) => setValue('BankAccountNumber', text)}
+                                value={value}
                             />
                         )}
                     />
@@ -225,11 +279,12 @@ export const ManageShelterScreen: FC<ProfileRootBottomTabCompositeScreenProps<'M
                     <Controller
                         name="ShelterDescription"
                         control={control}
-                        render={() => (
+                        render={({ field: { value } }) => (
                             <TextInput
                                 placeholder="Masukkan Deskripsi Shelter"
                                 style={{ flex: 1 }}
                                 onChangeText={(text: string) => setValue('ShelterDescription', text)}
+                                value={value}
                             />
                         )}
                     />
@@ -237,22 +292,31 @@ export const ManageShelterScreen: FC<ProfileRootBottomTabCompositeScreenProps<'M
                 <Text style={styles.errorMessage}>{errors.ShelterDescription?.message}</Text>
 
                 <Text style={styles.textColor}>Jenis Hewan Shelter<Text className='text-[#ff0000]'>*</Text></Text>
-                {/* <Controller
+                <Controller
                     name="PetTypeAccepted"
                     control={control}
-                    render={() => (
-                        <MultipleSelectList
-                            // setSelected={setSelected}
-                            data={petTypeData}
-                            save="key"
-                            dropdownStyles={styles.inputBox}
-                            // boxStyles={styles.selectBox}
-                            inputStyles={{ padding: 3 }}
-                            arrowicon={<FontAwesome name="chevron-down" size={12} color={'#808080'} style={{ padding: 3 }} />}
-                            label="Jenis Hewan"
-                        />
+                    render={({ field: { value } }) => (
+                        <View style={{marginHorizontal: 35}}>
+                            {petTypeData.map((petType) => (
+                                <View key={petType.key} style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                    <Checkbox
+                                        status={selected?.includes(petType.key) ? 'checked' : 'unchecked'}
+                                        onPress={() => {
+                                            setSelected(prevSelected => {
+                                                if (prevSelected && prevSelected.includes(petType.key)) {
+                                                    return prevSelected.filter(item => item !== petType.key);
+                                                } else {
+                                                    return [...(prevSelected || []), petType.key];
+                                                }
+                                            });
+                                        }}
+                                    />
+                                    <Text>{petType.value}</Text>
+                                </View>
+                            ))}
+                        </View>
                     )}
-                /> */}
+                />
                 <Text style={styles.errorMessage}>{errors.PetTypeAccepted?.message}</Text>
 
                 <Text style={styles.textColor}>Pin Shelter<Text className='text-[#ff0000]'>*</Text></Text>
@@ -260,11 +324,12 @@ export const ManageShelterScreen: FC<ProfileRootBottomTabCompositeScreenProps<'M
                     <Controller
                         name="Pin"
                         control={control}
-                        render={() => (
+                        render={({ field: { value } }) => (
                             <TextInput
                                 placeholder="Masukkan Pin"
                                 style={{ flex: 1 }}
                                 onChangeText={(text: string) => setValue('Pin', text)}
+                                value={value}
                             />
                         )}
                     />
@@ -324,17 +389,6 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between'
     },
-    disabledInput: {
-        backgroundColor: "#CCCCCC",
-        padding: 20,
-        marginHorizontal: 30,
-        marginBottom: 25,
-        borderBottomColor: "#488DF4",
-        borderBottomWidth: 2,
-        borderRadius: 10,
-        flexDirection: 'row',
-        justifyContent: 'space-between'
-    },
     errorMessage: {
         color: 'red',
         marginHorizontal: 35,
@@ -354,4 +408,19 @@ const styles = StyleSheet.create({
         marginHorizontal: 35,
         marginBottom: 5
     },
+    selectBox: {
+        marginTop: 5,
+        marginHorizontal: 30,
+        borderColor: "#CECECE",
+        borderWidth: 2,
+        borderRadius: 25,
+        flexDirection: 'row'
+    },
+    petTypeButton: {
+        borderColor: '#488DF4',
+        borderWidth: 2,
+        padding: 10,
+        borderRadius: 10,
+        marginRight: 10
+    }
 });
