@@ -106,7 +106,7 @@ export const ShelterScreen: FC<ProfileRootBottomTabCompositeScreenProps<'Shelter
                             </TouchableOpacity>
                         </View>
                         <View className="mt-10 flex-row justify-around">
-                            <TouchableOpacity style={styles.button}>
+                            <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("CreatePetScreen")}>
                                 <View style={styles.iconContainer}>
                                     <MaterialCommunityIcons name="plus" color="white" size={25} />
                                 </View>
