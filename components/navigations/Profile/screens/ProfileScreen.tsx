@@ -7,6 +7,7 @@ import { useAuth } from "../../../../app/context/AuthContext";
 import { Avatar } from "react-native-elements";
 import { BackendApiUri } from "../../../../functions/BackendApiUri";
 import { get } from "../../../../functions/Fetch";
+import { ShelterUser } from "../../../../interface/IShelter";
 
 interface IProfile {
     ImageBase64 : string
@@ -15,11 +16,12 @@ interface IProfile {
 export const ProfileScreen: FC<ProfileRootBottomTabCompositeScreenProps<'ProfileScreen'>> = ({ navigation }) => {
     const { authState, onLogout } = useAuth();
     const [data, setData] = useState<IProfile>();
+    const[dataShelter, setDataShelter] = useState<ShelterUser>();
     const [flag, setFlag] = useState<number>(0);
 
     const fetchProfile = async () => {
         const res = await get(BackendApiUri.getUserShelter);
-        console.log(res.data)
+        setDataShelter(res.data)
         if(res && res.status === 200) {
             setData({
                 ImageBase64 : res.data.ImageBase64,
@@ -29,8 +31,8 @@ export const ProfileScreen: FC<ProfileRootBottomTabCompositeScreenProps<'Profile
 
     useEffect(() => {
         fetchProfile();
-        if(data) setFlag(1);
-    }, []);
+        if(dataShelter?.Data.ShelterName) setFlag(1);
+    }, [flag]);
 
     return (
         <SafeAreaProvider style={styles.container}>
