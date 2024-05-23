@@ -10,23 +10,29 @@ import { ShelterUser } from "../../../../interface/IShelter";
 import { Searchbar } from "react-native-paper";
 
 export const ShelterScreen: FC<ProfileRootBottomTabCompositeScreenProps<'ShelterScreen'>> = ({ navigation }) => {
-    const [data, setData] = useState<ShelterUser>();
+    const [data, setData] = useState<ShelterUser| null>(null);
     const [flag, setFlag] = useState(0);
     const [search, setSearch] = useState<string>('');
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [inputValue, setInputValue] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
-
-    const fetchUserShelter = async () => {
-        const res = await get(BackendApiUri.getUserShelter);
-        setData(res.data);
-    }
+    
+    const fetchProfile = async () => {
+        try {
+            const res = await get(BackendApiUri.getUserShelter);
+            if (!res.data.Error) {
+            } 
+            if(res.data.Data) {
+                setData(res.data.Data)
+                setFlag(1);
+            }
+        } catch (error) {
+            console.log(error)
+        } 
+    };
 
     useEffect(() => {
-        fetchUserShelter();
-        if (data?.Data) {
-            setFlag(1);
-        }
+        fetchProfile();
     }, [])
 
     const handleInputChange = (text: string) => {
@@ -52,7 +58,7 @@ export const ShelterScreen: FC<ProfileRootBottomTabCompositeScreenProps<'Shelter
 
     return (
         <SafeAreaProvider style={styles.container}>
-            {flag == 0 ?
+            {flag === 0 ?
                 <>
                     <View className="mt-14 flex-row items-center justify-center mb-3">
                         <Ionicons name="chevron-back" size={24} color="black" onPress={() => navigation.goBack()} style={{ position: 'absolute', left: 20 }} />
