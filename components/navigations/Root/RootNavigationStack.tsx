@@ -1,11 +1,11 @@
 import { NativeStackNavigationOptions, createNativeStackNavigator } from "@react-navigation/native-stack";
-import React from 'react';
+import React, { FC, useEffect, useRef } from 'react';
 import { RootNavigationStackParams } from "./RootNavigationStackParams";
 import RootBottomTab from "../RootBottomTab/RootBottomTab"
 import { LoginScreen } from "./screens/LoginScreen";
 import { RegisterScreen } from "./screens/RegisterScreen";
 import { useAuth } from "../../../app/context/AuthContext";
-import { NavigationContainer } from "@react-navigation/native";
+import { NavigationContainer, NavigationContainerRef, useNavigation } from "@react-navigation/native";
 import { ShelterDetailScreen } from "./screens/ShelterDetailScreen";
 import { DonateScreen } from "./screens/DonateScreen";
 import { HewanAdopsiScreen } from "./screens/HewanAdopsiScreen";
@@ -13,13 +13,29 @@ import { PetDetailScreen } from "./screens/PetDetailScreen";
 import { AdoptionFormScreen } from "./screens/AdoptionFormScreen";
 import { RescueFormScreen } from "./screens/RescueFormScreen";
 import { SurrenderFormScreen } from "./screens/SurrenderFormScreen";
+import { EmailScreen } from "./screens/EmailScreen";
+import { EmitterSubscription, Linking } from "react-native";
 
 const Stack = createNativeStackNavigator<RootNavigationStackParams>();
 
 const RootNavigationStack: React.FC = () => {
     const { authState } = useAuth();
+    const navigation = useRef<NavigationContainerRef<RootNavigationStackParams>>(null);
+
+
+    useEffect(() => {
+        const handleDeepLink = async () => {
+          const initialUrl = await Linking.getInitialURL();
+          if (initialUrl && initialUrl.includes('email-verified')) {
+            navigation.current?.navigate('EmailScreen');
+          }
+        };
+
+        handleDeepLink();
+    }, []);
+
     return (
-        <NavigationContainer>
+        <NavigationContainer ref={navigation}>
             <Stack.Navigator>
                 {authState?.authenticated ? (
                     <Stack.Group>
@@ -36,6 +52,7 @@ const RootNavigationStack: React.FC = () => {
                     <Stack.Group>
                         <Stack.Screen name="LoginScreen" component={LoginScreen} options={noHeader} />
                         <Stack.Screen name="RegisterScreen" component={RegisterScreen} options={noHeader} />
+                        <Stack.Screen name="EmailScreen" component={EmailScreen} options={noHeader} />
                     </Stack.Group>
                 )}
             </Stack.Navigator>
