@@ -22,12 +22,12 @@ const RootNavigationStack: React.FC = () => {
     const { authState } = useAuth();
     const navigation = useRef<NavigationContainerRef<RootNavigationStackParams>>(null);
 
-
     useEffect(() => {
         const handleDeepLink = async () => {
           const initialUrl = await Linking.getInitialURL();
-          if (initialUrl && initialUrl.includes('email-verified')) {
-            navigation.current?.navigate('EmailScreen');
+          if (initialUrl && initialUrl.includes('email/verification')) {
+            const token = initialUrl.split('/').pop();
+            navigation.current?.navigate('EmailScreen', {token : token || ''});
           }
         };
 

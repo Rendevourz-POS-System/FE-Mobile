@@ -4,9 +4,9 @@ import { Text, View } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { FontAwesome6 } from "@expo/vector-icons";
 
-export const EmailScreen : FC<RootNavigationStackScreenProps<'EmailScreen'>> = ({ navigation }) => {
+export const EmailScreen : FC<RootNavigationStackScreenProps<'EmailScreen'>> = ({ navigation, route }) => {
     const [time, setTime] = useState<number>(5);
-
+    const token = route.params?.token;
     useEffect(() => {
         const interval = setInterval(() => {
             setTime(prevTime => prevTime - 1); // Decrement time every second
