@@ -16,7 +16,7 @@ interface IProfile {
 export const ProfileScreen: FC<ProfileRootBottomTabCompositeScreenProps<'ProfileScreen'>> = ({ navigation }) => {
     const { authState, onLogout } = useAuth();
     const [data, setData] = useState<IProfile | null>(null);
-    const [flag, setFlag] = useState<number>(0);
+    const [dataShelter, setDataShelter] = useState<ShelterUser | null>(null);
 
     const fetchProfile = async () => {
         try {
@@ -28,7 +28,7 @@ export const ProfileScreen: FC<ProfileRootBottomTabCompositeScreenProps<'Profile
                     ImageBase64 : res.data.ImageBase64
                 });
             }
-            if(res.data.Data) setFlag(1);
+            if(res.data.Data) setDataShelter(res.data);
         } catch (error) {
             console.log(error)
         } 
@@ -74,9 +74,9 @@ export const ProfileScreen: FC<ProfileRootBottomTabCompositeScreenProps<'Profile
                     </TouchableOpacity>
                     <TouchableOpacity style={styles.rowContainer} onPress={() => navigation.navigate("ShelterScreen")}>
                         <View style={styles.iconContainer}>
-                            {flag == 1 ? <Octicons name="arrow-switch" size={25} color="white" /> : <MaterialIcons name="create" size={25} color="white" />}
+                            {dataShelter ? <Octicons name="arrow-switch" size={25} color="white" /> : <MaterialIcons name="create" size={25} color="white" />}
                         </View>
-                        <Text style={styles.text}>{flag == 1 ? "Switch to Shelter" : "Create Shelter"}</Text>
+                        <Text style={styles.text}>{dataShelter ? "Switch to Shelter" : "Create Shelter"}</Text>
                         <View style={styles.nextIconContainer}>
                             <MaterialIcons name="navigate-next" size={25} color="black" />
                         </View>

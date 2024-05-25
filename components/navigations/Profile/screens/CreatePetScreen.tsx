@@ -25,7 +25,7 @@ const createPetFormSchema = z.object({
 
 type CreatePetFormType = z.infer<typeof createPetFormSchema>
 
-export const CreatePetScreen: FC<ProfileRootBottomTabCompositeScreenProps<'CreatePetScreen'>> = ({ navigation }) => {
+export const CreatePetScreen: FC<ProfileRootBottomTabCompositeScreenProps<'CreatePetScreen'>> = ({ navigation, route }) => {
     const [image, setImage] = useState('');
     const [petTypes, setPetTypes] = useState<PetType[]>([]);
     const [fileName, setFileName] = useState('');
@@ -49,12 +49,6 @@ export const CreatePetScreen: FC<ProfileRootBottomTabCompositeScreenProps<'Creat
 
     const pickImage = async () => {
         try {
-            const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-
-            if (status !== 'granted') {
-                console.log('Permission denied!');
-                return;
-            }
             const result = await ImagePicker.launchImageLibraryAsync();
             console.log(result, 'RES');
             if (!result.canceled) {
@@ -74,26 +68,30 @@ export const CreatePetScreen: FC<ProfileRootBottomTabCompositeScreenProps<'Creat
     };
 
     const onSubmit = async (data: CreatePetFormType) => {
-        let payloadString = JSON.stringify(data);
-        const response = await fetch(image);
-        const imageBlob = await response.blob();
+        const shelterId = route.params.shelterId;
+        const payload = {
+            ShelterId: shelterId,
+            ...data
+        }
+        let payloadString = JSON.stringify(payload);
+        // const response = await fetch(image);
+        // const imageBlob = await response.blob();
 
         const formData = new FormData();
-        formData.append('file', imageBlob, imageBlob.type);
-
+        formData.append('file', fileName);
         formData.append('data', payloadString);
         console.log(formData)
-        // const res = await postForm(BackendApiUri.postShelterRegister, formData);
-        // if (res.status === 200) {
+        const res = await postForm(BackendApiUri.postPet, formData);
+        if (res.status === 200) {
         Alert.alert("Pet Created", "Pet Berhasil dibuat", [
             {
                 text: "OK",
                 onPress: () => navigation.goBack()
             }
         ]);
-        // }else{
-        //     Alert.alert("Pet Gagal", "Pet gagal dibuat, mohon diisi dengan yang benar");
-        // }
+        }else{
+            Alert.alert("Pet Gagal", "Pet gagal dibuat, mohon diisi dengan yang benar");
+        }
     }
 
     return (
@@ -106,7 +104,7 @@ export const CreatePetScreen: FC<ProfileRootBottomTabCompositeScreenProps<'Creat
             <ScrollView className="mt-5">
                 <View className="mt-10 mb-10 items-center">
                     <TouchableOpacity
-                        style={{ width: 550, height: 200, backgroundColor: '#2E3A59', borderRadius: 10, justifyContent: 'center', alignItems: 'center' }}
+                        style={{ width: 350, height: 200, backgroundColor: '#2E3A59', borderRadius: 10, justifyContent: 'center', alignItems: 'center' }}
                         onPress={pickImage}
                     >
 

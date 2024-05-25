@@ -7,5 +7,5 @@ export type ProfileNavigationStackParams = {
     ChangePasswordScreen: undefined;
     ShelterScreen: undefined; 
     ManageShelterScreen: undefined;
-    CreatePetScreen: undefined;
+    CreatePetScreen: {shelterId : string};
 }

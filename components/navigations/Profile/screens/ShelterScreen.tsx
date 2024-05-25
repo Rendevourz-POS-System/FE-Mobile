@@ -7,7 +7,7 @@ import { CreateShelter } from "../../../CreateShelter";
 import { get } from "../../../../functions/Fetch";
 import { BackendApiUri } from "../../../../functions/BackendApiUri";
 import { ShelterUser } from "../../../../interface/IShelter";
-import { Searchbar } from "react-native-paper";
+import { Searchbar } from "react-native-paper";2
 
 export const ShelterScreen: FC<ProfileRootBottomTabCompositeScreenProps<'ShelterScreen'>> = ({ navigation }) => {
     const [data, setData] = useState<ShelterUser | null>(null);
@@ -16,6 +16,7 @@ export const ShelterScreen: FC<ProfileRootBottomTabCompositeScreenProps<'Shelter
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [inputValue, setInputValue] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
+    const [shelterId, setShelterId] = useState('');
 
     const fetchProfile = async () => {
         try {
@@ -25,6 +26,7 @@ export const ShelterScreen: FC<ProfileRootBottomTabCompositeScreenProps<'Shelter
             if (res.data.Data) {
                 setData(res.data)
                 setFlag(1);
+                setShelterId(res.data.Data.Id);
             }
         } catch (error) {
             console.log(error)
@@ -33,7 +35,7 @@ export const ShelterScreen: FC<ProfileRootBottomTabCompositeScreenProps<'Shelter
 
     useEffect(() => {
         fetchProfile();
-    }, [])
+    }, [shelterId])
 
     const handleInputChange = (text: string) => {
         setInputValue(text);
@@ -106,7 +108,7 @@ export const ShelterScreen: FC<ProfileRootBottomTabCompositeScreenProps<'Shelter
                             </TouchableOpacity>
                         </View>
                         <View className="mt-10 flex-row justify-around">
-                            <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("CreatePetScreen")}>
+                            <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("CreatePetScreen", {shelterId : shelterId})}>
                                 <View style={styles.iconContainer}>
                                     <MaterialCommunityIcons name="plus" color="white" size={25} />
                                 </View>

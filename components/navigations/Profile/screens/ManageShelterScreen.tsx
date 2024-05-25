@@ -126,7 +126,7 @@ export const ManageShelterScreen: FC<ProfileRootBottomTabCompositeScreenProps<'M
             <ScrollView>
                 <View style={styles.rowContainer} className="justify-around mt-5 mb-5">
                     <TouchableOpacity
-                        style={{ width: 550, height: 200, backgroundColor: '#2E3A59', borderRadius: 10, justifyContent: 'center', alignItems: 'center' }}
+                        style={{ width: 350, height: 200, backgroundColor: '#2E3A59', borderRadius: 10, justifyContent: 'center', alignItems: 'center' }}
                         onPress={pickImage}
                         disabled={image ? true : false}
                     >
