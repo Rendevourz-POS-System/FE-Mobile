@@ -7,6 +7,7 @@ import { HistoryScreen } from "./screens/HistoryScreen";
 import { FavoriteScreen } from "./screens/FavoriteScreen";
 import { ChangePasswordScreen } from "./screens/ChangePasswordScreen";
 import { ShelterScreen } from "./screens/ShelterScreen";
+import { ManageShelterScreen } from "./screens/ManageShelterScreen";
 
 const Stack = createNativeStackNavigator<ProfileNavigationStackParams>();
 
@@ -20,6 +21,7 @@ export const ProfileNavigationStack: React.FC<{}> = () => {
             <Stack.Screen name="FavoriteScreen" component={FavoriteScreen} options={noHeader} />
             <Stack.Screen name="ChangePasswordScreen" component={ChangePasswordScreen} options={noHeader} />
             <Stack.Screen name="ShelterScreen" component={ShelterScreen} options={noHeader} />
+            <Stack.Screen name="ManageShelterScreen" component={ManageShelterScreen} options={noHeader} />
         </Stack.Navigator>
     );
 }

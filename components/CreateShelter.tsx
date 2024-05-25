@@ -9,7 +9,7 @@ import { BackendApiUri } from "../functions/BackendApiUri";
 import { get, postForm } from "../functions/Fetch";
 import { PetType, ShelterLocation } from "../interface/IPetType";
 import * as ImagePicker from 'expo-image-picker';
-import { ProfileRootBottomTabCompositeScreenProps, RootBottomTabCompositeNavigationProp } from "./navigations/CompositeNavigationProps";
+import { RootBottomTabCompositeNavigationProp } from "./navigations/CompositeNavigationProps";
 import { useNavigation } from "@react-navigation/native";
 
 const createShelterFormSchema = z.object({

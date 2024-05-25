@@ -6,4 +6,5 @@ export type ProfileNavigationStackParams = {
     FavoriteScreen: undefined;
     ChangePasswordScreen: undefined;
     ShelterScreen: undefined; 
+    ManageShelterScreen: undefined;
 }

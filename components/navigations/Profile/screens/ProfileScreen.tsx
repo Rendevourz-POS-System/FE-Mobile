@@ -7,6 +7,7 @@ import { useAuth } from "../../../../app/context/AuthContext";
 import { Avatar } from "react-native-elements";
 import { BackendApiUri } from "../../../../functions/BackendApiUri";
 import { get } from "../../../../functions/Fetch";
+import { ShelterUser } from "../../../../interface/IShelter";
 
 interface IProfile {
     ImageBase64 : string
