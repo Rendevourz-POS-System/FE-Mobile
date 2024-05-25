@@ -5,6 +5,7 @@ export type RootNavigationStackParams = {
     HomeScreen: NavigatorScreenParams<RootBottomTabParams>;
     TabMenu: undefined;
     LoginScreen: undefined;
+    EmailScreen : {token : string} | undefined;
     RegisterScreen: undefined;
     ShelterDetailScreen: {shelterId : string}
     DonateScreen: {bankNumber : string};

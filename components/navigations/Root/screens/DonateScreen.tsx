@@ -6,7 +6,6 @@ import { Ionicons } from '@expo/vector-icons';
 import { RootNavigationStackScreenProps } from '../../StackScreenProps';
 
 export const DonateScreen: FC<RootNavigationStackScreenProps<'DonateScreen'>> = ({ navigation, route }: any) => {
-    console.log(route.params)
     return (
         <SafeAreaProvider className='flex-1'>
              <View className="mt-14 flex-row items-center justify-center mb-3">
