@@ -13,6 +13,7 @@ import { Location } from "../../../../interface/ILocation";
 import { post } from "../../../../functions/Fetch";
 import { BackendApiUri } from "../../../../functions/BackendApiUri";
 import { getCity, getKabupaten, getProvince } from "../../../../functions/getLocation";
+import { LocationAPI } from "../../../../interface/ILocationAPI";
 
 const registerFormSchema = z.object({
     Username: z.string({ required_error: "Name cannot be empty" })
@@ -47,9 +48,9 @@ type RegisterFormType = z.infer<typeof registerFormSchema>
 export const RegisterScreen: FC<RootNavigationStackScreenProps<'RegisterScreen'>> = ({ navigation }) => {
     const [showPassword, setShowPassword] = useState(true);
     const [showConfirmPassword, setShowConfirmPassword] = useState(true);
-    const [provinces, setProvinces] = useState<Location[]>([]);
-    const [cities, setCities] = useState<Location[]>([]);
-    const [kabupatens, setKabupatens] = useState<Location[]>([]);
+    const [provinces, setProvinces] = useState<LocationAPI[]>([]);
+    const [cities, setCities] = useState<LocationAPI[]>([]);
+    const [kabupatens, setKabupatens] = useState<LocationAPI[]>([]);
 
     const {
         control,
@@ -255,7 +256,7 @@ export const RegisterScreen: FC<RootNavigationStackScreenProps<'RegisterScreen'>
                                     mode="dropdown"
                                 >
                                     <Picker.Item label="Select Province" value="" />
-                                    {Object.values(provinces).map((item: Location) => (
+                                    {Object.values(provinces).map((item: LocationAPI) => (
                                         <Picker.Item label={item.name} value={item.id} key={item.id} />
                                     ))}
                                 </Picker>
@@ -280,7 +281,7 @@ export const RegisterScreen: FC<RootNavigationStackScreenProps<'RegisterScreen'>
                                     mode="dropdown"
                                 >
                                     <Picker.Item label="Select Kabupaten" value=""/>
-                                    {kabupatens && Object.values(kabupatens).map((item: Location) => (
+                                    {kabupatens && Object.values(kabupatens).map((item: LocationAPI) => (
                                         <Picker.Item label={item.name} value={item.id} key={item.id} />
                                     ))}
                                 </Picker>
@@ -302,7 +303,7 @@ export const RegisterScreen: FC<RootNavigationStackScreenProps<'RegisterScreen'>
                                     enabled={!!watch("District")}
                                 >
                                     <Picker.Item label="Select City" value=""/>
-                                    {cities && Object.values(cities).map((item: Location) => (
+                                    {cities && Object.values(cities).map((item: LocationAPI) => (
                                         <Picker.Item label={item.name} value={item.id} key={item.id} />
                                     ))}
                                 </Picker>
