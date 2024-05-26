@@ -154,9 +154,8 @@ export const RegisterScreen: FC<RootNavigationStackScreenProps<'RegisterScreen'>
         try {
             const response = await post(BackendApiUri.registerUser, body);
             if(response.status === 200) {
-                navigation.navigate("LoginScreen");
+                navigation.navigate("VerifyScreen", {userId : response.data.Id, email : body.Email});
             }
-            console.log("Success Register");
         } catch (e) {
             console.log(e)
         }
@@ -169,7 +168,7 @@ export const RegisterScreen: FC<RootNavigationStackScreenProps<'RegisterScreen'>
                 <View className="mb-8">
                     <View className="items-center my-10">
                         <View className="absolute left-7 top-1">
-                            <Ionicons name="chevron-back" size={24} color="black" onPress={() => navigation.goBack()} />
+                            <Ionicons name="chevron-back" size={24} style={{backgroundColor: "#ECECEC", borderRadius:999, padding: 2.5}} color="black" onPress={() => navigation.goBack()} />
                         </View>
                         <Text className="text-2xl mb-5">Sign Up</Text>
                         <Image source={require('../../../../assets/logo-register.png')} />

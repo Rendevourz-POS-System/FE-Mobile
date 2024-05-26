@@ -7,6 +7,7 @@ export const BackendApiUri = {
 
     getPetTypes : '/pet-types',
     getLocation: '/shelter-location',
+    verifyEmail : '/user/verify-email',
 
     getShelterList : '/shelter',
     getShelterFav : '/shelter/favorite',

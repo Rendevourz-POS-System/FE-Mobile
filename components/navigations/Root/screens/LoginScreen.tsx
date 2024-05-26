@@ -121,12 +121,6 @@ export const LoginScreen: FC<RootNavigationStackScreenProps<'LoginScreen'>> = ({
                             <Text className="underline underline-offset-4" style={style.fontColor}> Sign Up</Text>
                         </TouchableOpacity>
                     </View>
-                    <View className="flex-row justify-center top-5">
-                        <Text>Test Email Screen</Text>
-                        <TouchableOpacity onPress={() => navigation.navigate("EmailScreen")}>
-                            <Text className="underline underline-offset-4" style={style.fontColor}>Test Email Screen</Text>
-                        </TouchableOpacity>
-                    </View>
                 </View>
             </ScrollView>
         </SafeAreaProvider>
