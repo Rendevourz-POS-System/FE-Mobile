@@ -68,27 +68,23 @@ export const CreatePetScreen: FC<ProfileRootBottomTabCompositeScreenProps<'Creat
     };
 
     const onSubmit = async (data: CreatePetFormType) => {
-        const shelterId = route.params.shelterId;
         const payload = {
-            ShelterId: shelterId,
-            ...data
+            ShelterId: route.params.shelterId,
+            PetName: data.PetName,
+            PetAge: data.PetAge,
+            PetType: data.PetType,
+            PetGender: data.PetGender,
+            IsVaccinated: data.IsVaccinated == "true" ? true : false,
+            PetDescription: data.PetDescription
         }
         let payloadString = JSON.stringify(payload);
-        // const response = await fetch(image);
-        // const imageBlob = await response.blob();
-
         const formData = new FormData();
-        formData.append('file', fileName);
+        formData.append('files', fileName);
         formData.append('data', payloadString);
         console.log(formData)
         const res = await postForm(BackendApiUri.postPet, formData);
         if (res.status === 200) {
-        Alert.alert("Pet Created", "Pet Berhasil dibuat", [
-            {
-                text: "OK",
-                onPress: () => navigation.goBack()
-            }
-        ]);
+            Alert.alert("Pet Created", "Pet Berhasil dibuat", [ { text: "OK", onPress: () => navigation.goBack()}]);
         }else{
             Alert.alert("Pet Gagal", "Pet gagal dibuat, mohon diisi dengan yang benar");
         }
@@ -181,11 +177,11 @@ export const CreatePetScreen: FC<ProfileRootBottomTabCompositeScreenProps<'Creat
                             <RadioButton.Group onValueChange={onChange} value={value} >
                                 <View className="flex flex-row">
                                     <View className="flex-row justify-start items-center mr-5">
-                                        <RadioButton.Android value="Male" color={'#4689FD'} uncheckedColor="#808080" />
+                                        <RadioButton.Android value="male" color={'#4689FD'} uncheckedColor="#808080" />
                                         <Text className="text-base text-[#808080]">Laki-Laki</Text>
                                     </View>
                                     <View className="flex-row justify-start items-center">
-                                        <RadioButton.Android value="Female" color={'#4689FD'} uncheckedColor="#808080" />
+                                        <RadioButton.Android value="female" color={'#4689FD'} uncheckedColor="#808080" />
                                         <Text className="text-base text-[#808080]">Perempuan</Text>
                                     </View>
                                 </View>
