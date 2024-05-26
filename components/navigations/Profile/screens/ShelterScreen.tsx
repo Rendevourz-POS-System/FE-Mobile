@@ -1,21 +1,23 @@
-import { Ionicons, MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
+import { FontAwesome, FontAwesome6, Ionicons, MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
 import React, { FC, useEffect, useState } from "react";
-import { Text, View, StyleSheet, Modal, Alert, TouchableOpacity, TextInput, ScrollView, Button } from "react-native";
+import { Text, View, StyleSheet, Modal, Alert, TouchableOpacity, TextInput, ScrollView, Image, TouchableHighlight } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { ProfileRootBottomTabCompositeScreenProps } from "../../CompositeNavigationProps";
 import { CreateShelter } from "../../../CreateShelter";
 import { get } from "../../../../functions/Fetch";
 import { BackendApiUri } from "../../../../functions/BackendApiUri";
 import { ShelterUser } from "../../../../interface/IShelter";
-import { Searchbar } from "react-native-paper";
+import { PetData } from "../../../../interface/IPetList";
+import { FlashList } from "@shopify/flash-list";
 
 export const ShelterScreen: FC<ProfileRootBottomTabCompositeScreenProps<'ShelterScreen'>> = ({ navigation }) => {
     const [data, setData] = useState<ShelterUser | null>(null);
-    const [flag, setFlag] = useState(0);
-    const [search, setSearch] = useState<string>('');
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [inputValue, setInputValue] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
+    const [shelterId, setShelterId] = useState('');
+    const [shelterName, setShelterName] = useState('');
+    const [petData, setPetData] = useState<PetData[]>([]);
 
     const fetchProfile = async () => {
         try {
@@ -24,20 +26,35 @@ export const ShelterScreen: FC<ProfileRootBottomTabCompositeScreenProps<'Shelter
             }
             if (res.data.Data) {
                 setData(res.data)
-                setFlag(1);
+                setShelterId(res.data.Data.Id);
+                setShelterName(res.data.Data.ShelterName)
             }
         } catch (error) {
             console.log(error)
         }
     };
 
+    const fetchPetData = async () => {
+        try{
+            const responsePet = await get(`${BackendApiUri.getPetList}/?shelter_name=${shelterName}&page=1&page_size=200`)
+            if(responsePet && responsePet.status === 200) {
+                setPetData(responsePet.data);
+                console.log(petData)
+            }
+        } catch(e) {
+            throw Error;
+        } 
+    };
+
     useEffect(() => {
         fetchProfile();
-    }, [])
+        fetchPetData();
+    }, [shelterId, shelterName])
 
     const handleInputChange = (text: string) => {
         setInputValue(text);
     };
+    
     const handleSubmitModal = () => {
         if (data) {
             if (inputValue == data?.Data.Pin) {
@@ -58,7 +75,7 @@ export const ShelterScreen: FC<ProfileRootBottomTabCompositeScreenProps<'Shelter
 
     return (
         <SafeAreaProvider style={styles.container}>
-            {flag === 0 ?
+            {!data ?
                 <>
                     <View className="mt-14 flex-row items-center justify-center mb-3">
                         <Ionicons name="chevron-back" size={24} color="black" onPress={() => navigation.goBack()} style={{ position: 'absolute', left: 20 }} />
@@ -73,18 +90,6 @@ export const ShelterScreen: FC<ProfileRootBottomTabCompositeScreenProps<'Shelter
                         <Text className="text-xl">Shelter Dashboard</Text>
                     </View>
                     <ScrollView className="mt-5">
-                        <View className='flex-row items-center justify-around'>
-                            <Searchbar
-                                placeholder='Text Here...'
-                                value={search}
-                                onChangeText={setSearch}
-                                style={{ backgroundColor: 'white', width: '87%' }}
-                            />
-                            <MaterialCommunityIcons name='tune-variant' size={24} color='black'
-                                style={{ marginRight: 10 }}
-                            />
-                        </View>
-
                         <View className="mt-10 flex-row justify-around">
                             <TouchableOpacity style={styles.button} onPress={() => setIsModalOpen(true)}>
                                 <View style={styles.iconContainer}>
@@ -106,7 +111,7 @@ export const ShelterScreen: FC<ProfileRootBottomTabCompositeScreenProps<'Shelter
                             </TouchableOpacity>
                         </View>
                         <View className="mt-10 flex-row justify-around">
-                            <TouchableOpacity style={styles.button}>
+                            <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("CreatePetScreen", {shelterId : shelterId})}>
                                 <View style={styles.iconContainer}>
                                     <MaterialCommunityIcons name="plus" color="white" size={25} />
                                 </View>
@@ -125,6 +130,64 @@ export const ShelterScreen: FC<ProfileRootBottomTabCompositeScreenProps<'Shelter
                                 <Text style={styles.text}>Approval List</Text>
                             </TouchableOpacity>
                         </View>
+
+                        {petData &&
+                            <View style={{ flex: 1, padding: 10 }}>
+                                <FlashList
+                                    estimatedItemSize={25}
+                                    data={petData || []}
+                                    numColumns={1}
+                                    keyExtractor={item => item.Id.toString()}
+                                    renderItem={({ item: pet }) => (
+                                        <View style={{ flex: 1, marginBottom: 35, marginTop: 20 }}>
+                                            <TouchableOpacity className="mx-2 justify-center" activeOpacity={1}>
+                                            <Image
+                                                source={{ uri: `data:image/*;base64,${pet.ImageBase64}` }}
+                                                className="w-full h-80 rounded-3xl"
+                                                />
+                                                <TouchableHighlight
+                                                    style={{
+                                                        position: 'absolute',
+                                                        top: 7,
+                                                        right: 7,
+                                                        backgroundColor: 'rgba(255, 255, 255, 0.65)',
+                                                        padding: 8,
+                                                        borderRadius: 999
+                                                    }}
+                                                    underlayColor="transparent"
+                                                    onPress={() => {
+                                                        // Add your onPress logic here
+                                                    }}
+                                                >
+                                                    <View className="rounded-full">
+                                                        <FontAwesome name='heart' size={20} color="#FF0000" />
+                                                    </View>
+                                                </TouchableHighlight>
+
+                                                <View style={{ position: 'absolute', top: 230, left: 0, right: 0, bottom: 0 }}>
+                                                    <View style={{ marginTop: 5, backgroundColor: "#FFFDFF", paddingHorizontal: 20, paddingVertical: 15, borderRadius: 15 }}>
+                                                        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                                                            <Text style={{ fontSize: 20, fontWeight: 'bold' }}>{pet.PetName}</Text>
+                                                            {pet.PetType === "Male" ? (
+                                                                    <FontAwesome6 name='venus' size={20} color='#FF6EC7' />
+                                                                ) : (
+                                                                    <FontAwesome6 name='mars' size={20} color='#4689FD' />
+                                                            )}
+                                                        </View>
+                                                        <View className="flex-row">
+                                                            <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10 }}>
+                                                                <FontAwesome6 name='location-dot' size={20} color='#4689FD' />
+                                                                <Text style={{ fontSize: 14, fontWeight: 'normal', marginLeft: 5 }}>Jakarta Barat</Text>
+                                                            </View>
+                                                        </View>
+                                                    </View>
+                                                </View>
+                                            </TouchableOpacity>
+                                        </View>
+                                    )}
+                                />
+                            </View>
+                        }
                     </ScrollView>
 
                     {isModalOpen &&
