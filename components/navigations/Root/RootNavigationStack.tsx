@@ -15,27 +15,28 @@ import { RescueFormScreen } from "./screens/RescueFormScreen";
 import { SurrenderFormScreen } from "./screens/SurrenderFormScreen";
 import { EmailScreen } from "./screens/EmailScreen";
 import { EmitterSubscription, Linking } from "react-native";
+import { VerifyScreen } from "./screens/VerifyScreen";
 
 const Stack = createNativeStackNavigator<RootNavigationStackParams>();
 
 const RootNavigationStack: React.FC = () => {
     const { authState } = useAuth();
-    const navigation = useRef<NavigationContainerRef<RootNavigationStackParams>>(null);
+    // const navigation = useRef<NavigationContainerRef<RootNavigationStackParams>>(null);
 
-    useEffect(() => {
-        const handleDeepLink = async () => {
-          const initialUrl = await Linking.getInitialURL();
-          if (initialUrl && initialUrl.includes('email/verification')) {
-            const token = initialUrl.split('/').pop();
-            navigation.current?.navigate('EmailScreen', {token : token || ''});
-          }
-        };
+    // useEffect(() => {
+    //     const handleDeepLink = async () => {
+    //       const initialUrl = await Linking.getInitialURL();
+    //       if (initialUrl && initialUrl.includes('email/verification')) {
+    //         const token = initialUrl.split('/').pop();
+    //         navigation.current?.navigate('EmailScreen', {token : token || ''});
+    //       }
+    //     };
 
-        handleDeepLink();
-    }, []);
+    //     handleDeepLink();
+    // }, []);
 
     return (
-        <NavigationContainer ref={navigation}>
+        <NavigationContainer>
             <Stack.Navigator>
                 {authState?.authenticated ? (
                     <Stack.Group>
@@ -53,6 +54,7 @@ const RootNavigationStack: React.FC = () => {
                         <Stack.Screen name="LoginScreen" component={LoginScreen} options={noHeader} />
                         <Stack.Screen name="RegisterScreen" component={RegisterScreen} options={noHeader} />
                         <Stack.Screen name="EmailScreen" component={EmailScreen} options={noHeader} />
+                        <Stack.Screen name="VerifyScreen" component={VerifyScreen} options={noHeader} />
                     </Stack.Group>
                 )}
             </Stack.Navigator>

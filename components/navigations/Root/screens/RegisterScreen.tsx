@@ -1,18 +1,18 @@
 import React, { FC, useEffect, useState } from "react";
 import { RootNavigationStackScreenProps } from "../../StackScreenProps";
 import { SafeAreaProvider } from "react-native-safe-area-context";
-import { View, Text, Image, TextInput, StyleSheet, TouchableOpacity, ScrollView, Button } from "react-native";
+import { View, Text, Image, TextInput, StyleSheet, TouchableOpacity, ScrollView, Button, ActivityIndicator } from "react-native";
 import { Icon } from "react-native-elements";
 import { number, z, ZodNumber } from "zod";
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Controller, useForm } from 'react-hook-form';
 import { Ionicons } from "@expo/vector-icons";
 import { Picker } from "@react-native-picker/picker";
-import axios from "axios";
-import { Location } from "../../../../interface/ILocation";
 import { post } from "../../../../functions/Fetch";
 import { BackendApiUri } from "../../../../functions/BackendApiUri";
 import { getCity, getKabupaten, getProvince } from "../../../../functions/getLocation";
+import { LocationAPI } from "../../../../interface/ILocationAPI";
+import { useFocusEffect } from "@react-navigation/native"; // Import useFocusEffect
 
 const registerFormSchema = z.object({
     Username: z.string({ required_error: "Name cannot be empty" })
@@ -47,9 +47,9 @@ type RegisterFormType = z.infer<typeof registerFormSchema>
 export const RegisterScreen: FC<RootNavigationStackScreenProps<'RegisterScreen'>> = ({ navigation }) => {
     const [showPassword, setShowPassword] = useState(true);
     const [showConfirmPassword, setShowConfirmPassword] = useState(true);
-    const [provinces, setProvinces] = useState<Location[]>([]);
-    const [cities, setCities] = useState<Location[]>([]);
-    const [kabupatens, setKabupatens] = useState<Location[]>([]);
+    const [provinces, setProvinces] = useState<LocationAPI[]>([]);
+    const [cities, setCities] = useState<LocationAPI[]>([]);
+    const [kabupatens, setKabupatens] = useState<LocationAPI[]>([]);
 
     const {
         control,
@@ -75,7 +75,7 @@ export const RegisterScreen: FC<RootNavigationStackScreenProps<'RegisterScreen'>
         }
     });
     
-
+    
     useEffect(() => {
         fetchProvinceData();
     }, []);
@@ -153,14 +153,12 @@ export const RegisterScreen: FC<RootNavigationStackScreenProps<'RegisterScreen'>
         try {
             const response = await post(BackendApiUri.registerUser, body);
             if(response.status === 200) {
-                navigation.navigate("LoginScreen");
+                navigation.navigate("VerifyScreen", {userId : response.data.Id, email : body.Email});
             }
-            console.log("Success Register");
         } catch (e) {
             console.log(e)
         }
     }
-    
 
     return (
         <SafeAreaProvider className="flex-1 bg-white">
@@ -168,7 +166,7 @@ export const RegisterScreen: FC<RootNavigationStackScreenProps<'RegisterScreen'>
                 <View className="mb-8">
                     <View className="items-center my-10">
                         <View className="absolute left-7 top-1">
-                            <Ionicons name="chevron-back" size={24} color="black" onPress={() => navigation.goBack()} />
+                            <Ionicons name="chevron-back" size={24} style={{backgroundColor: "#ECECEC", borderRadius:999, padding: 2.5}} color="black" onPress={() => navigation.goBack()} />
                         </View>
                         <Text className="text-2xl mb-5">Sign Up</Text>
                         <Image source={require('../../../../assets/logo-register.png')} />
@@ -255,7 +253,7 @@ export const RegisterScreen: FC<RootNavigationStackScreenProps<'RegisterScreen'>
                                     mode="dropdown"
                                 >
                                     <Picker.Item label="Select Province" value="" />
-                                    {Object.values(provinces).map((item: Location) => (
+                                    {Object.values(provinces).map((item: LocationAPI) => (
                                         <Picker.Item label={item.name} value={item.id} key={item.id} />
                                     ))}
                                 </Picker>
@@ -280,7 +278,7 @@ export const RegisterScreen: FC<RootNavigationStackScreenProps<'RegisterScreen'>
                                     mode="dropdown"
                                 >
                                     <Picker.Item label="Select Kabupaten" value=""/>
-                                    {kabupatens && Object.values(kabupatens).map((item: Location) => (
+                                    {kabupatens && Object.values(kabupatens).map((item: LocationAPI) => (
                                         <Picker.Item label={item.name} value={item.id} key={item.id} />
                                     ))}
                                 </Picker>
@@ -302,7 +300,7 @@ export const RegisterScreen: FC<RootNavigationStackScreenProps<'RegisterScreen'>
                                     enabled={!!watch("District")}
                                 >
                                     <Picker.Item label="Select City" value=""/>
-                                    {cities && Object.values(cities).map((item: Location) => (
+                                    {cities && Object.values(cities).map((item: LocationAPI) => (
                                         <Picker.Item label={item.name} value={item.id} key={item.id} />
                                     ))}
                                 </Picker>
@@ -387,7 +385,9 @@ export const RegisterScreen: FC<RootNavigationStackScreenProps<'RegisterScreen'>
                         style={[style.button, isSubmitting ? { backgroundColor: 'gray' } : null]}
                         onPress={handleSubmit(onSubmit)}
                         disabled={isSubmitting}
+                        className="flex-row items-center justify-center"
                     >
+                        {isSubmitting && <ActivityIndicator color="white" />}
                         <Text className="text-center font-bold text-white">Sign Up</Text>
                     </TouchableOpacity>
 
@@ -448,4 +448,3 @@ const style = StyleSheet.create({
         marginBottom: 20,
     }
 })
-

@@ -24,7 +24,8 @@ export const LoginScreen: FC<RootNavigationStackScreenProps<'LoginScreen'>> = ({
     const login = async () => {
         const result = await onLogin!(email, password);
         if(result && result.error){
-            alert(result.msg);
+            setError('Email', { message: 'Invalid email or password' });
+            setError('Password', { message: 'Invalid email or password' });
         }
     }
 
@@ -32,6 +33,7 @@ export const LoginScreen: FC<RootNavigationStackScreenProps<'LoginScreen'>> = ({
         control,
         watch,
         setValue,
+        setError,
         handleSubmit,
         formState: { errors },
     } = useForm<LoginFormType>({
@@ -96,14 +98,14 @@ export const LoginScreen: FC<RootNavigationStackScreenProps<'LoginScreen'>> = ({
                     </View>
                     <Text style={style.errorMessage}>{errors.Password?.message}</Text>
 
-                    <View className="flex-row justify-between mx-8 top-2">
+                    <View className="flex-row justify-between mx-9 top-0">
                         <CheckBox
                             checked={rememberMe}
                             onPress={handleRememberMeChange}
                             checkedColor="#488DF4"
                             containerStyle={style.checkboxContent}
                             title={"Remember Me"}
-                            className="mt-1"
+                            className=""
                             textStyle={style.fontColor}
                         ></CheckBox>
                         <TouchableOpacity>
@@ -119,12 +121,6 @@ export const LoginScreen: FC<RootNavigationStackScreenProps<'LoginScreen'>> = ({
                         <Text>Don't have an account?</Text>
                         <TouchableOpacity onPress={() => navigation.navigate("RegisterScreen")}>
                             <Text className="underline underline-offset-4" style={style.fontColor}> Sign Up</Text>
-                        </TouchableOpacity>
-                    </View>
-                    <View className="flex-row justify-center top-5">
-                        <Text>Test Email Screen</Text>
-                        <TouchableOpacity onPress={() => navigation.navigate("EmailScreen")}>
-                            <Text className="underline underline-offset-4" style={style.fontColor}>Test Email Screen</Text>
                         </TouchableOpacity>
                     </View>
                 </View>
