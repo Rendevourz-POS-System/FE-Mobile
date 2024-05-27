@@ -1,39 +1,79 @@
 import { FontAwesome6, Ionicons } from "@expo/vector-icons";
-import { FC, useState } from "react";
+import { FC, useState, useEffect } from "react";
 import { ActivityIndicator, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { RootNavigationStackScreenProps } from "../../StackScreenProps";
 import { Button, TextInput } from "react-native-paper";
 import { post } from "../../../../functions/Fetch";
 import { BackendApiUri } from "../../../../functions/BackendApiUri";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+const RESEND_OTP_TIMEOUT = 120; // seconds
 
 export const VerifyScreen: FC<RootNavigationStackScreenProps<'VerifyScreen'>> = ({ navigation, route }) => {
     const email = route.params.email;
     const userId = route.params.userId;
     const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
     const [otp, setOtp] = useState<string>("");
+    const [resendAvailable, setResendAvailable] = useState<boolean>(true);
+    const [resendMessage, setResendMessage] = useState<string>("");
+    const [countdown, setCountdown] = useState<number>(0);
+
+    useEffect(() => {
+        const checkResendStatus = async () => {
+            const storedTime = await AsyncStorage.getItem('resendOtpTime');
+            if (storedTime) {
+                const timeDiff = Math.floor((Date.now() - parseInt(storedTime)) / 1000);
+                if (timeDiff < RESEND_OTP_TIMEOUT) {
+                    setCountdown(RESEND_OTP_TIMEOUT - timeDiff);
+                    setResendAvailable(false);
+                } else {
+                    await AsyncStorage.removeItem('resendOtpTime');
+                }
+            }
+        };
+
+        checkResendStatus();
+
+        const interval = setInterval(() => {
+            setCountdown(prevCountdown => {
+                if (prevCountdown > 0) return prevCountdown - 1;
+                setResendAvailable(true);
+                return 0;
+            });
+        }, 1000);
+
+        return () => clearInterval(interval);
+    }, []);
 
     const handleSubmit = async () => {
-        setIsSubmitting(true)
+        setIsSubmitting(true);
         const body = {
-            UserId : userId,
-            Otp : otp
+            UserId: userId,
+            Otp: parseInt(otp)
         };
-        navigation.navigate("EmailScreen")
         try {
             const res = await post(`${BackendApiUri.verifyEmail}`, body);
-            if(res.status === 200) {
+            if (res.status === 200) {
                 setIsSubmitting(false);
-                navigation.navigate("EmailScreen")
+                navigation.navigate("EmailScreen");
             }
-        } catch(e) {
+        } catch (e) {
             setIsSubmitting(false);
         }
     };
 
-    const handleResend = () => {
-
-    }
+    const handleResend = async () => {
+        setResendAvailable(false);
+        setResendMessage("OTP resent. Please check your email. You can resend OTP again in 2 minutes.");
+        await AsyncStorage.setItem('resendOtpTime', Date.now().toString());
+        setCountdown(RESEND_OTP_TIMEOUT);
+        const res = await post(`${BackendApiUri.resendOtp}`, { UserId: userId });
+        if (res.status !== 200) {
+            setResendAvailable(true);
+            setResendMessage("Failed to resend OTP. Please try again.");
+        }
+    };
 
     return (
         <SafeAreaProvider>
@@ -58,22 +98,22 @@ export const VerifyScreen: FC<RootNavigationStackScreenProps<'VerifyScreen'>> = 
                                 <TextInput
                                     placeholder="8 digit code"
                                     style={{ backgroundColor: "transparent", flex: 1, marginLeft: 10 }}
-                                    activeUnderlineColor="#488DF4" // Optional: Customize active underline color
+                                    activeUnderlineColor="#488DF4"
                                     mode="flat"
                                     onChangeText={setOtp}
-                                    value={otp}
                                 />
                             </View>
                             <View style={{ flexDirection: 'row', marginTop: 12 }}>
-                                <Text className="">Don't receive an OTP? </Text>
-                                <TouchableOpacity onPress={handleResend}>
-                                    <Text style={{ color: '#488DF4' }}>Resend OTP</Text>
+                                <Text>Don't receive an OTP? </Text>
+                                <TouchableOpacity onPress={handleResend} disabled={!resendAvailable}>
+                                    <Text style={resendAvailable ? { color: '#488DF4' } : { color: 'gray' }}>
+                                        {resendAvailable ? 'Resend OTP' : `Resend in ${countdown}s`}
+                                    </Text>
                                 </TouchableOpacity>
                             </View>
                             <TouchableOpacity 
                                 style={[style.button, isSubmitting ? { backgroundColor: 'gray' } : null]}
                                 onPress={handleSubmit}
-                                disabled={isSubmitting}
                             >
                                 <View style={style.buttonContent}>
                                     {isSubmitting && <ActivityIndicator color="white" style={style.activityIndicator} />}
@@ -99,10 +139,10 @@ const style = StyleSheet.create({
         flexDirection: 'row'
     },
     phoneNumberPrefix: {
-        marginRight: 10, // Adjust the margin as needed
-        fontSize: 18, // Adjust the font size as needed
-        alignSelf: 'center', // Align the prefix vertically in the center
-    },    
+        marginRight: 10, 
+        fontSize: 18,
+        alignSelf: 'center',
+    },
     inputSelect: {
         backgroundColor: "#F7F7F9",
         marginHorizontal: 30,
@@ -110,8 +150,8 @@ const style = StyleSheet.create({
         borderBottomWidth: 2,
         borderRadius: 10,
         flexDirection: 'row',
-        alignItems: 'stretch', // Ensure that children stretch to fill the container vertically
-        overflow: 'hidden', // Hide any overflowing content
+        alignItems: 'stretch',
+        overflow: 'hidden',
     },
     button: {
         backgroundColor: "#378CE7",
@@ -144,4 +184,4 @@ const style = StyleSheet.create({
         marginHorizontal: 35,
         marginBottom: 20,
     }
-})
+});

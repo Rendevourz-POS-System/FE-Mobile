@@ -157,20 +157,6 @@ export const RegisterScreen: FC<RootNavigationStackScreenProps<'RegisterScreen'>
             }
         } catch (e) {
             console.log(e)
-        } finally {
-            reset({
-                Nik : undefined,
-                Username: undefined,
-                Email: undefined,
-                Password: undefined,
-                ConfirmPassword: undefined,
-                City : undefined,
-                Province : undefined,
-                District : undefined,
-                Address : undefined,
-                PostalCode : undefined,
-                PhoneNumber : undefined,
-            });
         }
     }
 
