@@ -55,7 +55,6 @@ export const VerifyScreen: FC<RootNavigationStackScreenProps<'VerifyScreen'>> = 
         try {
             const res = await post(`${BackendApiUri.verifyEmail}`, body);
             if (res.status === 200) {
-                setIsSubmitting(false);
                 navigation.navigate("EmailScreen");
             }
         } catch (e) {
@@ -114,6 +113,7 @@ export const VerifyScreen: FC<RootNavigationStackScreenProps<'VerifyScreen'>> = 
                             <TouchableOpacity 
                                 style={[style.button, isSubmitting ? { backgroundColor: 'gray' } : null]}
                                 onPress={handleSubmit}
+                                disabled={isSubmitting}
                             >
                                 <View style={style.buttonContent}>
                                     {isSubmitting && <ActivityIndicator color="white" style={style.activityIndicator} />}
