@@ -117,7 +117,7 @@ export const ShelterScreen: FC<ProfileRootBottomTabCompositeScreenProps<'Shelter
                                 </View>
                                 <Text style={styles.text}>Tambah Hewan</Text>
                             </TouchableOpacity>
-                            <TouchableOpacity style={styles.button}>
+                            <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("HistoryShelterScreen")}>
                                 <View style={styles.iconContainer}>
                                     <MaterialCommunityIcons name="history" color="white" size={25} />
                                 </View>
