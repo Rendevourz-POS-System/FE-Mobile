@@ -160,15 +160,15 @@ export const ShelterDetailScreen: FC<RootNavigationStackScreenProps<'ShelterDeta
                     </View>
 
                     <View className="flex flex-row justify-between items-center mt-4">
-                        <View className="flex-1 border-2 border-gray-300 px-4 py-3 mx-1 rounded-xl items-center">
+                        <View className="flex-1 border-2 border-gray-300 px-4 py-5 mx-1 rounded-xl items-center" style={{height: 75}}>
                             <Text className="text-gray-500 text-center">Total Hewan</Text>
                             <Text className="text-black font-bold">{data.Data.TotalPet}</Text>
                         </View>
-                        <View className="flex-1 border-2 border-gray-300 px-4 py-3 mx-1 text-center rounded-xl items-center">
+                        <View className="flex-1 border-2 border-gray-300 px-4 py-3 mx-1 text-center rounded-xl items-center" style={{height: 75}}>
                             <Text className="text-gray-500 text-center">Adopsi Available</Text>
                             <Text className="text-black font-bold">{data.Data.ShelterCapacity}</Text>
                         </View>
-                        <View className="flex-1 border-2 border-gray-300 px-4 py-[6] mx-1 text-center rounded-xl items-center">
+                        <View className="flex-1 border-2 border-gray-300 px-4 py-[4] mx-1 text-center rounded-xl items-center" style={{height: 75}}>
                             <Text className="text-gray-500 text-center">Menerima Hewan</Text>
                             <View className="flex flex-row justify-center items-center mt-1">
                                 {/* <FontAwesome6 name="cat" size={21} color="black" style={{ marginRight: 5 }} />

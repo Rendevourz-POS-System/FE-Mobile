@@ -22,7 +22,7 @@ export const putForm = async (url: string, body: FormData) => {
             'Content-Type': 'multipart/form-data',
         }
     });
-    return response.data;
+    return response;
 }
 
 export const postForm = async (url: string, body: FormData) => {

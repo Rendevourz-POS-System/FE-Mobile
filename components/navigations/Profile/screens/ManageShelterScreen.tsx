@@ -7,7 +7,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from 'react-hook-form';
 import { BackendApiUri } from "../../../../functions/BackendApiUri";
-import { get } from "../../../../functions/Fetch";
+import { get, putForm } from "../../../../functions/Fetch";
 import * as ImagePicker from 'expo-image-picker';
 import { SelectList } from "react-native-dropdown-select-list";
 import { PetType, ShelterLocation } from "../../../../interface/IPetType";
@@ -65,9 +65,12 @@ export const ManageShelterScreen: FC<ProfileRootBottomTabCompositeScreenProps<'M
         const formData = new FormData();
         formData.append('file', image);
         formData.append('data', payloadString);
-        console.log(payloadString)
-        // const res = await putForm(`${BackendApiUri.putUserUpdate}`, formData);
-        Alert.alert('Data Tersimpan', 'Data anda telah tersimpan.');
+        const res = await putForm(`${BackendApiUri.putShelterUpdate}`, formData);
+        if(res.status == 200){
+            Alert.alert('Shelter Berhasil Terupdate', 'Data shelter anda telah berhasil terupdate.', [{ text: "OK", onPress: () => navigation.goBack() } ]);
+        }else{
+            Alert.alert('Shelter Gagal Update', 'Data shelter anda gagal terupdate.');
+        } 
     }
 
     const pickImage = async () => {
@@ -111,7 +114,6 @@ export const ManageShelterScreen: FC<ProfileRootBottomTabCompositeScreenProps<'M
     useEffect(() => {
         if (selected && selected.length > 0) {
             const selectedValue: [string, ...string[]] = [selected[0], ...selected.slice(1)];
-            console.log("tessL ", selected)
             setValue('PetTypeAccepted', selectedValue);
         }
     }, [selected, setValue]);
@@ -126,7 +128,7 @@ export const ManageShelterScreen: FC<ProfileRootBottomTabCompositeScreenProps<'M
             <ScrollView>
                 <View style={styles.rowContainer} className="justify-around mt-5 mb-5">
                     <TouchableOpacity
-                        style={{ width: 550, height: 200, backgroundColor: '#2E3A59', borderRadius: 10, justifyContent: 'center', alignItems: 'center' }}
+                        style={{ width: 350, height: 200, backgroundColor: '#2E3A59', borderRadius: 10, justifyContent: 'center', alignItems: 'center' }}
                         onPress={pickImage}
                         disabled={image ? true : false}
                     >

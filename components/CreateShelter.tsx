@@ -107,6 +107,18 @@ export const CreateShelter = () => {
 
     return (
         <ScrollView className="mt-5">
+            <View className="mt-10 mb-10 items-center">
+                <TouchableOpacity
+                    style={{ width: 350, height: 200, backgroundColor: '#2E3A59', borderRadius: 10, justifyContent: 'center', alignItems: 'center' }}
+                    onPress={pickImage}
+                >
+
+                    {image ? (
+                        <Image source={{ uri: image }} style={{ width: "100%", height: "100%", borderRadius: 10 }} resizeMode="cover" />) :
+                        (<Ionicons name="camera" size={40} color="white" />)}
+                </TouchableOpacity>
+            </View>
+
             <Text style={styles.textColor}>Nama Shelter<Text className='text-[#ff0000]'>*</Text></Text>
             <View style={styles.inputBox}>
                 <Controller
@@ -152,6 +164,7 @@ export const CreateShelter = () => {
                         <TextInput
                             placeholder="Masukkan Alamat Shelter"
                             style={{ flex: 1 }}
+                            multiline
                             onChangeText={(text: string) => setValue('ShelterAddress', text)}
                         />
                     )}
@@ -248,6 +261,7 @@ export const CreateShelter = () => {
                         <TextInput
                             placeholder="Masukkan Deskripsi Shelter"
                             style={{ flex: 1 }}
+                            multiline
                             onChangeText={(text: string) => setValue('ShelterDescription', text)}
                         />
                     )}
@@ -289,13 +303,6 @@ export const CreateShelter = () => {
                 />
             </View>
             <Text style={styles.errorMessage}>{errors.Pin?.message}</Text>
-
-            <Text style={styles.textColor}>Gambar<Text className='text-[#ff0000]'>*</Text></Text>
-            <TouchableOpacity onPress={pickImage} style={styles.imageBox}>
-                <Text className='text-center text-gray-500'>Pilih Gambar</Text>
-            </TouchableOpacity>
-            {image ? (<Image source={{ uri: image }} style={{ width: 100, height: 100, marginHorizontal: 35, marginTop: 10, borderRadius: 10 }} />) : (<Ionicons name="camera" size={40} color="white" />)}
-
 
             <TouchableOpacity style={[styles.button]} onPress={handleSubmit(onSubmit)}>
                 <Text className="text-center font-bold text-white">Save</Text>

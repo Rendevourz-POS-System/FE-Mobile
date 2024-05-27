@@ -57,7 +57,7 @@ export const ChangePasswordScreen: FC<ProfileRootBottomTabCompositeScreenProps<'
                                 placeholder="Current Password"
                                 style={{ flex: 1 }}
                                 onChangeText={(text: string) => setValue('Password', text)}
-                                secureTextEntry={showPassword}
+                                secureTextEntry={!showPassword}
                             />
                         )}
                     />
@@ -76,7 +76,7 @@ export const ChangePasswordScreen: FC<ProfileRootBottomTabCompositeScreenProps<'
                                 placeholder="New Password"
                                 style={{ flex: 1 }}
                                 onChangeText={(text: string) => setValue('NewPassword', text)}
-                                secureTextEntry={showNewPassword}
+                                secureTextEntry={!showNewPassword}
                             />
                         )}
                     />
@@ -96,7 +96,7 @@ export const ChangePasswordScreen: FC<ProfileRootBottomTabCompositeScreenProps<'
                                 placeholder="Confirm Password"
                                 style={{ flex: 1 }}
                                 onChangeText={(text: string) => setValue('ConfirmPassword', text)}
-                                secureTextEntry={showConfirmPassword}
+                                secureTextEntry={!showConfirmPassword}
                             />
                         )}
                     />
