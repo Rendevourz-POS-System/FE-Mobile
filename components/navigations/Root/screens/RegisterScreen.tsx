@@ -1,19 +1,18 @@
 import React, { FC, useEffect, useState } from "react";
 import { RootNavigationStackScreenProps } from "../../StackScreenProps";
 import { SafeAreaProvider } from "react-native-safe-area-context";
-import { View, Text, Image, TextInput, StyleSheet, TouchableOpacity, ScrollView, Button } from "react-native";
+import { View, Text, Image, TextInput, StyleSheet, TouchableOpacity, ScrollView, Button, ActivityIndicator } from "react-native";
 import { Icon } from "react-native-elements";
 import { number, z, ZodNumber } from "zod";
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Controller, useForm } from 'react-hook-form';
 import { Ionicons } from "@expo/vector-icons";
 import { Picker } from "@react-native-picker/picker";
-import axios from "axios";
-import { Location } from "../../../../interface/ILocation";
 import { post } from "../../../../functions/Fetch";
 import { BackendApiUri } from "../../../../functions/BackendApiUri";
 import { getCity, getKabupaten, getProvince } from "../../../../functions/getLocation";
 import { LocationAPI } from "../../../../interface/ILocationAPI";
+import { useFocusEffect } from "@react-navigation/native"; // Import useFocusEffect
 
 const registerFormSchema = z.object({
     Username: z.string({ required_error: "Name cannot be empty" })
@@ -76,7 +75,7 @@ export const RegisterScreen: FC<RootNavigationStackScreenProps<'RegisterScreen'>
         }
     });
     
-
+    
     useEffect(() => {
         fetchProvinceData();
     }, []);
@@ -158,9 +157,22 @@ export const RegisterScreen: FC<RootNavigationStackScreenProps<'RegisterScreen'>
             }
         } catch (e) {
             console.log(e)
+        } finally {
+            reset({
+                Nik : undefined,
+                Username: undefined,
+                Email: undefined,
+                Password: undefined,
+                ConfirmPassword: undefined,
+                City : undefined,
+                Province : undefined,
+                District : undefined,
+                Address : undefined,
+                PostalCode : undefined,
+                PhoneNumber : undefined,
+            });
         }
     }
-    
 
     return (
         <SafeAreaProvider className="flex-1 bg-white">
@@ -387,7 +399,9 @@ export const RegisterScreen: FC<RootNavigationStackScreenProps<'RegisterScreen'>
                         style={[style.button, isSubmitting ? { backgroundColor: 'gray' } : null]}
                         onPress={handleSubmit(onSubmit)}
                         disabled={isSubmitting}
+                        className="flex-row items-center justify-center"
                     >
+                        {isSubmitting && <ActivityIndicator color="white" />}
                         <Text className="text-center font-bold text-white">Sign Up</Text>
                     </TouchableOpacity>
 
@@ -448,4 +462,3 @@ const style = StyleSheet.create({
         marginBottom: 20,
     }
 })
-
