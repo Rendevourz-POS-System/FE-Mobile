@@ -19,5 +19,6 @@ export const BackendApiUri = {
     postShelterRegister: '/shelter/register',
     getUserShelter: '/shelter/my-shelter',
     postPet: '/pet/create',
-    putShelterUpdate: '/shelter/update'
+    putShelterUpdate: '/shelter/update',
+    getPet: '/pet'
 }
