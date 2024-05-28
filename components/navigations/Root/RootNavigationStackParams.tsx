@@ -6,7 +6,7 @@ export type RootNavigationStackParams = {
     TabMenu: undefined;
     LoginScreen: undefined;
     EmailScreen : undefined;
-    VerifyScreen : {userId: string | null, email : string | null};
+    VerifyOTPScreen : {userId: string | null, email : string | null};
     RegisterScreen: undefined;
     ShelterDetailScreen: {shelterId : string}
     DonateScreen: {bankNumber : string};

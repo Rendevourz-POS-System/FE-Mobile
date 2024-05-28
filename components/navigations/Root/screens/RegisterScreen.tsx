@@ -153,7 +153,7 @@ export const RegisterScreen: FC<RootNavigationStackScreenProps<'RegisterScreen'>
         try {
             const response = await post(BackendApiUri.registerUser, body);
             if(response.status === 200) {
-                navigation.navigate("VerifyScreen", {userId : response.data.Id, email : body.Email});
+                navigation.navigate("VerifyOTPScreen", {userId : response.data.Id, email : body.Email});
             }
         } catch (e) {
             console.log(e)
