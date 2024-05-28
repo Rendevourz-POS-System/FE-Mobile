@@ -30,7 +30,7 @@ export const HomeUser = ({ favAttempt }: any) => {
                         <TouchableOpacity
                             key={item.name}
                             onPress={() => selectTab(item.name)}
-                            className={`w-1/2 px-20 py-3 m-2 ${selectedTab === item.name ? 'border-b-2 border-blue-400' : 'border-transparent'}`}
+                            className={`w-1/2 py-3 m-2 ${selectedTab === item.name ? 'border-b-2 border-blue-400' : 'border-transparent'}`}
                         >
                             <Text className={`text-center ${selectedTab === item.name ? 'text-blue-400' : 'text-gray-700'}`}>
                                 {item.name}
