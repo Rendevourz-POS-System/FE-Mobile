@@ -55,6 +55,8 @@ export const VerifyOTPScreen: FC<RootNavigationStackScreenProps<'VerifyOTPScreen
         try {
             const res = await post(`${BackendApiUri.verifyEmail}`, body);
             if (res.status === 200) {
+                setOtp("");
+                setIsSubmitting(false);
                 navigation.navigate("EmailScreen");
             }
         } catch (e) {
@@ -100,6 +102,7 @@ export const VerifyOTPScreen: FC<RootNavigationStackScreenProps<'VerifyOTPScreen
                                     activeUnderlineColor="#488DF4"
                                     mode="flat"
                                     onChangeText={setOtp}
+                                    keyboardType="phone-pad"
                                 />
                             </View>
                             <View style={{ flexDirection: 'row', marginTop: 12 }}>
