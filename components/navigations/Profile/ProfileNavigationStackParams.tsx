@@ -8,4 +8,5 @@ export type ProfileNavigationStackParams = {
     ShelterScreen: undefined; 
     ManageShelterScreen: undefined;
     CreatePetScreen: {shelterId : string};
+    HistoryShelterScreen: undefined;
 }

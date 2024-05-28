@@ -171,9 +171,6 @@ export const ShelterDetailScreen: FC<RootNavigationStackScreenProps<'ShelterDeta
                         <View className="flex-1 border-2 border-gray-300 px-4 py-[4] mx-1 text-center rounded-xl items-center" style={{height: 75}}>
                             <Text className="text-gray-500 text-center">Menerima Hewan</Text>
                             <View className="flex flex-row justify-center items-center mt-1">
-                                {/* <FontAwesome6 name="cat" size={21} color="black" style={{ marginRight: 5 }} />
-                                <FontAwesome6 name="dog" size={21} color="black" style={{ marginRight: 5 }} />
-                                <MaterialCommunityIcons name="rabbit" size={26} color="black" /> */}
                                 {data.Data.PetTypeAccepted.map((item) => {
                                     const matchingPet = petTypes.find((pet) => pet.Id === item);
                                     if (matchingPet) {
@@ -194,7 +191,7 @@ export const ShelterDetailScreen: FC<RootNavigationStackScreenProps<'ShelterDeta
                 </View>
                 <View className='my-3'>
                     <View className='flex-row justify-around'>
-                        <TouchableOpacity style={styles.buttonBox} onPress={() => navigation.navigate("HewanAdopsiScreen")}>
+                        <TouchableOpacity style={styles.buttonBox} onPress={() => navigation.navigate("HewanAdopsiScreen", {shelterId: route.params.shelterId})}>
                             <MaterialIcons name="pets" size={24} color="white" />
                             <Text style={styles.fontButton} className='ml-3 text-s text-center'>Adoption Pet</Text>
                         </TouchableOpacity>
@@ -223,11 +220,6 @@ export const ShelterDetailScreen: FC<RootNavigationStackScreenProps<'ShelterDeta
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-    },
-    title: {
-        fontWeight: 'bold',
-        fontSize: 20,
-        bottom: 15
     },
     nextIcon: {
         backgroundColor: "#f5f5f5",

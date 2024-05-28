@@ -1,12 +1,34 @@
-import React, { FC, useState } from 'react';
-import { Image, ScrollView, TouchableOpacity, View, StyleSheet } from 'react-native';
+import React, { FC, useEffect, useState } from 'react';
+import { Image, ScrollView, TouchableOpacity, View, StyleSheet, TouchableHighlight } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { Text } from 'react-native-elements';
 import { FontAwesome, FontAwesome5, FontAwesome6, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { RootNavigationStackScreenProps } from '../../StackScreenProps';
+import { PetData } from '../../../../interface/IPetList';
+import { get } from '../../../../functions/Fetch';
+import { BackendApiUri } from '../../../../functions/BackendApiUri';
+import { FlashList } from '@shopify/flash-list';
 
-export const HewanAdopsiScreen: FC<RootNavigationStackScreenProps<'HewanAdopsiScreen'>> = ({ navigation }: any) => {
+export const HewanAdopsiScreen: FC<RootNavigationStackScreenProps<'HewanAdopsiScreen'>> = ({ navigation, route }: any) => {
     const [isFavorite, setIsFavorite] = useState(false);
+    const [petData, setPetData] = useState<PetData[]>([]);
+    
+    const fetchPetData = async () => {
+        try{
+            console.log(route.params.shelterId)
+            const responsePet = await get(`${BackendApiUri.getPetList}/?shelter_id=${route.params.shelterId}&page=1&page_size=200`)
+            if(responsePet && responsePet.status === 200) {
+                setPetData(responsePet.data);
+                console.log(petData)
+            }
+        } catch(e) {
+            throw Error;
+        } 
+    };
+
+    useEffect(() => {
+        fetchPetData();
+    }, [route.params.shelterId])
 
     const handlePressFavorite = () => {
         setIsFavorite(!isFavorite);
@@ -20,62 +42,61 @@ export const HewanAdopsiScreen: FC<RootNavigationStackScreenProps<'HewanAdopsiSc
             </View>
 
             <ScrollView>
-                <View className='mt-5 p-5'>
-                    <TouchableOpacity style={{ overflow: 'hidden', marginBottom: 10 }} onPress={() => navigation.navigate("PetDetailScreen")}>
-                        <Image source={require('../../../../assets/image.png')} style={styles.imageContainer} />
-                        <View style={styles.infoContainer}>
-                            <View className='rounded-t-3xl mt-5' style={{ marginTop: 10, backgroundColor: "#FFFDFF", paddingHorizontal: 20, paddingVertical: 15 }}>
-                                <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-                                    <Text className='text-xl font-bold'>Doggy</Text>
-                                    <FontAwesome name={isFavorite ? 'heart' : 'heart-o'} size={24} color="#4689FD" onPress={handlePressFavorite} />
-                                </View>
-                                <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10 }}>
-                                    <FontAwesome6 name='location-dot' size={20} color='#4689FD' />
-                                    <Text className='text-s font-light ml-2'>Jl. Kebon Jeruk Raya No. 1, Jakarta Barat</Text>
-                                </View>
-                                <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10 }}>
-                                    <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}>
-                                        <Ionicons name="male" size={20} color="#4689FD" />
-                                        <Text className='text-s font-light ml-2'>Male</Text>
+                {petData &&
+                    <View style={{ flex: 1, padding: 10 }}>
+                    <FlashList
+                        estimatedItemSize={25}
+                        data={petData || []}
+                        numColumns={1}
+                        keyExtractor={item => item.Id.toString()}
+                        renderItem={({ item: pet }) => (
+                            <View style={{ flex: 1, marginBottom: 35, marginTop: 20 }}>
+                                <TouchableOpacity className="mx-2 justify-center" activeOpacity={1} onPress={() => navigation.navigate("PetDetailScreen", {petId : pet.Id})}>
+                                <Image
+                                    source={{ uri: `data:image/*;base64,${pet.ImageBase64}` }}
+                                    className="w-full h-80 rounded-3xl"
+                                    />
+                                    <TouchableHighlight
+                                        style={{
+                                            position: 'absolute',
+                                            top: 7,
+                                            right: 7,
+                                            backgroundColor: 'rgba(255, 255, 255, 0.65)',
+                                            padding: 8,
+                                            borderRadius: 999
+                                        }}
+                                        underlayColor="transparent"
+                                    >
+                                        <View className="rounded-full">
+                                            <FontAwesome name='heart' size={20} color="#FF0000" />
+                                        </View>
+                                    </TouchableHighlight>
+
+                                    <View style={{ position: 'absolute', top: 230, left: 0, right: 0, bottom: 0 }}>
+                                        <View style={{ marginTop: 5, backgroundColor: "#FFFDFF", paddingHorizontal: 20, paddingVertical: 15, borderRadius: 15 }}>
+                                            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                                                <Text style={{ fontSize: 20, fontWeight: 'bold' }}>{pet.PetName}</Text>
+                                                {pet.PetType === "Male" ? (
+                                                        <FontAwesome6 name='venus' size={20} color='#FF6EC7' />
+                                                    ) : (
+                                                        <FontAwesome6 name='mars' size={20} color='#4689FD' />
+                                                )}
+                                            </View>
+                                            <View className="flex-row">
+                                                <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10 }}>
+                                                    <FontAwesome6 name='location-dot' size={20} color='#4689FD' />
+                                                    <Text style={{ fontSize: 14, fontWeight: 'normal', marginLeft: 5 }}>Jakarta Barat</Text>
+                                                </View>
+                                            </View>
+                                        </View>
                                     </View>
-                                    <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}>
-                                        <FontAwesome5 name="calendar-alt" size={18} color="#4689FD" />
-                                        <Text className='text-s font-light ml-2'>25 years old</Text>
-                                    </View>
-                                </View>
+                                </TouchableOpacity>
                             </View>
-                        </View>
-                    </TouchableOpacity>
-                </View>
+                        )}
+                    />
+                </View> 
+                }
             </ScrollView>
         </SafeAreaProvider>
     );
 }
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-    },
-    title: {
-        fontWeight: 'bold',
-        fontSize: 20,
-        bottom: 15
-    },
-    fontButton: {
-        color: 'white'
-    },
-    imageContainer: {
-        width: '100%',
-        height: 280,
-        marginTop: 10,
-        borderTopLeftRadius: 20,
-        borderTopRightRadius: 20
-    },
-    infoContainer: {
-        position: 'absolute',
-        top: 170,
-        left: 0,
-        right: 0,
-        bottom: 0
-    }
-});
