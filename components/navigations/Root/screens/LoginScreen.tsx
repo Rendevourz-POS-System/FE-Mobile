@@ -25,7 +25,7 @@ export const LoginScreen: FC<RootNavigationStackScreenProps<'LoginScreen'>> = ({
 
     const login = async () => {
         const result = await onLogin!(email, password);
-        if(result.data.Data)  {
+        if(result.data?.Data)  {
             try{
                 const res = await post(`${BackendApiUri.resendOtp}`, { UserId: result.data.Data });
             } catch(e){
@@ -33,7 +33,7 @@ export const LoginScreen: FC<RootNavigationStackScreenProps<'LoginScreen'>> = ({
             }
             navigation.navigate("VerifyOTPScreen", { email: email, userId: result.data.Data });
         }
-        if(result && result.error){
+        if(result.error){
             setError('Email', { message: 'Invalid email or password' });
             setError('Password', { message: 'Invalid email or password' });
         }

@@ -85,6 +85,7 @@ export const AuthProvider = ({children} : any) => {
                 });
                 return result;
             }
+            if(result.data.Error) return result;
             setAuthState({
                 token: result.data['Token'],
                 authenticated: true,
