@@ -8,6 +8,8 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Controller, useForm } from 'react-hook-form';
 import axios from "axios";
 import { useAuth } from "../../../../app/context/AuthContext";
+import { post } from "../../../../functions/Fetch";
+import { BackendApiUri } from "../../../../functions/BackendApiUri";
 
 const loginFormSchema = z.object({
     Email: z.string({ required_error: "Email cannot be empty" }).email({ message: "Invalid email address" }),
@@ -23,6 +25,14 @@ export const LoginScreen: FC<RootNavigationStackScreenProps<'LoginScreen'>> = ({
 
     const login = async () => {
         const result = await onLogin!(email, password);
+        if(result.data.Data)  {
+            try{
+                const res = await post(`${BackendApiUri.resendOtp}`, { UserId: result.data.Data });
+            } catch(e){
+                console.log(e)
+            }
+            navigation.navigate("VerifyOTPScreen", { email: email, userId: result.data.Data });
+        }
         if(result && result.error){
             setError('Email', { message: 'Invalid email or password' });
             setError('Password', { message: 'Invalid email or password' });

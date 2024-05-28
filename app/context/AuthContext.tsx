@@ -76,7 +76,15 @@ export const AuthProvider = ({children} : any) => {
     const login = async (email: string, password: string) => {
         try{
             const result = await axios.post(`${BackendApiUri.loginUser}`, {email, password});
-
+            if(result.data.Data) {
+                setAuthState({
+                    token: null,
+                    authenticated: false,
+                    userId : null,
+                    username: null,
+                });
+                return result;
+            }
             setAuthState({
                 token: result.data['Token'],
                 authenticated: true,

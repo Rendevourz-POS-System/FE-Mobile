@@ -10,7 +10,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const RESEND_OTP_TIMEOUT = 120; // seconds
 
-export const VerifyScreen: FC<RootNavigationStackScreenProps<'VerifyScreen'>> = ({ navigation, route }) => {
+export const VerifyOTPScreen: FC<RootNavigationStackScreenProps<'VerifyOTPScreen'>> = ({ navigation, route }) => {
     const email = route.params.email;
     const userId = route.params.userId;
     const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
