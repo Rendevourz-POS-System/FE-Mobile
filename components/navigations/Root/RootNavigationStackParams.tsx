@@ -12,7 +12,7 @@ export type RootNavigationStackParams = {
     DonateScreen: {bankNumber : string};
     HewanAdopsiScreen: undefined;
     PetDetailScreen: {petId : string};
-    AdoptionFormScreen: undefined;
+    AdoptionFormScreen: {shelterId: string};
     RescueFormScreen: undefined;
     SurrenderFormScreen: undefined;
 }
