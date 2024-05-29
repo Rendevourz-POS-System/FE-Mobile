@@ -6,11 +6,19 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Controller, useForm } from 'react-hook-form';
 import { MultipleSelectList, SelectList } from "react-native-dropdown-select-list";
 import { BackendApiUri } from "../functions/BackendApiUri";
-import { get, postForm } from "../functions/Fetch";
+import { get, post, postForm } from "../functions/Fetch";
 import { PetType, ShelterLocation } from "../interface/IPetType";
 import * as ImagePicker from 'expo-image-picker';
 import { RootBottomTabCompositeNavigationProp } from "./navigations/CompositeNavigationProps";
 import { useNavigation } from "@react-navigation/native";
+import { useAuth } from "../app/context/AuthContext";
+import * as FileSystem from 'expo-file-system';
+
+interface ImageState {
+    uri: string;
+    type: string;
+    name: string;
+}
 
 const createShelterFormSchema = z.object({
     ShelterName: z.string({ required_error: "Nama shelter tidak boleh kosong" }).min(1, { message: "Nama shelter tidak boleh kosong" }),
@@ -28,13 +36,15 @@ const createShelterFormSchema = z.object({
 type CreateShelterFormType = z.infer<typeof createShelterFormSchema>
 
 export const CreateShelter = () => {
+    const { authState } = useAuth();
     const navigation = useNavigation<RootBottomTabCompositeNavigationProp<'Profile'>>();
     const [inputValue, setInputValue] = useState<number | undefined>(undefined);
     const [inputTotalPetValue, setInputTotalPetValue] = useState<number | undefined>(undefined);
     const [petTypes, setPetTypes] = useState<PetType[]>([]);
     const [shelterLocation, setShelterLocation] = useState<ShelterLocation[]>([]);
     const [selected, setSelected] = useState<string[]>([]);
-    const [image, setImage] = useState('');
+    const [image, setImage] = useState<string | null>(null);
+    const imgDir = FileSystem.documentDirectory + 'images/';
     const { control, handleSubmit, setValue, formState: { errors } } = useForm<CreateShelterFormType>({
         resolver: zodResolver(createShelterFormSchema),
         defaultValues: {
@@ -42,6 +52,12 @@ export const CreateShelter = () => {
         },
     });
 
+    const ensureDirExists = async () => {
+        const dirInfo = await FileSystem.getInfoAsync(imgDir);
+        if (!dirInfo.exists) {
+            await FileSystem.makeDirectoryAsync(imgDir, { intermediates: true });
+        }
+    }
     const fetchPetType = async () => {
         const res = await get(BackendApiUri.getPetTypes);
         setPetTypes(res.data)
@@ -74,52 +90,118 @@ export const CreateShelter = () => {
         }
     }, [selected, setValue]);
 
-    const pickImage = async () => {
-        let result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ImagePicker.MediaTypeOptions.All,
-            allowsEditing: true,
-            aspect: [1, 1],
-            quality: 1,
-        })
+    const selectImage = async (useLibrary : boolean) => {
+        let result;
+        const options : ImagePicker.ImagePickerOptions = {
+            mediaTypes: ImagePicker.MediaTypeOptions.Images,
+                allowsEditing: true,
+                aspect: [1, 1],
+                quality: 1,
+        }
+
+        if (useLibrary) {
+            result = await ImagePicker.launchImageLibraryAsync(options);
+        } else {
+            await ImagePicker.requestCameraPermissionsAsync();
+            result = await ImagePicker.launchCameraAsync(options);
+        }
 
         if (!result.canceled) {
-            setImage(result.assets[0].uri)
+            saveImage(result.assets[0].uri);
         }
     };
 
-    const onSubmit = async (data: CreateShelterFormType) => {
-        let payloadString = JSON.stringify(data);
-        const formData = new FormData();
-        formData.append("files", image);
-        formData.append('data', payloadString);
-        const res = await postForm(BackendApiUri.postShelterRegister, formData);
-        if (res.status === 200) {
-            Alert.alert("Shelter Created", "Shelter Berhasil dibuat", [
-                {
-                    text: "OK",
-                    onPress: () => navigation.goBack()
-                }
-            ]);
-        }else{
-            Alert.alert("Shelter Gagal", "Shelter gagal dibuat, mohon diisi dengan yang benar");
+    const saveImage = async (uri: string) => {
+        await ensureDirExists();
+        const fileName = uri.substring(uri.lastIndexOf('/') + 1);
+        const dest = imgDir + fileName;
+        await FileSystem.copyAsync({ from: uri, to: dest });
+        setImage(dest);
+    }
+
+    useEffect(() => {
+        loadImages();
+    }, []);
+
+    const loadImages = async () => {
+        await ensureDirExists();
+        const files = await FileSystem.readDirectoryAsync(imgDir);
+        if(files.length > 0) {
+            setImage(imgDir + files[0]);
         }
+    }
+
+    const onSubmit = async (data: CreateShelterFormType) => {
+        const formData = new FormData();
+
+        // Add image file
+        if (image) {
+            const fileInfo = await FileSystem.getInfoAsync(image);
+            formData.append('files', {
+                uri: image,
+                name: fileInfo.uri.split('/').pop(),
+                type: 'image/jpeg'
+            } as any); // You can also check and set the type dynamically based on file extension
+        }
+
+        formData.append('data', JSON.stringify(data));
+
+        const res = await fetch('http://192.168.18.3:8080/shelter/register', {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'Content-Type': 'multipart/form-data',
+                'Authorization': `Bearer ${authState?.token}`,
+            }
+        }).then(response => {
+            removeImage(image!);
+            navigation.navigate("Home");
+        }).catch(err => {
+            console.log(err)
+        });
+    }
+
+    const removeImage = async (imageUri: string) => {
+        await FileSystem.deleteAsync(imageUri);
+        setImage(null);
     }
 
     return (
         <ScrollView className="mt-5">
-            <View className="mt-10 mb-10 items-center">
-                <TouchableOpacity
-                    style={{ width: 350, height: 200, backgroundColor: '#2E3A59', borderRadius: 10, justifyContent: 'center', alignItems: 'center' }}
-                    onPress={pickImage}
-                >
+            {image && (
+                <View className="items-end mx-5 ">
+                    <TouchableOpacity className="flex-row items-center" onPress={() => removeImage(image)}>
+                        <Ionicons name="trash" size={20} color="black" />
+                        <Text className="text-xs">Hapus Gambar</Text>
+                    </TouchableOpacity>
+                </View>
+            )}
+            <View className="items-center">
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: 350 }}>
+                    {image == null && (
+                        <>
+                            <TouchableOpacity
+                                style={{ width: 170, height: 200, backgroundColor: '#2E3A59', borderRadius: 10, justifyContent: 'center', alignItems: 'center', marginRight: 5 }}
+                                onPress={() => selectImage(true)}
+                            >
+                                <Ionicons name="images" size={40} color="white" />
+                            </TouchableOpacity>
 
-                    {image ? (
-                        <Image source={{ uri: image }} style={{ width: "100%", height: "100%", borderRadius: 10 }} resizeMode="cover" />) :
-                        (<Ionicons name="camera" size={40} color="white" />)}
-                </TouchableOpacity>
+                            <TouchableOpacity
+                            style={{ width: 170, height: 200, backgroundColor: '#2E3A59', borderRadius: 10, justifyContent: 'center', alignItems: 'center', marginLeft: 5 }}
+                            onPress={() => selectImage(false)}
+                            >
+                            <Ionicons name="camera" size={40} color="white" />
+                            </TouchableOpacity>
+                        </>
+                    )}
+                </View>
+                {image && (
+                    <Image source={{ uri: image }} style={{ width: 350, height: 200, borderRadius: 10 }} resizeMode="cover" />
+                )}
             </View>
 
-            <Text style={styles.textColor}>Nama Shelter<Text className='text-[#ff0000]'>*</Text></Text>
+            <Text style={styles.textColor} className="mt-5">Nama Shelter<Text className='text-[#ff0000]'>*</Text></Text>
             <View style={styles.inputBox}>
                 <Controller
                     name="ShelterName"
