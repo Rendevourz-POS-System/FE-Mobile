@@ -26,10 +26,15 @@ export const putForm = async (url: string, body: FormData) => {
 }
 
 export const postForm = async (url: string, body: FormData) => {
-    const response = await axios.post(baseUrl + url, body, {
-        headers: {
-            'Content-Type': 'multipart/form-data',
-        }
-    });
-    return response;
+    console.log(body)
+    try{
+        const response = await axios.post(baseUrl + url, body, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            }
+        });
+        return response;
+    } catch(e){
+        console.log(e);
+    }
 }
