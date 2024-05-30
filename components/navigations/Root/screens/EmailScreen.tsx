@@ -6,7 +6,7 @@ import { RootNavigationStackScreenProps } from "../../StackScreenProps";
 import { ActivityIndicator } from "react-native-paper";
 
 export const EmailScreen: FC<RootNavigationStackScreenProps<'EmailScreen'>> = ({ navigation, route }) => {
-    const [time, setTime] = useState<number>(5);
+    const [time, setTime] = useState<number>(3);
 
     useEffect(() => {
         const interval = setInterval(() => {
@@ -16,7 +16,7 @@ export const EmailScreen: FC<RootNavigationStackScreenProps<'EmailScreen'>> = ({
         // Replace the current screen with the Login screen after countdown ends
         const timeout = setTimeout(() => {
             navigation.replace('LoginScreen');
-        }, 5000);
+        }, 3000);
 
         return () => {
             clearInterval(interval); // Cleanup function to clear the interval when the component unmounts

@@ -1,5 +1,5 @@
 import { FontAwesome, Ionicons, MaterialCommunityIcons, MaterialIcons, Octicons } from "@expo/vector-icons";
-import React, { FC, useEffect, useState } from "react";
+import React, { FC, useCallback, useEffect, useState } from "react";
 import { ScrollView, Text, View, StyleSheet, TouchableOpacity } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { ProfileRootBottomTabCompositeScreenProps } from "../../CompositeNavigationProps";
@@ -8,12 +8,13 @@ import { Avatar } from "react-native-elements";
 import { BackendApiUri } from "../../../../functions/BackendApiUri";
 import { get } from "../../../../functions/Fetch";
 import { ShelterUser } from "../../../../interface/IShelter";
+import { useFocusEffect } from "@react-navigation/native";
 
 interface IProfile {
     ImageBase64 : string
 }
 
-export const ProfileScreen: FC<ProfileRootBottomTabCompositeScreenProps<'ProfileScreen'>> = ({ navigation }) => {
+export const ProfileScreen: FC<ProfileRootBottomTabCompositeScreenProps<'ProfileScreen'>> = ({ navigation, route }) => {
     const { authState, onLogout } = useAuth();
     const [data, setData] = useState<IProfile | null>(null);
     const [dataShelter, setDataShelter] = useState<ShelterUser | null>(null);
@@ -21,22 +22,24 @@ export const ProfileScreen: FC<ProfileRootBottomTabCompositeScreenProps<'Profile
     const fetchProfile = async () => {
         try {
             const res = await get(BackendApiUri.getUserShelter);
-            if (!res.data.Error) {
+            if (res.data.Error) {
+                setDataShelter(null);
             } 
-            if(res.data.Data.ImageBase64) {
-                setData({
-                    ImageBase64 : res.data.ImageBase64
-                });
-            }
+            // if(res.data.Data.ImageBase64) {
+            //     setData({
+            //         ImageBase64 : res.data.ImageBase64
+            //     });
+            // }
             if(res.data.Data) setDataShelter(res.data);
         } catch (error) {
             console.log(error)
         } 
     };
-
-    useEffect(() => {
-        fetchProfile();
-    }, []);
+    useFocusEffect(
+        useCallback(() => {
+            fetchProfile();
+        }, [navigation, route])
+    );
 
     return (
         <SafeAreaProvider style={styles.container}>
@@ -76,7 +79,7 @@ export const ProfileScreen: FC<ProfileRootBottomTabCompositeScreenProps<'Profile
                         <View style={styles.iconContainer}>
                             {dataShelter ? <Octicons name="arrow-switch" size={25} color="white" /> : <MaterialIcons name="create" size={25} color="white" />}
                         </View>
-                        <Text style={styles.text}>{dataShelter ? "Switch to Shelter" : "Create Shelter"}</Text>
+                        <Text style={styles.text}>{dataShelter!= null ? "Switch to Shelter" : "Create Shelter"}</Text>
                         <View style={styles.nextIconContainer}>
                             <MaterialIcons name="navigate-next" size={25} color="black" />
                         </View>
