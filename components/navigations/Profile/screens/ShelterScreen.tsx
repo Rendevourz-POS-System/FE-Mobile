@@ -16,7 +16,6 @@ export const ShelterScreen: FC<ProfileRootBottomTabCompositeScreenProps<'Shelter
     const [inputValue, setInputValue] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
     const [shelterId, setShelterId] = useState('');
-    const [shelterName, setShelterName] = useState('');
     const [petData, setPetData] = useState<PetData[]>([]);
 
     const fetchProfile = async () => {
@@ -27,7 +26,6 @@ export const ShelterScreen: FC<ProfileRootBottomTabCompositeScreenProps<'Shelter
             if (res.data.Data) {
                 setData(res.data)
                 setShelterId(res.data.Data.Id);
-                setShelterName(res.data.Data.ShelterName)
             }
         } catch (error) {
             console.log(error)
@@ -36,7 +34,7 @@ export const ShelterScreen: FC<ProfileRootBottomTabCompositeScreenProps<'Shelter
 
     const fetchPetData = async () => {
         try{
-            const responsePet = await get(`${BackendApiUri.getPetList}/?shelter_name=${shelterName}&page=1&page_size=200`)
+            const responsePet = await get(`${BackendApiUri.getPetList}/?shelter_id=${shelterId}&page=1&page_size=200`)
             if(responsePet && responsePet.status === 200) {
                 setPetData(responsePet.data);
                 console.log(petData)
@@ -49,7 +47,7 @@ export const ShelterScreen: FC<ProfileRootBottomTabCompositeScreenProps<'Shelter
     useEffect(() => {
         fetchProfile();
         fetchPetData();
-    }, [shelterId, shelterName])
+    }, [shelterId])
 
     const handleInputChange = (text: string) => {
         setInputValue(text);
@@ -130,7 +128,7 @@ export const ShelterScreen: FC<ProfileRootBottomTabCompositeScreenProps<'Shelter
                                 <Text style={styles.text}>Approval List</Text>
                             </TouchableOpacity>
                         </View>
-
+                                                    
                         {petData &&
                             <View style={{ flex: 1, padding: 10 }}>
                                 <FlashList
