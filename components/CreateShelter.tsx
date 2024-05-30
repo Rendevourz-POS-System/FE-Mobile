@@ -9,16 +9,12 @@ import { BackendApiUri } from "../functions/BackendApiUri";
 import { get, post, postForm } from "../functions/Fetch";
 import { PetType, ShelterLocation } from "../interface/IPetType";
 import * as ImagePicker from 'expo-image-picker';
-import { RootBottomTabCompositeNavigationProp } from "./navigations/CompositeNavigationProps";
+import { ProfileRootBottomTabCompositeScreenProps, RootBottomTabCompositeNavigationProp } from "./navigations/CompositeNavigationProps";
 import { useNavigation } from "@react-navigation/native";
 import { useAuth } from "../app/context/AuthContext";
 import * as FileSystem from 'expo-file-system';
-
-interface ImageState {
-    uri: string;
-    type: string;
-    name: string;
-}
+import { ProfileNavigationStackParams } from "./navigations/Profile/ProfileNavigationStackParams";
+import { RootNavigationStackParams } from "./navigations/Root/RootNavigationStackParams";
 
 const createShelterFormSchema = z.object({
     ShelterName: z.string({ required_error: "Nama shelter tidak boleh kosong" }).min(1, { message: "Nama shelter tidak boleh kosong" }),
@@ -36,8 +32,8 @@ const createShelterFormSchema = z.object({
 type CreateShelterFormType = z.infer<typeof createShelterFormSchema>
 
 export const CreateShelter = () => {
+    const navigate = useNavigation();
     const { authState } = useAuth();
-    const navigation = useNavigation<RootBottomTabCompositeNavigationProp<'Profile'>>();
     const [inputValue, setInputValue] = useState<number | undefined>(undefined);
     const [inputTotalPetValue, setInputTotalPetValue] = useState<number | undefined>(undefined);
     const [petTypes, setPetTypes] = useState<PetType[]>([]);
@@ -45,7 +41,7 @@ export const CreateShelter = () => {
     const [selected, setSelected] = useState<string[]>([]);
     const [image, setImage] = useState<string | null>(null);
     const imgDir = FileSystem.documentDirectory + 'images/';
-    const { control, handleSubmit, setValue, formState: { errors } } = useForm<CreateShelterFormType>({
+    const { control, handleSubmit, setValue, watch , reset,  formState: { errors } } = useForm<CreateShelterFormType>({
         resolver: zodResolver(createShelterFormSchema),
         defaultValues: {
             PetTypeAccepted: [],
@@ -130,8 +126,14 @@ export const CreateShelter = () => {
             setImage(imgDir + files[0]);
         }
     }
-
+    const formatContactNumber = (contactNumber: string) => {
+        if (contactNumber.startsWith('0')) {
+            return '+62' + contactNumber.slice(1);
+        }
+        return contactNumber;
+    };
     const onSubmit = async (data: CreateShelterFormType) => {
+        data.ShelterContactNumber = formatContactNumber(data.ShelterContactNumber);
         const formData = new FormData();
 
         // Add image file
@@ -154,11 +156,15 @@ export const CreateShelter = () => {
                 'Authorization': `Bearer ${authState?.token}`,
             }
         }).then(response => {
-            removeImage(image!);
-            navigation.navigate("Home");
+            if(image) {
+                removeImage(image!);
+            }
+            if(response.status === 200) {
+                navigate.goBack();
+            }
         }).catch(err => {
             console.log(err)
-        });
+        })
     }
 
     const removeImage = async (imageUri: string) => {
@@ -280,19 +286,24 @@ export const CreateShelter = () => {
 
             <Text style={styles.textColor}>Kontak Shelter<Text className='text-[#ff0000]'>*</Text></Text>
             <View style={styles.inputBox}>
+                <Text className="mr-2">+62</Text>
                 <Controller
                     name="ShelterContactNumber"
                     control={control}
-                    render={() => (
+                    render={({ field: { onChange, value } }) => (
                         <TextInput
                             placeholder="Masukkan Kontak Shelter"
                             style={{ flex: 1 }}
-                            onChangeText={(text: string) => setValue('ShelterContactNumber', text)}
+                            keyboardType="phone-pad"
+                            onChangeText={(text) => setValue('ShelterContactNumber', text)}
+                            value={value} // Show the number without +62 prefix
+                            maxLength={12}
                         />
                     )}
                 />
             </View>
             <Text style={styles.errorMessage}>{errors.ShelterContactNumber?.message}</Text>
+
 
             <Text style={styles.textColor}>Total Hewan Shelter<Text className='text-[#ff0000]'>*</Text></Text>
             <View style={styles.inputBox}>
@@ -416,8 +427,9 @@ const styles = StyleSheet.create({
         borderColor: "#CECECE",
         borderWidth: 2,
         borderRadius: 25,
-        flexDirection: 'row'
-    },
+        flexDirection: 'row',
+        alignItems : 'center'
+    }, 
     errorMessage: {
         color: 'red',
         marginHorizontal: 35,
