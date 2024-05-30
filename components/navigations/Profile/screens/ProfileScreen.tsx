@@ -24,12 +24,7 @@ export const ProfileScreen: FC<ProfileRootBottomTabCompositeScreenProps<'Profile
             const res = await get(BackendApiUri.getUserShelter);
             if (res.data.Error) {
                 setDataShelter(null);
-            } 
-            // if(res.data.Data.ImageBase64) {
-            //     setData({
-            //         ImageBase64 : res.data.ImageBase64
-            //     });
-            // }
+            }
             if(res.data.Data) setDataShelter(res.data);
         } catch (error) {
             console.log(error)
