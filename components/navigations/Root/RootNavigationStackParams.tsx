@@ -1,5 +1,6 @@
 import { NavigatorScreenParams } from "@react-navigation/native";
 import { RootBottomTabParams } from "../RootBottomTab/RootBottomTabParams";
+import { AdminNavigationStackParams } from "../Admin/AdminNavigationStackParams";
 
 export type RootNavigationStackParams = {
     HomeScreen: NavigatorScreenParams<RootBottomTabParams>;
@@ -15,4 +16,5 @@ export type RootNavigationStackParams = {
     AdoptionFormScreen: {shelterId: string};
     RescueFormScreen: undefined;
     SurrenderFormScreen: undefined;
+    HomeAdmin: NavigatorScreenParams<AdminNavigationStackParams>;
 }
