@@ -81,9 +81,8 @@ export const CreatePetScreen: FC<ProfileRootBottomTabCompositeScreenProps<'Creat
         const formData = new FormData();
         formData.append('files', fileName);
         formData.append('data', payloadString);
-        console.log(formData)
         const res = await postForm(BackendApiUri.postPet, formData);
-        if (res.status === 200) {
+        if (res?.status === 200) {
             Alert.alert("Pet Created", "Pet Berhasil dibuat", [ { text: "OK", onPress: () => navigation.goBack()}]);
         }else{
             Alert.alert("Pet Gagal", "Pet gagal dibuat, mohon diisi dengan yang benar");

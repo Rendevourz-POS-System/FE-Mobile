@@ -12,13 +12,15 @@ interface ShelterData {
     Id: string,
     UserId: string,
     ShelterName: string,
-    ShelterLocation: string,
+    ShelterLocationName: string,
     ShelterCapacity: number,
+    ShelterAddress : string,
     ShelterContactNumber: string,
     ShelterDescription: string,
     TotalPet: number,
     BankAccountNumber: string,
     PetTypeAccepted : [],
+    ImageBase64 : string[],
     Pin: string,
     ShelterVertified: boolean,
     CreatedAt: Date
@@ -36,13 +38,15 @@ export const ShelterDetailScreen: FC<RootNavigationStackScreenProps<'ShelterDeta
             Id: "",
             UserId: "",
             ShelterName: "",
-            ShelterLocation: "",
+            ShelterLocationName: "",
             ShelterCapacity: 0,
             ShelterContactNumber: "",
             ShelterDescription: "",
+            ShelterAddress : "",
             TotalPet: 0,
             BankAccountNumber: "",
             PetTypeAccepted: [],
+            ImageBase64: [],
             Pin: "",
             ShelterVertified: false,
             CreatedAt: new Date(),
@@ -60,7 +64,8 @@ export const ShelterDetailScreen: FC<RootNavigationStackScreenProps<'ShelterDeta
                         Id: response.data.Data.Id,
                         UserId: response.data.Data.UserId,
                         ShelterName: response.data.Data.ShelterName,
-                        ShelterLocation: response.data.Data.ShelterLocation,
+                        ShelterLocationName: response.data.Data.ShelterLocationNName,
+                        ShelterAddress : response.data.Data.ShelterAddress,
                         ShelterCapacity: response.data.Data.ShelterCapacity,
                         ShelterContactNumber: response.data.Data.ShelterContactNumber,
                         ShelterDescription: response.data.Data.ShelterDescription,
@@ -69,6 +74,7 @@ export const ShelterDetailScreen: FC<RootNavigationStackScreenProps<'ShelterDeta
                         PetTypeAccepted : response.data.Data.PetTypeAccepted,
                         Pin: response.data.Data.Pin,
                         ShelterVertified: response.data.Data.ShelterVertified,
+                        ImageBase64 : response.data.Data.ImageBase64 || [],
                         CreatedAt: response.data.Data.CreatedAt
                     }
                 });
@@ -139,7 +145,11 @@ export const ShelterDetailScreen: FC<RootNavigationStackScreenProps<'ShelterDeta
                 <Ionicons name="chevron-back" size={24} color="black" onPress={() => navigation.navigate("HomeScreen", {screen: "Home", params : {favAttempt : favAttempt}})} />
             </View>
             <ScrollView>
-                <ImageBackground source={require('../../../../assets/image.png')} style={{ width: '100%', height: 350 }} />
+                {data.Data.ImageBase64 && data.Data.ImageBase64.length > 0 ? (
+                    <ImageBackground source={{ uri: `data:image/*;base64,${data.Data.ImageBase64[0]}` }} style={{ width: '100%', height: 350 }} />
+                ) : (
+                    <ImageBackground source={require('../../../../assets/animal-shelter.png')} style={{ width: '100%', height: 350 }} />
+                )}
                 <View className='pt-8 px-6 bottom-6 bg-white rounded-t-3xl'>
                     <View className='flex flex-row justify-between'>
                         <Text className='text-3xl font-bold'>{data.Data.ShelterName}</Text>
