@@ -47,7 +47,6 @@ export const HomeAdmin: FC<AdminNavigationStackScreenProps<'HomeAdmin'>> = ({ na
             const response = await get(`${BackendApiUri.getUser}`);
             if (response && response.status === 200) {
                 setUserData(response.data);
-                console.log("Test", userData);
             } else {
                 setUserData([]);
             }

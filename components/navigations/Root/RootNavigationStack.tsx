@@ -33,7 +33,6 @@ const RootNavigationStack: React.FC = () => {
                 try {
                     const response = await get(`${BackendApiUri.getUserData}`);
                     setUserData(response.data);
-                    console.log(userData)
                 } catch (error) {
                     console.error("Error fetching shelter data:", error);
                 }

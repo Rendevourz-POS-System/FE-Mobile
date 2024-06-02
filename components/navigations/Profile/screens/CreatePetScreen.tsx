@@ -50,7 +50,6 @@ export const CreatePetScreen: FC<ProfileRootBottomTabCompositeScreenProps<'Creat
     const pickImage = async () => {
         try {
             const result = await ImagePicker.launchImageLibraryAsync();
-            console.log(result, 'RES');
             if (!result.canceled) {
                 const base64 = await FileSystem.readAsStringAsync(result.assets[0].uri, { encoding: FileSystem?.EncodingType?.Base64 });
                 setImage(result.assets[0].uri);
