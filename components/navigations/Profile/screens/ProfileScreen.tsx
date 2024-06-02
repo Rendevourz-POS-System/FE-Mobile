@@ -11,6 +11,7 @@ import { ShelterUser } from "../../../../interface/IShelter";
 import { useFocusEffect } from "@react-navigation/native";
 
 interface IProfile {
+    Username : string
     ImageBase64 : string
 }
 
@@ -19,7 +20,7 @@ export const ProfileScreen: FC<ProfileRootBottomTabCompositeScreenProps<'Profile
     const [data, setData] = useState<IProfile | null>(null);
     const [dataShelter, setDataShelter] = useState<ShelterUser | null>(null);
 
-    const fetchProfile = async () => {
+    const fetchProfileShelter = async () => {
         try {
             const res = await get(BackendApiUri.getUserShelter);
             if (res.data.Error) {
@@ -30,8 +31,21 @@ export const ProfileScreen: FC<ProfileRootBottomTabCompositeScreenProps<'Profile
             console.log(error)
         } 
     };
+
+    const fetchProfile = async () => {
+        try {
+            const res = await get(BackendApiUri.getUserData);
+            if(res.data) {
+                setData(res.data);
+            }
+        } catch (error) {
+            console.log(error)
+        } 
+    };
+
     useFocusEffect(
         useCallback(() => {
+            fetchProfileShelter();
             fetchProfile();
         }, [navigation, route])
     );
@@ -44,9 +58,9 @@ export const ProfileScreen: FC<ProfileRootBottomTabCompositeScreenProps<'Profile
                     <Avatar
                         size={130}
                         rounded
-                        source={data?.ImageBase64 != undefined ? { uri: `data:image/*;base64,${data.ImageBase64}` } : { uri: 'https://randomuser.me/api/portraits/men/41.jpg'}}
+                        source={data?.ImageBase64 != undefined ? { uri: `data:image/*;base64,${data.ImageBase64}` } : { uri: "/assets/Default_Acc.jpg"}}
                     />
-                        <Text className='text-2xl font-bold mt-2'>{authState?.username}</Text>
+                        <Text className='text-2xl font-bold mt-2'>{data?.Username}</Text>
                     </View>
                 </View>
 
