@@ -23,4 +23,7 @@ export const BackendApiUri = {
     putShelterUpdate: '/shelter/update',
     getPet: '/pet',
     getUser: '/user',
+    deleteAdminUser: '/admin/user/delete',
+    deleteAdminShelter: '/admin/shelter/delete',
+    deleteAdminPet: '/admin/pet/delete',
 }
