@@ -1,5 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
-import React, { FC, useEffect, useState } from "react";
+import React, { FC, useCallback, useEffect, useRef, useState } from "react";
 import { ScrollView, Text, View, StyleSheet, TouchableOpacity, TextInput, Alert, Image } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { ProfileRootBottomTabCompositeScreenProps } from "../../CompositeNavigationProps";
@@ -10,6 +10,15 @@ import { FontAwesome6 } from '@expo/vector-icons';
 import { BackendApiUri } from "../../../../functions/BackendApiUri";
 import { get, putForm } from "../../../../functions/Fetch";
 import * as ImagePicker from 'expo-image-picker';
+import { GestureHandlerRootView } from "react-native-gesture-handler";
+import {
+    BottomSheetModal,
+    BottomSheetView,
+    BottomSheetBackdrop,
+    BottomSheetModalProvider,
+} from '@gorhom/bottom-sheet';
+import * as FileSystem from 'expo-file-system';
+import { useAuth } from "../../../../app/context/AuthContext";
 
 interface User {
     Username: string,
@@ -43,11 +52,13 @@ type ProfileFormType = z.infer<typeof profileFormSchema>
 
 export const ManageScreen: FC<ProfileRootBottomTabCompositeScreenProps<'ManageScreen'>> = ({ navigation }) => {
     const [userData, setUserData] = useState<User>();
-    const [image, setImage] = useState('');
-
+    const [image, setImage] = useState<string | null>(null);
+    const bottomSheetModalRef = useRef<BottomSheetModal>(null);
     const { control, setValue, handleSubmit, formState: { errors } } = useForm<ProfileFormType>({
         resolver: zodResolver(profileFormSchema),
     });
+    const imgDir = FileSystem.documentDirectory + 'images/';
+    const { authState } = useAuth();
 
     useEffect(() => {
         const fetchData = async () => {
@@ -71,217 +82,303 @@ export const ManageScreen: FC<ProfileRootBottomTabCompositeScreenProps<'ManageSc
         fetchData();
     }, []);
 
-    const onSubmit = async (data: ProfileFormType) => {
-        let payloadString = JSON.stringify(data);
-        const formData = new FormData();
-        formData.append('file', image);
-        formData.append('data', payloadString);
-        const res = await putForm(`${BackendApiUri.putUserUpdate}`, formData);
-        Alert.alert('Data Tersimpan', 'Data anda telah tersimpan.');
+    const removeImage = async (imageUri: string) => {
+        await FileSystem.deleteAsync(imageUri);
+        setImage(null);
     }
 
-    const pickImage = async () => {
-        let result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ImagePicker.MediaTypeOptions.All,
-            allowsEditing: true,
-            aspect: [1, 1],
-            quality: 1,
+    const onSubmit = async (data: ProfileFormType) => {
+        // data.OldImageName = userData?.Image ?? '';
+        let payloadString = JSON.stringify(data);
+        
+        const formData = new FormData();
+        // Add image file
+        if (image) {
+            const fileInfo = await FileSystem.getInfoAsync(image);
+            formData.append('file', {
+                uri: image,
+                name: fileInfo.uri.split('/').pop(),
+                type: 'image/jpeg',
+            } as any); // You can also check and set the type dynamically based on file extension
+        }
+
+        formData.append('data', payloadString);
+        const res = await fetch('http://192.168.18.3:8080/user/update', {
+            method: 'PUT',
+            body: formData,
+            headers: {
+                'Content-Type': 'multipart/form-data',
+                'Authorization': `Bearer ${authState?.token}`,
+            }
+        }).then(response => {
+            if(image) {
+                removeImage(image!);
+            }
+            if(response.status === 200) {
+                Alert.alert('Data Tersimpan', 'Data anda telah tersimpan.');
+                navigation.goBack();
+            }
+        }).catch(err => {
+            console.log(err)
         })
+    }
+    const handleImagePress = useCallback(() => {
+        bottomSheetModalRef.current?.present();
+    }, []);
+    const selectImage = async (useLibrary : boolean) => {
+        let result;
+        const options : ImagePicker.ImagePickerOptions = {
+            mediaTypes: ImagePicker.MediaTypeOptions.Images,
+                allowsEditing: true,
+                aspect: [1, 1],
+                quality: 1,
+        }
+
+        if (useLibrary) {
+            result = await ImagePicker.launchImageLibraryAsync(options);
+        } else {
+            await ImagePicker.requestCameraPermissionsAsync();
+            result = await ImagePicker.launchCameraAsync(options);
+        }
 
         if (!result.canceled) {
-            setImage(result.assets[0].uri)
+            saveImage(result.assets[0].uri);
         }
+        bottomSheetModalRef.current?.close();
     };
 
+    const ensureDirExists = async () => {
+        const dirInfo = await FileSystem.getInfoAsync(imgDir);
+        if (!dirInfo.exists) {
+            await FileSystem.makeDirectoryAsync(imgDir, { intermediates: true });
+        }
+    }
+
+    const saveImage = async (uri: string) => {
+        await ensureDirExists();
+        const fileName = uri.substring(uri.lastIndexOf('/') + 1);
+        const dest = imgDir + fileName;
+        await FileSystem.copyAsync({ from: uri, to: dest });
+        setImage(dest);
+    }
+    
     return (
         <SafeAreaProvider style={styles.container}>
-            <View className="mt-14 flex-row items-center justify-center mb-3">
-                <Ionicons name="chevron-back" size={24} color="black" onPress={() => navigation.goBack()} style={{ position: 'absolute', left: 20 }} />
-                <Text className="text-xl">Manage Profile</Text>
-            </View>
-
-            <ScrollView>
-                <View className="mb-10 mt-10">
-                    <View style={styles.rowContainer} className="justify-around">
-                        <TouchableOpacity
-                            style={{ width: 100, height: 100, backgroundColor: '#2E3A59', borderRadius: 50, justifyContent: 'center', alignItems: 'center' }}
-                            onPress={pickImage}
-                            disabled={image ? true : false}
-                        >
-                            
-                            {image ? (
-                                <Image source={{ uri: image }} style={{ width: 100, height: 100, borderRadius: 50 }} />)
-                                :
-                                (<Ionicons name="camera" size={40} color="white" />
-                                )}
-                        </TouchableOpacity>
-                        <Text className="top-5 text-3xl">{userData?.Username}</Text>
+            <GestureHandlerRootView style={{ flex: 1 }}>
+                <BottomSheetModalProvider>
+                    <View className="mt-14 flex-row items-center justify-center mb-3">
+                        <Ionicons name="chevron-back" size={24} color="black" onPress={() => navigation.goBack()} style={{ position: 'absolute', left: 20 }} />
+                        <Text className="text-xl">Manage Profile</Text>
                     </View>
-                </View>
 
-                <View style={styles.inputBox}>
-                    <Controller
-                        name="Username"
-                        control={control}
-                        render={({ field: { value } }) => (
-                            <TextInput
-                                style={{ flex: 1 }}
-                                placeholder="Username"
-                                onChangeText={(text: string) => setValue('Username', text)}
-                                value={value}
+                    <ScrollView>
+                        <View className="mb-10 mt-10">
+                            <View style={styles.rowContainer} className="justify-around">
+                            <BottomSheetModal
+                                ref={bottomSheetModalRef}
+                                index={0}
+                                snapPoints={['20%']}
+                                backdropComponent={(props) => (
+                                    <BottomSheetBackdrop
+                                        {...props}
+                                        disappearsOnIndex={-1}
+                                        appearsOnIndex={0}
+                                        pressBehavior="close"
+                                    />
+                                )}
+                            >
+                                <BottomSheetView className="flex items-center justify-center">
+                                    <View className="flex flex-col items-center">
+                                        <TouchableOpacity className="py-4" onPress={() => selectImage(true)}>
+                                            <Text className="text-lg ">Choose Photo</Text>
+                                        </TouchableOpacity>
+                                        <TouchableOpacity className="py-4" onPress={() => selectImage(false)}>
+                                            <Text className="text-lg ">Take Photo</Text>
+                                        </TouchableOpacity>
+                                    </View>
+                                </BottomSheetView>
+                            </BottomSheetModal>
+                                <TouchableOpacity
+                                    style={{ width: 100, height: 100, backgroundColor: '#2E3A59', borderRadius: 50, justifyContent: 'center', alignItems: 'center' }}
+                                    onPress={handleImagePress}
+                                >
+                                    {image ? (
+                                        <Image source={{ uri: image }} style={{ width: 100, height: 100, borderRadius: 50 }} />
+                                    ) : userData?.ImageBase64 ? (
+                                        <Image source={{ uri: `data:image/*;base64,${userData.ImageBase64}` }} style={{ width: 100, height: 100, borderRadius: 50 }} />
+                                    ) : (
+                                        <Ionicons name="camera" size={40} color="white" />
+                                    )}
+                                </TouchableOpacity>
+                                <Text className="top-5 text-3xl">{userData?.Username}</Text>
+                            </View>
+                        </View>
+
+                        <View style={styles.inputBox}>
+                            <Controller
+                                name="Username"
+                                control={control}
+                                render={({ field: { value } }) => (
+                                    <TextInput
+                                        style={{ flex: 1 }}
+                                        placeholder="Username"
+                                        onChangeText={(text: string) => setValue('Username', text)}
+                                        value={value}
+                                    />
+                                )}
                             />
-                        )}
-                    />
-                    <FontAwesome6 name="edit" size={24} color="black" />
-                </View>
-                <Text style={styles.errorMessage}>{errors.Username?.message}</Text>
+                            <FontAwesome6 name="edit" size={24} color="black" />
+                        </View>
+                        <Text style={styles.errorMessage}>{errors.Username?.message}</Text>
 
-                <View style={styles.inputBox}>
-                    <Controller
-                        name="Email"
-                        control={control}
-                        render={({ field: { value } }) => (
-                            <TextInput
-                                style={{ flex: 1 }}
-                                placeholder="Email"
-                                onChangeText={(text: string) => setValue('Email', text)}
-                                value={value}
+                        <View style={styles.inputBox}>
+                            <Controller
+                                name="Email"
+                                control={control}
+                                render={({ field: { value } }) => (
+                                    <TextInput
+                                        style={{ flex: 1 }}
+                                        placeholder="Email"
+                                        onChangeText={(text: string) => setValue('Email', text)}
+                                        value={value}
+                                    />
+                                )}
                             />
-                        )}
-                    />
-                    <FontAwesome6 name="edit" size={24} color="black" />
-                </View>
-                <Text style={styles.errorMessage}>{errors.Email?.message}</Text>
+                            <FontAwesome6 name="edit" size={24} color="black" />
+                        </View>
+                        <Text style={styles.errorMessage}>{errors.Email?.message}</Text>
 
-                <View style={styles.inputBox}>
-                    <Controller
-                        name="Nik"
-                        control={control}
-                        render={({ field: { value } }) => (
-                            <TextInput
-                                style={{ flex: 1 }}
-                                placeholder="NIK"
-                                onChangeText={(text: string) => setValue('Nik', text)}
-                                value={value}
+                        <View style={styles.inputBox}>
+                            <Controller
+                                name="Nik"
+                                control={control}
+                                render={({ field: { value } }) => (
+                                    <TextInput
+                                        style={{ flex: 1 }}
+                                        placeholder="NIK"
+                                        onChangeText={(text: string) => setValue('Nik', text)}
+                                        value={value}
+                                    />
+                                )}
                             />
-                        )}
-                    />
-                    <FontAwesome6 name="edit" size={24} color="black" />
-                </View>
-                <Text style={styles.errorMessage}>{errors.Nik?.message}</Text>
+                            <FontAwesome6 name="edit" size={24} color="black" />
+                        </View>
+                        <Text style={styles.errorMessage}>{errors.Nik?.message}</Text>
 
-                <View style={styles.inputBox}>
-                    <Controller
-                        name="PhoneNumber"
-                        control={control}
-                        render={({ field: { value } }) => (
-                            <TextInput
-                                style={{ flex: 1 }}
-                                placeholder="Nomor Telepon"
-                                onChangeText={(text: string) => setValue('PhoneNumber', text)}
-                                value={value}
+                        <View style={styles.inputBox}>
+                            <Controller
+                                name="PhoneNumber"
+                                control={control}
+                                render={({ field: { value } }) => (
+                                    <TextInput
+                                        style={{ flex: 1 }}
+                                        placeholder="Nomor Telepon"
+                                        onChangeText={(text: string) => setValue('PhoneNumber', text)}
+                                        value={value}
+                                    />
+                                )}
                             />
-                        )}
-                    />
-                    <FontAwesome6 name="edit" size={24} color="black" />
-                </View>
-                <Text style={styles.errorMessage}>{errors.PhoneNumber?.message}</Text>
+                            <FontAwesome6 name="edit" size={24} color="black" />
+                        </View>
+                        <Text style={styles.errorMessage}>{errors.PhoneNumber?.message}</Text>
 
-                <View style={styles.inputBox}>
-                    <Controller
-                        name="Address"
-                        control={control}
-                        render={({ field: { value } }) => (
-                            <TextInput
-                                style={{ flex: 1 }}
-                                placeholder="Alamat"
-                                onChangeText={(text: string) => setValue('Address', text)}
-                                value={value}
+                        <View style={styles.inputBox}>
+                            <Controller
+                                name="Address"
+                                control={control}
+                                render={({ field: { value } }) => (
+                                    <TextInput
+                                        style={{ flex: 1 }}
+                                        placeholder="Alamat"
+                                        onChangeText={(text: string) => setValue('Address', text)}
+                                        value={value}
+                                    />
+                                )}
                             />
-                        )}
-                    />
-                    <FontAwesome6 name="edit" size={24} color="black" />
-                </View>
-                <Text style={styles.errorMessage}>{errors.Address?.message}</Text>
+                            <FontAwesome6 name="edit" size={24} color="black" />
+                        </View>
+                        <Text style={styles.errorMessage}>{errors.Address?.message}</Text>
 
-                <View style={styles.inputBox}>
-                    <Controller
-                        name="State"
-                        control={control}
-                        render={({ field: { value } }) => (
-                            <TextInput
-                                style={{ flex: 1 }}
-                                placeholder="Negara"
-                                onChangeText={(text: string) => setValue('State', text)}
-                                value={value}
+                        <View style={styles.inputBox}>
+                            <Controller
+                                name="State"
+                                control={control}
+                                render={({ field: { value } }) => (
+                                    <TextInput
+                                        style={{ flex: 1 }}
+                                        placeholder="Negara"
+                                        onChangeText={(text: string) => setValue('State', text)}
+                                        value={value}
+                                    />
+                                )}
                             />
-                        )}
-                    />
-                    <FontAwesome6 name="edit" size={24} color="black" />
-                </View>
-                <Text style={styles.errorMessage}>{errors.State?.message}</Text>
+                            <FontAwesome6 name="edit" size={24} color="black" />
+                        </View>
+                        <Text style={styles.errorMessage}>{errors.State?.message}</Text>
 
-                <View style={styles.inputBox}>
-                    <Controller
-                        name="Province"
-                        control={control}
-                        render={({ field: { value } }) => (
-                            <TextInput
-                                style={{ flex: 1 }}
-                                placeholder="Provinsi"
-                                onChangeText={(text: string) => setValue('Province', text)}
-                                value={value}
+                        <View style={styles.inputBox}>
+                            <Controller
+                                name="Province"
+                                control={control}
+                                render={({ field: { value } }) => (
+                                    <TextInput
+                                        style={{ flex: 1 }}
+                                        placeholder="Provinsi"
+                                        onChangeText={(text: string) => setValue('Province', text)}
+                                        value={value}
+                                    />
+                                )}
                             />
-                        )}
-                    />
-                    <FontAwesome6 name="edit" size={24} color="black" />
-                </View>
-                <Text style={styles.errorMessage}>{errors.Province?.message}</Text>
+                            <FontAwesome6 name="edit" size={24} color="black" />
+                        </View>
+                        <Text style={styles.errorMessage}>{errors.Province?.message}</Text>
 
-                <View style={styles.inputBox}>
-                    <Controller
-                        name="District"
-                        control={control}
-                        render={({ field: { value } }) => (
-                            <TextInput
-                                style={{ flex: 1 }}
-                                placeholder="Daerah"
-                                onChangeText={(text: string) => setValue('District', text)}
-                                value={value}
+                        <View style={styles.inputBox}>
+                            <Controller
+                                name="District"
+                                control={control}
+                                render={({ field: { value } }) => (
+                                    <TextInput
+                                        style={{ flex: 1 }}
+                                        placeholder="Daerah"
+                                        onChangeText={(text: string) => setValue('District', text)}
+                                        value={value}
+                                    />
+                                )}
                             />
-                        )}
-                    />
-                    <FontAwesome6 name="edit" size={24} color="black" />
-                </View>
-                <Text style={styles.errorMessage}>{errors.District?.message}</Text>
+                            <FontAwesome6 name="edit" size={24} color="black" />
+                        </View>
+                        <Text style={styles.errorMessage}>{errors.District?.message}</Text>
 
-                <View style={styles.inputBox}>
-                    <Controller
-                        name="PostalCode"
-                        control={control}
-                        render={({ field: { value } }) => (
-                            <TextInput
-                                style={{ flex: 1 }}
-                                placeholder="Kode Pos"
-                                onChangeText={(text: string) => {
-                                    const numericValue = parseInt(text);
-                                    if (!isNaN(numericValue)) {
-                                        setValue('PostalCode', numericValue);
-                                    }
-                                }}
-                                value={value?.toString()}
-                                keyboardType="numeric"
+                        <View style={styles.inputBox}>
+                            <Controller
+                                name="PostalCode"
+                                control={control}
+                                render={({ field: { value } }) => (
+                                    <TextInput
+                                        style={{ flex: 1 }}
+                                        placeholder="Kode Pos"
+                                        onChangeText={(text: string) => {
+                                            const numericValue = parseInt(text);
+                                            if (!isNaN(numericValue)) {
+                                                setValue('PostalCode', numericValue);
+                                            }
+                                        }}
+                                        value={value?.toString()}
+                                        keyboardType="numeric"
+                                    />
+                                )}
                             />
-                        )}
-                    />
-                    <FontAwesome6 name="edit" size={24} color="black" />
-                </View>
-                <Text style={styles.errorMessage}>{errors.PostalCode?.message}</Text>
+                            <FontAwesome6 name="edit" size={24} color="black" />
+                        </View>
+                        <Text style={styles.errorMessage}>{errors.PostalCode?.message}</Text>
 
-                <TouchableOpacity style={styles.button} onPress={handleSubmit(onSubmit)}>
-                    <Text className="text-center font-bold text-white">Save</Text>
-                </TouchableOpacity>
-            </ScrollView>
+                        <TouchableOpacity style={styles.button} onPress={handleSubmit(onSubmit)}>
+                            <Text className="text-center font-bold text-white">Save</Text>
+                        </TouchableOpacity>
+                    </ScrollView>
+                </BottomSheetModalProvider>
+            </GestureHandlerRootView>
         </SafeAreaProvider>
     );
 }

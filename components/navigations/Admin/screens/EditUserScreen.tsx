@@ -16,7 +16,6 @@ export const EditUserScreen: FC<AdminNavigationStackScreenProps<'EditUserScreen'
     const routes = route.params.userId
 
     useEffect(() => {
-        console.log(routes)
         fetchUser();
     }, [])
 
@@ -25,7 +24,6 @@ export const EditUserScreen: FC<AdminNavigationStackScreenProps<'EditUserScreen'
             const response = await get(`${BackendApiUri.getUserDetail}`);
             if (response && response.status === 200) {
                 setUserData(response.data);
-                console.log(userData)
             } else {
                 setUserData([]);
             }
