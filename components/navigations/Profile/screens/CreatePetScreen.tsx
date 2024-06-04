@@ -33,6 +33,24 @@ export const CreatePetScreen: FC<ProfileRootBottomTabCompositeScreenProps<'Creat
         resolver: zodResolver(createPetFormSchema),
     });
 
+    useEffect(() => {
+        const parentNavigation = navigation.getParent();
+        
+        if (parentNavigation) {
+          parentNavigation.setOptions({
+            tabBarStyle: { display: 'none' }
+          });
+        }
+    
+        return () => {
+          if (parentNavigation) {
+            parentNavigation.setOptions({
+              tabBarStyle: { display: 'flex' }
+            });
+          }
+        };
+      }, [navigation]);    
+
     const fetchPetType = async () => {
         const res = await get(BackendApiUri.getPetTypes);
         setPetTypes(res.data)
