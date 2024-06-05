@@ -17,6 +17,11 @@ export const put = async (url: string, body: any) => {
     return response.data;
 }
 
+export const deletes = async(url: string) => {
+    const response = await axios.delete(baseUrl + url);
+    return response.data;
+}
+
 export const putForm = async (url: string, body: FormData) => {
     const response = await axios.put(baseUrl + url, body, {
         headers: {
