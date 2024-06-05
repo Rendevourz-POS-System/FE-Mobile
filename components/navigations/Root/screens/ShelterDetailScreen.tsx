@@ -139,93 +139,90 @@ export const ShelterDetailScreen: FC<RootNavigationStackScreenProps<'ShelterDeta
 
     return (
         <SafeAreaProvider className='bg-white'>
-            <SafeAreaView>
-                <View style={[styles.nextIcon, { position: 'absolute', left: 20, top: 45, zIndex: 1 }]}>
-                    {/* DONT REMOVE THIS COMMENT
-                    Passing refFav to HomeScreen to trigger refresh if not the list shelter not updated */}
-                    <Ionicons name="chevron-back" size={24} color="black" onPress={() => navigation.navigate("HomeScreen", {screen: "Home", params : {favAttempt : favAttempt}})} />
-                </View>
-                <ScrollView>
-                    {data.Data.ImageBase64 && data.Data.ImageBase64.length > 0 ? (
-                        <ImageBackground source={{ uri: `data:image/*;base64,${data.Data.ImageBase64[0]}` }} style={{ width: '100%', height: 350 }} />
-                    ) : (
-                        <ImageBackground source={require('../../../../assets/animal-shelter.png')} style={{ width: '100%', height: 350 }} />
-                    )}
-                    <View className='pt-8 px-6 bottom-6 bg-white rounded-t-3xl'>
-                        <View className='flex flex-row justify-between'>
-                            <Text className='text-3xl font-bold'>{data.Data.ShelterName}</Text>
-                            <View className='flex flex-row items-center'>
-                                <FontAwesome name="whatsapp" size={28} color="green" style={{ marginRight: 15 }} onPress={() => handleWhatsApp(data.Data.ShelterContactNumber)} />
-                                <TouchableHighlight
-                                    onPress={() => handlePressFavorite(data.Data.Id)}
-                                    underlayColor="transparent"
-                                    >
-                                    <FontAwesome name={isFavorite ? 'heart' : 'heart-o'} size={24} style={{ color: isFavorite ? '#FF0000' : '#4689FD' }}  />
-                                </TouchableHighlight>
-                            </View>
+            <View style={[styles.nextIcon, { position: 'absolute', left: 20, top: 45, zIndex: 1 }]}>
+                {/* DONT REMOVE THIS COMMENT
+                Passing refFav to HomeScreen to trigger refresh if not the list shelter not updated */}
+                <Ionicons name="chevron-back" size={24} color="black" onPress={() => navigation.navigate("HomeScreen", {screen: "Home", params : {favAttempt : favAttempt}})} />
+            </View>
+            <ScrollView>
+                {data.Data.ImageBase64 && data.Data.ImageBase64.length > 0 ? (
+                    <ImageBackground source={{ uri: `data:image/*;base64,${data.Data.ImageBase64[0]}` }} style={{ width: '100%', height: 350 }} />
+                ) : (
+                    <ImageBackground source={require('../../../../assets/animal-shelter.png')} style={{ width: '100%', height: 350 }} />
+                )}
+                <View className='pt-8 px-6 bottom-6 bg-white rounded-t-3xl border border-slate-300 border-b-0'>
+                    <View className='flex flex-row justify-between'>
+                        <Text className='text-3xl font-bold'>{data.Data.ShelterName}</Text>
+                        <View className='flex flex-row items-center'>
+                            <FontAwesome name="whatsapp" size={28} color="green" style={{ marginRight: 15 }} onPress={() => handleWhatsApp(data.Data.ShelterContactNumber)} />
+                            <TouchableHighlight
+                                onPress={() => handlePressFavorite(data.Data.Id)}
+                                underlayColor="transparent"
+                                >
+                                <FontAwesome name={isFavorite ? 'heart' : 'heart-o'} size={24} style={{ color: isFavorite ? '#FF0000' : '#4689FD' }}  />
+                            </TouchableHighlight>
                         </View>
+                    </View>
 
-                        <View className='mt-2 flex flex-row items-center'>
-                            <FontAwesome6 name='location-dot' size={20} color='#4689FD' style={{ marginLeft: 2 }} />
-                            <Text className='text-base ml-2 text-[#8A8A8A]'>Jakarta Barat</Text>
+                    <View className='mt-2 flex flex-row items-center'>
+                        <FontAwesome6 name='location-dot' size={20} color='#4689FD' style={{ marginLeft: 2 }} />
+                        <Text className='text-base ml-2 text-[#8A8A8A]'>Jakarta Barat</Text>
+                    </View>
+
+                    <View className="flex flex-row justify-between items-center mt-4">
+                        <View className="flex-1 border-2 border-gray-300 px-4 py-5 mx-1 rounded-xl items-center" style={{height: 75}}>
+                            <Text className="text-gray-500 text-center">Total Hewan</Text>
+                            <Text className="text-black font-bold">{data.Data.TotalPet}</Text>
                         </View>
-
-                        <View className="flex flex-row justify-between items-center mt-4">
-                            <View className="flex-1 border-2 border-gray-300 px-4 py-5 mx-1 rounded-xl items-center" style={{height: 75}}>
-                                <Text className="text-gray-500 text-center">Total Hewan</Text>
-                                <Text className="text-black font-bold">{data.Data.TotalPet}</Text>
-                            </View>
-                            <View className="flex-1 border-2 border-gray-300 px-4 py-3 mx-1 text-center rounded-xl items-center" style={{height: 75}}>
-                                <Text className="text-gray-500 text-center">Adopsi Available</Text>
-                                <Text className="text-black font-bold">{data.Data.ShelterCapacity}</Text>
-                            </View>
-                            <View className="flex-1 border-2 border-gray-300 px-4 py-[4] mx-1 text-center rounded-xl items-center" style={{height: 75}}>
-                                <Text className="text-gray-500 text-center">Menerima Hewan</Text>
-                                <View className="flex flex-row justify-center items-center mt-1">
-                                    {data.Data.PetTypeAccepted.map((item) => {
-                                        const matchingPet = petTypes.find((pet) => pet.Id === item);
-                                        if (matchingPet) {
-                                            const iconName = getIconName(matchingPet.Type);
-                                            if (iconName === 'rabbit') {
-                                                return <MaterialCommunityIcons key={matchingPet.Id} name={iconName} size={29} color='#8A8A8A' style={{ marginEnd: 5 }} />;
-                                            }
-                                            return <FontAwesome6 key={matchingPet.Id} name={iconName} size={24} color='#8A8A8A' style={{ marginEnd: 5 }} />;
+                        <View className="flex-1 border-2 border-gray-300 px-4 py-3 mx-1 text-center rounded-xl items-center" style={{height: 75}}>
+                            <Text className="text-gray-500 text-center">Adopsi Available</Text>
+                            <Text className="text-black font-bold">{data.Data.ShelterCapacity}</Text>
+                        </View>
+                        <View className="flex-1 border-2 border-gray-300 px-4 py-[4] mx-1 text-center rounded-xl items-center" style={{height: 75}}>
+                            <Text className="text-gray-500 text-center">Menerima Hewan</Text>
+                            <View className="flex flex-row justify-center items-center mt-1">
+                                {data.Data.PetTypeAccepted.map((item) => {
+                                    const matchingPet = petTypes.find((pet) => pet.Id === item);
+                                    if (matchingPet) {
+                                        const iconName = getIconName(matchingPet.Type);
+                                        if (iconName === 'rabbit') {
+                                            return <MaterialCommunityIcons key={matchingPet.Id} name={iconName} size={29} color='#8A8A8A' style={{ marginEnd: 5 }} />;
                                         }
-                                        return null;
-                                    })}
-                                </View>
+                                        return <FontAwesome6 key={matchingPet.Id} name={iconName} size={24} color='#8A8A8A' style={{ marginEnd: 5 }} />;
+                                    }
+                                    return null;
+                                })}
                             </View>
                         </View>
-
-                        <Text className='mt-8 text-xl font-bold'>Tentang Kami</Text>
-                        <Text className='mt-2 text-base ml-1 text-[#8A8A8A]'>{data.Data.ShelterDescription}</Text>
                     </View>
-                    <View className='my-3'>
-                        <View className='flex-row justify-around'>
-                            <TouchableOpacity style={styles.buttonBox} onPress={() => navigation.navigate("HewanAdopsiScreen", {shelterId: route.params.shelterId})}>
-                                <MaterialIcons name="pets" size={24} color="white" />
-                                <Text style={styles.fontButton} className='ml-3 text-s text-center'>Adoption Pet</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity style={styles.buttonBox} onPress={() => navigation.navigate("SurrenderFormScreen")}>
-                                <FontAwesome6 name="house-medical-circle-exclamation" size={24} color="white" />
-                                <Text style={styles.fontButton} className='ml-3 text-s text-center'>Surrender Pet</Text>
-                            </TouchableOpacity>
-                        </View>
-                        
-                        <View className='mt-3 flex-row justify-around'>
-                            <TouchableOpacity disabled={data.Data.BankAccountNumber === ""} style={styles.buttonBox} onPress={() => navigation.navigate("DonateScreen", {bankNumber : data.Data.BankAccountNumber})}>
-                                <FontAwesome6 name="hand-holding-heart" size={24} color="white" />
-                                <Text style={styles.fontButton} className='ml-3 text-s text-center'>Donation</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity style={styles.buttonBox} onPress={() => navigation.navigate("RescueFormScreen")}>
-                                <MaterialIcons name="warning" size={24} color="white" />
-                                <Text style={styles.fontButton} className='ml-3 text-s text-center'>Rescue</Text>
-                            </TouchableOpacity>
-                        </View>
-                    </View>
-                </ScrollView>
 
-            </SafeAreaView>
+                    <Text className='mt-8 text-xl font-bold'>Tentang Kami</Text>
+                    <Text className='mt-2 text-base ml-1 text-[#8A8A8A]'>{data.Data.ShelterDescription}</Text>
+                </View>
+                <View className='my-3'>
+                    <View className='flex-row justify-around'>
+                        <TouchableOpacity style={styles.buttonBox} onPress={() => navigation.navigate("HewanAdopsiScreen", {shelterId: route.params.shelterId})}>
+                            <MaterialIcons name="pets" size={24} color="white" />
+                            <Text style={styles.fontButton} className='ml-3 text-s text-center'>Adoption Pet</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={styles.buttonBox} onPress={() => navigation.navigate("SurrenderFormScreen")}>
+                            <FontAwesome6 name="house-medical-circle-exclamation" size={24} color="white" />
+                            <Text style={styles.fontButton} className='ml-3 text-s text-center'>Surrender Pet</Text>
+                        </TouchableOpacity>
+                    </View>
+                    
+                    <View className='mt-3 flex-row justify-around'>
+                        <TouchableOpacity disabled={data.Data.BankAccountNumber === ""} style={styles.buttonBox} onPress={() => navigation.navigate("DonateScreen", {bankNumber : data.Data.BankAccountNumber})}>
+                            <FontAwesome6 name="hand-holding-heart" size={24} color="white" />
+                            <Text style={styles.fontButton} className='ml-3 text-s text-center'>Donation</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={styles.buttonBox} onPress={() => navigation.navigate("RescueFormScreen")}>
+                            <MaterialIcons name="warning" size={24} color="white" />
+                            <Text style={styles.fontButton} className='ml-3 text-s text-center'>Rescue</Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+            </ScrollView>
         </SafeAreaProvider>
     );
 }
