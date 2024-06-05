@@ -15,7 +15,6 @@ export const HewanAdopsiScreen: FC<RootNavigationStackScreenProps<'HewanAdopsiSc
     
     const fetchPetData = async () => {
         try{
-            console.log(route.params.shelterId)
             const responsePet = await get(`${BackendApiUri.getPetList}/?shelter_id=${route.params.shelterId}&page=1&page_size=200`)
             if(responsePet && responsePet.status === 200) {
                 setPetData(responsePet.data);

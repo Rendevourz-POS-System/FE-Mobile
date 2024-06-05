@@ -49,7 +49,7 @@ export const ProfileScreen: FC<ProfileRootBottomTabCompositeScreenProps<'Profile
             fetchProfile();
         }, [navigation, route])
     );
-    console.log(data?.ImageBase64);
+    
     return (
         <SafeAreaProvider style={styles.container}>
             <ScrollView>
