@@ -5,7 +5,7 @@ import { z } from "zod";
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Controller, useForm } from 'react-hook-form';
 import { MultipleSelectList, SelectList } from "react-native-dropdown-select-list";
-import { BackendApiUri } from "../functions/BackendApiUri";
+import { BackendApiUri, baseUrl } from "../functions/BackendApiUri";
 import { get, post, postForm } from "../functions/Fetch";
 import { PetType, ShelterLocation } from "../interface/IPetType";
 import * as ImagePicker from 'expo-image-picker';
@@ -148,7 +148,7 @@ export const CreateShelter = () => {
 
         formData.append('data', JSON.stringify(data));
 
-        const res = await fetch('http://192.168.18.3:8080/shelter/register', {
+        const res = await fetch(`${baseUrl}/shelter/register`, {
             method: 'POST',
             body: formData,
             headers: {

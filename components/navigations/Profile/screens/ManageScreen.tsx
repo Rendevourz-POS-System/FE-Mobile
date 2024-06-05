@@ -7,7 +7,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from 'react-hook-form';
 import { FontAwesome6 } from '@expo/vector-icons';
-import { BackendApiUri } from "../../../../functions/BackendApiUri";
+import { BackendApiUri, baseUrl } from "../../../../functions/BackendApiUri";
 import { get, putForm } from "../../../../functions/Fetch";
 import * as ImagePicker from 'expo-image-picker';
 import { GestureHandlerRootView } from "react-native-gesture-handler";
@@ -103,7 +103,7 @@ export const ManageScreen: FC<ProfileRootBottomTabCompositeScreenProps<'ManageSc
         }
 
         formData.append('data', payloadString);
-        const res = await fetch('http://192.168.18.3:8080/user/update', {
+        const res = await fetch(`${baseUrl}/user/update`, {
             method: 'PUT',
             body: formData,
             headers: {
@@ -114,9 +114,18 @@ export const ManageScreen: FC<ProfileRootBottomTabCompositeScreenProps<'ManageSc
             if(image) {
                 removeImage(image!);
             }
-            if(response.status === 200) {
-                Alert.alert('Data Tersimpan', 'Data anda telah tersimpan.');
-                navigation.goBack();
+            if (response.status === 200) {
+                Alert.alert(
+                    'Data Tersimpan',
+                    'Data anda telah tersimpan.',
+                    [
+                        {
+                            text: 'OK',
+                            onPress: () => navigation.goBack(),
+                        },
+                    ],
+                    { cancelable: false }
+                );
             }
         }).catch(err => {
             console.log(err)
