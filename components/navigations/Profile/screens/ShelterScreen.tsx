@@ -45,7 +45,6 @@ export const ShelterScreen: FC<ProfileRootBottomTabCompositeScreenProps<'Shelter
             throw Error;
         } 
     };
-    console.log(navigation)
 
     useFocusEffect(
         useCallback(() => {
