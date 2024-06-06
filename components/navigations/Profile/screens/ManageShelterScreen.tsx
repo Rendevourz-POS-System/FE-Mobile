@@ -39,6 +39,25 @@ export const ManageShelterScreen: FC<ProfileRootBottomTabCompositeScreenProps<'M
     });
 
     useEffect(() => {
+        const parentNavigation = navigation.getParent();
+        
+        if (parentNavigation) {
+          parentNavigation.setOptions({
+            tabBarStyle: { display: 'none' }
+          });
+        }
+    
+        return () => {
+          if (parentNavigation) {
+            parentNavigation.setOptions({
+              tabBarStyle: { display: 'flex' }
+            });
+          }
+        };
+      }, [navigation]);
+    
+
+    useEffect(() => {
         const fetchData = async () => {
             try {
                 const response = await get(`${BackendApiUri.getUserShelter}`);

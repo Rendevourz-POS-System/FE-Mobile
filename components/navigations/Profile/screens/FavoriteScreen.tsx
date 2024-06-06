@@ -41,6 +41,24 @@ export const FavoriteScreen: FC<ProfileRootBottomTabCompositeScreenProps<'Favori
         fetchPetType();
     }, []);
 
+    useEffect(() => {
+        const parentNavigation = navigation.getParent();
+        
+        if (parentNavigation) {
+          parentNavigation.setOptions({
+            tabBarStyle: { display: 'none' }
+          });
+        }
+    
+        return () => {
+          if (parentNavigation) {
+            parentNavigation.setOptions({
+              tabBarStyle: { display: 'flex' }
+            });
+          }
+        };
+      }, [navigation]);    
+
     return (
         <SafeAreaProvider className='flex-1'>
             <View className="mt-14 mb-5 flex-row items-center justify-center">

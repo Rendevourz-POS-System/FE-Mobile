@@ -61,6 +61,24 @@ export const ManageScreen: FC<ProfileRootBottomTabCompositeScreenProps<'ManageSc
     const { authState } = useAuth();
 
     useEffect(() => {
+        const parentNavigation = navigation.getParent();
+        
+        if (parentNavigation) {
+          parentNavigation.setOptions({
+            tabBarStyle: { display: 'none' }
+          });
+        }
+    
+        return () => {
+          if (parentNavigation) {
+            parentNavigation.setOptions({
+              tabBarStyle: { display: 'flex' }
+            });
+          }
+        };
+      }, [navigation]);
+    
+    useEffect(() => {
         const fetchData = async () => {
             try {
                 const response = await get(`${BackendApiUri.getUserData}`);
@@ -90,7 +108,7 @@ export const ManageScreen: FC<ProfileRootBottomTabCompositeScreenProps<'ManageSc
     const onSubmit = async (data: ProfileFormType) => {
         // data.OldImageName = userData?.Image ?? '';
         let payloadString = JSON.stringify(data);
-        
+
         const formData = new FormData();
         // Add image file
         if (image) {
@@ -111,7 +129,7 @@ export const ManageScreen: FC<ProfileRootBottomTabCompositeScreenProps<'ManageSc
                 'Authorization': `Bearer ${authState?.token}`,
             }
         }).then(response => {
-            if(image) {
+            if (image) {
                 removeImage(image!);
             }
             if (response.status === 200) {
@@ -134,13 +152,13 @@ export const ManageScreen: FC<ProfileRootBottomTabCompositeScreenProps<'ManageSc
     const handleImagePress = useCallback(() => {
         bottomSheetModalRef.current?.present();
     }, []);
-    const selectImage = async (useLibrary : boolean) => {
+    const selectImage = async (useLibrary: boolean) => {
         let result;
-        const options : ImagePicker.ImagePickerOptions = {
+        const options: ImagePicker.ImagePickerOptions = {
             mediaTypes: ImagePicker.MediaTypeOptions.Images,
-                allowsEditing: true,
-                aspect: [1, 1],
-                quality: 1,
+            allowsEditing: true,
+            aspect: [1, 1],
+            quality: 1,
         }
 
         if (useLibrary) {
@@ -170,7 +188,7 @@ export const ManageScreen: FC<ProfileRootBottomTabCompositeScreenProps<'ManageSc
         await FileSystem.copyAsync({ from: uri, to: dest });
         setImage(dest);
     }
-    
+
     return (
         <SafeAreaProvider style={styles.container}>
             <GestureHandlerRootView style={{ flex: 1 }}>
@@ -183,30 +201,30 @@ export const ManageScreen: FC<ProfileRootBottomTabCompositeScreenProps<'ManageSc
                     <ScrollView>
                         <View className="mb-10 mt-10">
                             <View style={styles.rowContainer} className="justify-around">
-                            <BottomSheetModal
-                                ref={bottomSheetModalRef}
-                                index={0}
-                                snapPoints={['20%']}
-                                backdropComponent={(props) => (
-                                    <BottomSheetBackdrop
-                                        {...props}
-                                        disappearsOnIndex={-1}
-                                        appearsOnIndex={0}
-                                        pressBehavior="close"
-                                    />
-                                )}
-                            >
-                                <BottomSheetView className="flex items-center justify-center">
-                                    <View className="flex flex-col items-center">
-                                        <TouchableOpacity className="py-4" onPress={() => selectImage(true)}>
-                                            <Text className="text-lg ">Choose Photo</Text>
-                                        </TouchableOpacity>
-                                        <TouchableOpacity className="py-4" onPress={() => selectImage(false)}>
-                                            <Text className="text-lg ">Take Photo</Text>
-                                        </TouchableOpacity>
-                                    </View>
-                                </BottomSheetView>
-                            </BottomSheetModal>
+                                <BottomSheetModal
+                                    ref={bottomSheetModalRef}
+                                    index={0}
+                                    snapPoints={['20%']}
+                                    backdropComponent={(props) => (
+                                        <BottomSheetBackdrop
+                                            {...props}
+                                            disappearsOnIndex={-1}
+                                            appearsOnIndex={0}
+                                            pressBehavior="close"
+                                        />
+                                    )}
+                                >
+                                    <BottomSheetView className="flex items-center justify-center">
+                                        <View className="flex flex-col items-center">
+                                            <TouchableOpacity className="py-4" onPress={() => selectImage(true)}>
+                                                <Text className="text-lg ">Choose Photo</Text>
+                                            </TouchableOpacity>
+                                            <TouchableOpacity className="py-4" onPress={() => selectImage(false)}>
+                                                <Text className="text-lg ">Take Photo</Text>
+                                            </TouchableOpacity>
+                                        </View>
+                                    </BottomSheetView>
+                                </BottomSheetModal>
                                 <TouchableOpacity
                                     style={{ width: 100, height: 100, backgroundColor: '#2E3A59', borderRadius: 50, justifyContent: 'center', alignItems: 'center' }}
                                     onPress={handleImagePress}

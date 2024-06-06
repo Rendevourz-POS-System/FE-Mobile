@@ -10,7 +10,8 @@ export type RootNavigationStackParams = {
     VerifyOTPScreen : {userId: string | null, email : string | null};
     RegisterScreen: undefined;
     ShelterDetailScreen: {shelterId : string}
-    DonateScreen: {bankNumber : string};
+    DonateScreen: {shelterId : string, bankNumber : string};
+    DonatePaymentScreen: {vaNumber : string | null};
     HewanAdopsiScreen: undefined;
     PetDetailScreen: {petId : string};
     AdoptionFormScreen: {shelterId: string};

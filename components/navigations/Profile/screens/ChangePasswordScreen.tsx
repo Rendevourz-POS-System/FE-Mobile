@@ -1,5 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
-import React, { FC, useState } from "react";
+import React, { FC, useState, useEffect } from "react";
 import { ScrollView, Text, View, StyleSheet, TouchableOpacity, TextInput, Alert, Image } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { ProfileRootBottomTabCompositeScreenProps } from "../../CompositeNavigationProps";
@@ -38,6 +38,24 @@ export const ChangePasswordScreen: FC<ProfileRootBottomTabCompositeScreenProps<'
             Alert.alert('Password Masih Salah', 'Password anda masih tidak sesuai.');
         }
     }
+
+    useEffect(() => {
+        const parentNavigation = navigation.getParent();
+        
+        if (parentNavigation) {
+          parentNavigation.setOptions({
+            tabBarStyle: { display: 'none' }
+          });
+        }
+    
+        return () => {
+          if (parentNavigation) {
+            parentNavigation.setOptions({
+              tabBarStyle: { display: 'flex' }
+            });
+          }
+        };
+      }, [navigation]);    
 
     return (
         <SafeAreaProvider style={styles.container}>

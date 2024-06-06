@@ -20,6 +20,24 @@ export const ShelterScreen: FC<ProfileRootBottomTabCompositeScreenProps<'Shelter
     const [errorMessage, setErrorMessage] = useState('');
     const [shelterId, setShelterId] = useState('');
     const [petData, setPetData] = useState<PetData[]>([]);
+    
+    useEffect(() => {
+        const parentNavigation = navigation.getParent();
+        
+        if (parentNavigation) {
+          parentNavigation.setOptions({
+            tabBarStyle: { display: 'none' }
+          });
+        }
+    
+        return () => {
+          if (parentNavigation) {
+            parentNavigation.setOptions({
+              tabBarStyle: { display: 'flex' }
+            });
+          }
+        };
+      }, [navigation]);    
 
     const fetchProfile = async () => {
         try {

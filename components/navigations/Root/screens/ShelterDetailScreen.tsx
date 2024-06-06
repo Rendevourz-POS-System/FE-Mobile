@@ -212,7 +212,7 @@ export const ShelterDetailScreen: FC<RootNavigationStackScreenProps<'ShelterDeta
                     </View>
                     
                     <View className='mt-3 flex-row justify-around'>
-                        <TouchableOpacity disabled={data.Data.BankAccountNumber === ""} style={styles.buttonBox} onPress={() => navigation.navigate("DonateScreen", {bankNumber : data.Data.BankAccountNumber})}>
+                        <TouchableOpacity disabled={data.Data.BankAccountNumber === ""} style={styles.buttonBox} onPress={() => navigation.navigate("DonateScreen", {shelterId : route.params.shelterId, bankNumber : data.Data.BankAccountNumber})}>
                             <FontAwesome6 name="hand-holding-heart" size={24} color="white" />
                             <Text style={styles.fontButton} className='ml-3 text-s text-center'>Donation</Text>
                         </TouchableOpacity>

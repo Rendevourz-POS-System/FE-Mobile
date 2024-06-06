@@ -1,4 +1,3 @@
-// export const baseUrl = "http://192.168.18.3:8080"
 export const baseUrl = "http://192.168.43.15:8080"
 
 export const BackendApiUri = {
@@ -24,6 +23,7 @@ export const BackendApiUri = {
     putShelterUpdate: '/shelter/update',
     getPet: '/pet',
     getUser: '/user',
+    postRequestDonation: '/request/donation',
     deleteAdminUser: '/admin/user/delete',
     deleteAdminShelter: '/admin/shelter/delete',
     deleteAdminPet: '/admin/pet/delete',
