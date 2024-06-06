@@ -32,7 +32,6 @@ export const AdoptionFormScreen: FC<RootNavigationStackScreenProps<'AdoptionForm
     });
 
     const onSubmit = async (data: AdoptionFormType) => {
-        console.log(data)
     }
 
     return (

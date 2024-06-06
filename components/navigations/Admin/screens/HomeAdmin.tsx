@@ -1,11 +1,11 @@
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import React, { useEffect, useState, FC } from 'react';
-import { TouchableHighlight, TouchableOpacity, View, ScrollView } from 'react-native';
+import { TouchableOpacity, View, ScrollView, ActivityIndicator, Alert } from 'react-native';
 import { Text } from 'react-native-elements';
 import TopNavigation from '../../../TopNavigation';
 import { BackendApiUri } from '../../../../functions/BackendApiUri';
 import { IUser } from '../../../../interface/IUser';
-import { get } from '../../../../functions/Fetch';
+import { deletes, get } from '../../../../functions/Fetch';
 import { MaterialIcons } from '@expo/vector-icons';
 import { IShelter } from '../../../../interface/IShelter';
 import { PetData } from '../../../../interface/IPetList';
@@ -15,11 +15,6 @@ export const HomeAdmin: FC<AdminNavigationStackScreenProps<'HomeAdmin'>> = ({ na
     const [userData, setUserData] = useState<IUser[]>();
     const [shelterData, setShelterData] = useState<IShelter[]>();
     const [petData, setPetData] = useState<PetData[]>();
-    const [selectedUser, setSelectedUser] = useState(null);
-
-    const toggleDetail = (index: any) => {
-        setSelectedUser(selectedUser === index ? null : index);
-    };
     const [isLoading, setIsLoading] = useState<boolean>(true);
 
     const data = [
@@ -87,6 +82,82 @@ export const HomeAdmin: FC<AdminNavigationStackScreenProps<'HomeAdmin'>> = ({ na
         }
     };
 
+
+    const handleDeleteUser = async (id: string, name: string) => {
+        Alert.alert(`Apakah Anda Yakin ingin menghapus ${name}`, '', [
+            {
+                text: 'Cancel',
+                onPress: () => navigation.navigate("HomeAdmin"),
+                style: 'cancel',
+            },
+            {
+                text: 'OK', onPress: async () => {
+                    setIsLoading(true)
+                    try {
+                        const response = await deletes(`${BackendApiUri.deleteAdminUser}/${id}`);
+                        if (response && response.status === 200) {
+                            Alert.alert(`Anda berhasil menghapus ${name}`)
+                        }
+                    } catch (e) {
+                        Alert.alert(`Anda gagal menghapus ${name}`)
+                    } finally {
+                        setIsLoading(false);
+                    }
+                }
+            },
+        ]);
+    }
+
+    const handleDeleteShelter = async (id: string, name: string) => {
+        Alert.alert(`Apakah Anda Yakin ingin menghapus ${name}`, '', [
+            {
+                text: 'Cancel',
+                onPress: () => navigation.navigate("HomeAdmin"),
+                style: 'cancel',
+            },
+            {
+                text: 'OK', onPress: async () => {
+                    setIsLoading(true)
+                    try {
+                        const response = await deletes(`${BackendApiUri.deleteAdminShelter}/${id}`);
+                        if (response && response.status === 200) {
+                            Alert.alert(`Anda berhasil menghapus ${name}`)
+                        }
+                    } catch (e) {
+                        Alert.alert(`Anda gagal menghapus ${name}`)
+                    } finally {
+                        setIsLoading(false);
+                    }
+                }
+            },
+        ]);
+    }
+
+    const handleDeletePet = async (id: string, name: string) => {
+        Alert.alert(`Apakah Anda Yakin ingin menghapus ${name}`, '', [
+            {
+                text: 'Cancel',
+                onPress: () => navigation.navigate("HomeAdmin"),
+                style: 'cancel',
+            },
+            {
+                text: 'OK', onPress: async () => {
+                    setIsLoading(true)
+                    try {
+                        const response = await deletes(`${BackendApiUri.deleteAdminPet}/${id}`);
+                        if (response && response.status === 200) {
+                            Alert.alert(`Anda berhasil menghapus ${name}`)
+                        }
+                    } catch (e) {
+                        Alert.alert(`Anda gagal menghapus ${name}`)
+                    } finally {
+                        setIsLoading(false);
+                    }
+                }
+            },
+        ]);
+    }
+
     const RenderUser = () => {
         return (
             <View>
@@ -103,7 +174,7 @@ export const HomeAdmin: FC<AdminNavigationStackScreenProps<'HomeAdmin'>> = ({ na
                             <TouchableOpacity className='pr-3' onPress={() => navigation.navigate("EditUserScreen", { userId: item.Id })}>
                                 <MaterialIcons name="edit" size={24} color="black" />
                             </TouchableOpacity>
-                            <TouchableOpacity>
+                            <TouchableOpacity onPress={() => handleDeleteUser(item.Id, item.Email)}>
                                 <MaterialIcons name="delete" size={24} color="#8A0B1E" />
                             </TouchableOpacity>
                         </Text>
@@ -126,10 +197,10 @@ export const HomeAdmin: FC<AdminNavigationStackScreenProps<'HomeAdmin'>> = ({ na
                         <Text className='ml-2 mr-5'>{index + 1}</Text>
                         <Text className='flex-1 ml-2'>{item.ShelterName}</Text>
                         <Text className='flex-2'>
-                            <TouchableOpacity className='pr-3'>
+                            <TouchableOpacity className='pr-3' onPress={() => navigation.navigate("EditShelterScreen", { shelterId: item.Id })}>
                                 <MaterialIcons name="edit" size={24} color="black" />
                             </TouchableOpacity>
-                            <TouchableOpacity>
+                            <TouchableOpacity onPress={() => handleDeleteShelter(item.Id, item.ShelterName)}>
                                 <MaterialIcons name="delete" size={24} color="#8A0B1E" />
                             </TouchableOpacity>
                         </Text>
@@ -152,10 +223,10 @@ export const HomeAdmin: FC<AdminNavigationStackScreenProps<'HomeAdmin'>> = ({ na
                         <Text className='ml-2 mr-5'>{index + 1}</Text>
                         <Text className='flex-1 ml-2'>{item.PetName}</Text>
                         <Text className='flex-2'>
-                            <TouchableOpacity className='pr-3'>
+                            <TouchableOpacity className='pr-3' onPress={() => navigation.navigate("EditPetScreen", { petId: item.Id })}>
                                 <MaterialIcons name="edit" size={24} color="black" />
                             </TouchableOpacity>
-                            <TouchableOpacity>
+                            <TouchableOpacity onPress={() => handleDeletePet(item.Id, item.PetName)}>
                                 <MaterialIcons name="delete" size={24} color="#8A0B1E" />
                             </TouchableOpacity>
                         </Text>
@@ -182,13 +253,19 @@ export const HomeAdmin: FC<AdminNavigationStackScreenProps<'HomeAdmin'>> = ({ na
                         </TouchableOpacity>
                     ))}
                 </View>
-                <ScrollView>
-                    {selectedTab === 'User' ? (RenderUser()) : (
-                        <>
-                            {selectedTab === 'Shelter' ? (RenderShelter()) : (RenderPet())}
-                        </>
-                    )}
-                </ScrollView>
+                {isLoading ? (
+                    <View className='flex-1 justify-center items-center'>
+                        <ActivityIndicator color="blue" size="large" />
+                    </View>
+                ) : (
+                    <ScrollView>
+                        {selectedTab === 'User' ? (RenderUser()) : (
+                            <>
+                                {selectedTab === 'Shelter' ? (RenderShelter()) : (RenderPet())}
+                            </>
+                        )}
+                    </ScrollView>
+                )}
             </BottomSheetModalProvider>
 
         </View>

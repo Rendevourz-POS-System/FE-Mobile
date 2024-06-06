@@ -36,7 +36,7 @@ export const PetDetailScreen: FC<RootNavigationStackScreenProps<'PetDetailScreen
             </View>
             <ScrollView>
                 <ImageBackground source={require('../../../../assets/image.png')} style={{ width: '100%', height: 350 }} />
-                <View className='pt-8 px-6 bottom-6 bg-white rounded-t-3xl'>
+                <View className='pt-8 px-6 bottom-6 bg-white rounded-t-3xl border border-slate-300 border-b-0'>
                     <View className='flex flex-row justify-between'>
                         <Text className='text-3xl font-bold'>{data?.Data.PetName}</Text>
                         <View className='flex flex-row items-center'>

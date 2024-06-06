@@ -49,7 +49,7 @@ export const ProfileScreen: FC<ProfileRootBottomTabCompositeScreenProps<'Profile
             fetchProfile();
         }, [navigation, route])
     );
-
+    
     return (
         <SafeAreaProvider style={styles.container}>
             <ScrollView>
@@ -58,7 +58,7 @@ export const ProfileScreen: FC<ProfileRootBottomTabCompositeScreenProps<'Profile
                     <Avatar
                         size={130}
                         rounded
-                        source={data?.ImageBase64 != undefined ? { uri: `data:image/*;base64,${data.ImageBase64}` } : { uri: "/assets/Default_Acc.jpg"}}
+                        source={data?.ImageBase64 ? { uri: `data:image/*;base64,${data.ImageBase64}` } : require('../../../../assets/Default_Acc.jpg')}
                     />
                         <Text className='text-2xl font-bold mt-2'>{data?.Username}</Text>
                     </View>

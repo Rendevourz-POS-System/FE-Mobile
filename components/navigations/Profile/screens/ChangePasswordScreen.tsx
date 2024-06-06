@@ -32,7 +32,6 @@ export const ChangePasswordScreen: FC<ProfileRootBottomTabCompositeScreenProps<'
 
     const onSubmit = async (data: changePasswordFormType) => {
         try {
-            console.log(data);
             await put(BackendApiUri.putUserUpdatePw, data);
             Alert.alert('Password Berhasil Berubah', 'Password anda telah berhasil berubah.');
         } catch (e) {

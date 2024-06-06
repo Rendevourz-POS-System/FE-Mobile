@@ -13,7 +13,7 @@ import { HistoryShelterScreen } from "./screens/HistoryShelterScreen";
 
 const Stack = createNativeStackNavigator<ProfileNavigationStackParams>();
 
-export const ProfileNavigationStack: React.FC<{}> = () => {
+const ProfileNavigationStack: React.FC<{}> = () => {
     return (
         <Stack.Navigator>
             <Stack.Screen name="ProfileScreen" component={ProfileScreen} options={noHeader} />
@@ -33,3 +33,5 @@ export const ProfileNavigationStack: React.FC<{}> = () => {
 const noHeader : NativeStackNavigationOptions = {
     headerShown: false
 };
+
+export default ProfileNavigationStack;

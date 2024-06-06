@@ -1,6 +1,6 @@
 import React, { FC, useEffect, useState } from 'react';
 import { ScrollView, TouchableOpacity, View, StyleSheet, Linking, ImageBackground, TouchableHighlight } from 'react-native';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { Text } from 'react-native-elements';
 import { FontAwesome, FontAwesome5, FontAwesome6, Ionicons, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 import { RootNavigationStackScreenProps } from '../../StackScreenProps';
@@ -150,7 +150,7 @@ export const ShelterDetailScreen: FC<RootNavigationStackScreenProps<'ShelterDeta
                 ) : (
                     <ImageBackground source={require('../../../../assets/animal-shelter.png')} style={{ width: '100%', height: 350 }} />
                 )}
-                <View className='pt-8 px-6 bottom-6 bg-white rounded-t-3xl'>
+                <View className='pt-8 px-6 bottom-6 bg-white rounded-t-3xl border border-slate-300 border-b-0'>
                     <View className='flex flex-row justify-between'>
                         <Text className='text-3xl font-bold'>{data.Data.ShelterName}</Text>
                         <View className='flex flex-row items-center'>

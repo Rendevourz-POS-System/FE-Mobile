@@ -1,11 +1,11 @@
 import { FontAwesome, Ionicons } from "@expo/vector-icons";
-import React, { FC, useEffect, useState } from "react";
-import { ScrollView, Text, View, StyleSheet, TouchableOpacity, TextInput, Alert, Image } from "react-native";
+import React, { FC, useCallback, useEffect, useRef, useState } from "react";
+import { ScrollView, Text, View, StyleSheet, TouchableOpacity, TextInput, Alert, Image, BackHandler } from "react-native";
 import { z } from "zod";
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Controller, useForm } from 'react-hook-form';
 import { MultipleSelectList, SelectList } from "react-native-dropdown-select-list";
-import { BackendApiUri } from "../functions/BackendApiUri";
+import { BackendApiUri, baseUrl } from "../functions/BackendApiUri";
 import { get, post, postForm } from "../functions/Fetch";
 import { PetType, ShelterLocation } from "../interface/IPetType";
 import * as ImagePicker from 'expo-image-picker';
@@ -15,6 +15,7 @@ import { useAuth } from "../app/context/AuthContext";
 import * as FileSystem from 'expo-file-system';
 import { ProfileNavigationStackParams } from "./navigations/Profile/ProfileNavigationStackParams";
 import { RootNavigationStackParams } from "./navigations/Root/RootNavigationStackParams";
+import { BottomSheetBackdrop, BottomSheetModal, BottomSheetView } from "@gorhom/bottom-sheet";
 
 const createShelterFormSchema = z.object({
     ShelterName: z.string({ required_error: "Nama shelter tidak boleh kosong" }).min(1, { message: "Nama shelter tidak boleh kosong" }),
@@ -41,6 +42,7 @@ export const CreateShelter = () => {
     const [selected, setSelected] = useState<string[]>([]);
     const [image, setImage] = useState<string | null>(null);
     const imgDir = FileSystem.documentDirectory + 'images/';
+    const bottomSheetModalRef = useRef<BottomSheetModal>(null);
     const { control, handleSubmit, setValue, watch , reset,  formState: { errors } } = useForm<CreateShelterFormType>({
         resolver: zodResolver(createShelterFormSchema),
         defaultValues: {
@@ -105,6 +107,7 @@ export const CreateShelter = () => {
         if (!result.canceled) {
             saveImage(result.assets[0].uri);
         }
+        bottomSheetModalRef.current?.close();
     };
 
     const saveImage = async (uri: string) => {
@@ -115,17 +118,6 @@ export const CreateShelter = () => {
         setImage(dest);
     }
 
-    useEffect(() => {
-        loadImages();
-    }, []);
-
-    const loadImages = async () => {
-        await ensureDirExists();
-        const files = await FileSystem.readDirectoryAsync(imgDir);
-        if(files.length > 0) {
-            setImage(imgDir + files[0]);
-        }
-    }
     const formatContactNumber = (contactNumber: string) => {
         if (contactNumber.startsWith('0')) {
             return '+62' + contactNumber.slice(1);
@@ -148,7 +140,7 @@ export const CreateShelter = () => {
 
         formData.append('data', JSON.stringify(data));
 
-        const res = await fetch('http://192.168.18.3:8080/shelter/register', {
+        const res = await fetch(`${baseUrl}/shelter/register`, {
             method: 'POST',
             body: formData,
             headers: {
@@ -160,7 +152,7 @@ export const CreateShelter = () => {
                 removeImage(image!);
             }
             if(response.status === 200) {
-                navigate.goBack();
+                Alert.alert("Pet Created", "Pet Berhasil dibuat", [ { text: "OK", onPress: () => navigate.goBack()}]);
             }
         }).catch(err => {
             console.log(err)
@@ -172,8 +164,12 @@ export const CreateShelter = () => {
         setImage(null);
     }
 
+    const handleImagePress = useCallback(() => {
+        bottomSheetModalRef.current?.present();
+    }, []);
+
     return (
-        <ScrollView className="mt-5">
+        <ScrollView className="">
             {image && (
                 <View className="items-end mx-5 ">
                     <TouchableOpacity className="flex-row items-center" onPress={() => removeImage(image)}>
@@ -182,20 +178,37 @@ export const CreateShelter = () => {
                     </TouchableOpacity>
                 </View>
             )}
+            <BottomSheetModal
+                ref={bottomSheetModalRef}
+                index={0}
+                snapPoints={['27%%']}
+                backdropComponent={(props) => (
+                    <BottomSheetBackdrop
+                        {...props}
+                        disappearsOnIndex={-1}
+                        appearsOnIndex={0}
+                        pressBehavior="close"
+                    />
+                )}
+            >
+                <BottomSheetView className="flex items-center justify-center">
+                    <View className="flex flex-col items-center">
+                        <TouchableOpacity className="py-4" onPress={() => selectImage(true)}>
+                            <Text className="text-lg ">Choose Photo</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity className="py-4" onPress={() => selectImage(false)}>
+                            <Text className="text-lg ">Take Photo</Text>
+                        </TouchableOpacity>
+                    </View>
+                </BottomSheetView>
+            </BottomSheetModal>
             <View className="items-center">
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: 350 }}>
                     {image == null && (
                         <>
                             <TouchableOpacity
-                                style={{ width: 170, height: 200, backgroundColor: '#2E3A59', borderRadius: 10, justifyContent: 'center', alignItems: 'center', marginRight: 5 }}
-                                onPress={() => selectImage(true)}
-                            >
-                                <Ionicons name="images" size={40} color="white" />
-                            </TouchableOpacity>
-
-                            <TouchableOpacity
-                            style={{ width: 170, height: 200, backgroundColor: '#2E3A59', borderRadius: 10, justifyContent: 'center', alignItems: 'center', marginLeft: 5 }}
-                            onPress={() => selectImage(false)}
+                                style={{ width: 350, height: 200, backgroundColor: '#2E3A59', borderRadius: 10, justifyContent: 'center', alignItems: 'center', marginLeft: 5 }}
+                                onPress={handleImagePress}
                             >
                             <Ionicons name="camera" size={40} color="white" />
                             </TouchableOpacity>
@@ -398,7 +411,7 @@ export const CreateShelter = () => {
             <Text style={styles.errorMessage}>{errors.Pin?.message}</Text>
 
             <TouchableOpacity style={[styles.button]} onPress={handleSubmit(onSubmit)}>
-                <Text className="text-center font-bold text-white">Save</Text>
+                <Text className="text-center font-bold text-white ">Save</Text>
             </TouchableOpacity>
         </ScrollView>
     );
@@ -440,8 +453,7 @@ const styles = StyleSheet.create({
         padding: 15,
         marginHorizontal: 30,
         borderRadius: 10,
-        top: 30,
-        marginBottom: 60
+        marginBottom: 80
     },
     selectBox: {
         marginTop: 5,
