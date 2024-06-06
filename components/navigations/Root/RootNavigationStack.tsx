@@ -20,6 +20,7 @@ import { get } from "../../../functions/Fetch";
 import { BackendApiUri } from "../../../functions/BackendApiUri";
 import HomeAdmin from "../Admin/screens/HomeAdmin";
 import { AdminNavigationStack } from "../Admin/AdminNavigationStack";
+import { DonatePaymentScreen } from "./screens/DonatePaymentScreen";
 
 const Stack = createNativeStackNavigator<RootNavigationStackParams>();
 
@@ -60,6 +61,7 @@ const RootNavigationStack: React.FC = () => {
                                 <Stack.Screen name="AdoptionFormScreen" component={AdoptionFormScreen} options={noHeader} />
                                 <Stack.Screen name="RescueFormScreen" component={RescueFormScreen} options={noHeader} />
                                 <Stack.Screen name="SurrenderFormScreen" component={SurrenderFormScreen} options={noHeader} />
+                                <Stack.Screen name="DonatePaymentScreen" component={DonatePaymentScreen} options={noHeader} />
                             </Stack.Group>
 
                         )}
