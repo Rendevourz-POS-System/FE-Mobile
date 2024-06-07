@@ -10,7 +10,6 @@ import {
     BottomSheetBackdrop,
 } from '@gorhom/bottom-sheet';
 import { FlashList } from '@shopify/flash-list';
-import { RootBottomTabCompositeNavigationProp } from './navigations/CompositeNavigationProps';
 import { ShelterData } from '../interface/IShelterList';
 import { get, post } from '../functions/Fetch';
 import { BackendApiUri } from '../functions/BackendApiUri';
@@ -21,9 +20,12 @@ import { getIconName } from '../functions/GetPetIconName';
 import { Dropdown } from 'react-native-element-dropdown';
 import { Location } from '../interface/ILocation';
 import { myProvince } from '../functions/getLocation';
+import { RootBottomTabCompositeNavigationProp } from './navigations/CompositeNavigationProps';
+import { AppNavigationStackParams } from './navigations/Root/AppNavigationStackParams';
+import { UserNavigationStackScreenProps } from './navigations/StackScreenProps';
 
 export const ShelterList = ({favAttempt} : any) => {
-    const navigation = useNavigation<RootBottomTabCompositeNavigationProp<'Home'>>();
+    const navigation = useNavigation<UserNavigationStackScreenProps<'Home'>>();
     const [provinceData, setProvinceData] = useState<Location[]>([]);
     const [shelterData, setShelterData] = useState<ShelterData[]>([]);
     const [shelterFav, setShelterFav] = useState<ShelterData[]>([]);
@@ -354,7 +356,7 @@ export const ShelterList = ({favAttempt} : any) => {
                                 renderItem={({item: shelter}) => (
                                     <TouchableOpacity 
                                         style={{ overflow: 'hidden' }} 
-                                        onPress={() => navigation.navigate("ShelterDetailScreen", { shelterId: shelter.Id })}
+                                        onPress={() => navigation.navigation.navigate('Home', { screen: 'Home' })}
                                         activeOpacity={1}>
                                             {shelter.ImageBase64 === null ? (
                                                 <Image source={require('../assets/animal-shelter.png')} 

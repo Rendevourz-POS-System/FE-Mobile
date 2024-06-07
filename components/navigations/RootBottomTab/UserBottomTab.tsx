@@ -1,13 +1,13 @@
 import React from 'react';
 import { createBottomTabNavigator, BottomTabNavigationOptions, } from '@react-navigation/bottom-tabs';
-import { RootBottomTabParams } from './RootBottomTabParams';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { FC } from 'react';
 import { Platform, StyleSheet } from 'react-native';
 import { HomeScreen } from './screens/HomeScreen';
 import ProfileNavigationStack from '../Profile/ProfileNavigationStack';
+import { UserBottomTabParams } from './UserBottomTabParams';
 
-const Tab = createBottomTabNavigator<RootBottomTabParams>();
+const Tab = createBottomTabNavigator<UserBottomTabParams>();
 
 const homeTabOptions : BottomTabNavigationOptions = {
     headerShown : false,
@@ -27,7 +27,7 @@ const profileTabOptions : BottomTabNavigationOptions = {
     )
 }
 
-const RootBottomTab : FC<unknown> = () => {
+const UserBottomTab : FC<unknown> = () => {
     return (
         <Tab.Navigator
             screenOptions={{
@@ -43,7 +43,7 @@ const RootBottomTab : FC<unknown> = () => {
     );
 }
 
-export default RootBottomTab;
+export default UserBottomTab;
 
 const styles = StyleSheet.create({
     iOSTabBar: {

@@ -9,13 +9,14 @@ import { BackendApiUri } from "../../../../functions/BackendApiUri";
 import { get } from "../../../../functions/Fetch";
 import { ShelterUser } from "../../../../interface/IShelter";
 import { useFocusEffect } from "@react-navigation/native";
+import { ProfileNavigationStackScreenProps } from "../../StackScreenProps";
 
 interface IProfile {
     Username : string
     ImageBase64 : string
 }
 
-export const ProfileScreen: FC<ProfileRootBottomTabCompositeScreenProps<'ProfileScreen'>> = ({ navigation, route }) => {
+export const ProfileScreen: FC<ProfileNavigationStackScreenProps<'ProfileScreen'>> = ({navigation, route}) => {
     const { authState, onLogout } = useAuth();
     const [data, setData] = useState<IProfile | null>(null);
     const [dataShelter, setDataShelter] = useState<ShelterUser | null>(null);
@@ -53,7 +54,7 @@ export const ProfileScreen: FC<ProfileRootBottomTabCompositeScreenProps<'Profile
     return (
         <SafeAreaProvider style={styles.container}>
             <ScrollView>
-                <View className="my-10 mt-20">
+                <View className="my-10">
                     <View className='flex items-center justify-center'>
                     <Avatar
                         size={130}

@@ -2,10 +2,10 @@ import React, { FC, useEffect, useState } from "react";
 import { BackHandler, Text, View, Image } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { useFocusEffect } from '@react-navigation/native';
-import { RootNavigationStackScreenProps } from "../../StackScreenProps";
+import { GuestNavigationStackScreenProps } from "../../StackScreenProps";
 import { ActivityIndicator } from "react-native-paper";
 
-export const EmailScreen: FC<RootNavigationStackScreenProps<'EmailScreen'>> = ({ navigation, route }) => {
+export const EmailScreen: FC<GuestNavigationStackScreenProps<'Email'>> = ({ navigation, route }) => {
     const [time, setTime] = useState<number>(3);
 
     useEffect(() => {
@@ -15,7 +15,7 @@ export const EmailScreen: FC<RootNavigationStackScreenProps<'EmailScreen'>> = ({
 
         // Replace the current screen with the Login screen after countdown ends
         const timeout = setTimeout(() => {
-            navigation.replace('LoginScreen');
+            navigation.replace('Login');
         }, 3000);
 
         return () => {

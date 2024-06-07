@@ -18,7 +18,7 @@ import { BottomSheetBackdrop, BottomSheetModal, BottomSheetModalProvider, Bottom
 import { useAuth } from "../../../../app/context/AuthContext";
 import { useNavigation } from "@react-navigation/native";
 import { ProfileNavigationStackScreenProps } from "../../StackScreenProps";
-import { RootBottomTabParams } from "../../RootBottomTab/RootBottomTabParams";
+import { RootBottomTabParams } from "../../RootBottomTab/UserBottomTabParams";
 
 const createPetFormSchema = z.object({
     PetName: z.string({ required_error: "Nama hewan tidak boleh kosong" }).min(1, { message: "Nama hewan tidak boleh kosong" }),

@@ -1,5 +1,4 @@
 import React, { FC, useEffect, useState } from "react";
-import { RootNavigationStackScreenProps } from "../../StackScreenProps";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { View, Text, Image, TextInput, StyleSheet, TouchableOpacity, ScrollView, Button, ActivityIndicator } from "react-native";
 import { Icon } from "react-native-elements";
@@ -12,7 +11,7 @@ import { post } from "../../../../functions/Fetch";
 import { BackendApiUri } from "../../../../functions/BackendApiUri";
 import { getCity, getKabupaten, getProvince } from "../../../../functions/getLocation";
 import { LocationAPI } from "../../../../interface/ILocationAPI";
-import { useFocusEffect } from "@react-navigation/native"; // Import useFocusEffect
+import { GuestNavigationStackScreenProps } from "../../StackScreenProps";
 
 const registerFormSchema = z.object({
     Username: z.string({ required_error: "Name cannot be empty" })
@@ -44,7 +43,7 @@ const registerFormSchema = z.object({
 
 type RegisterFormType = z.infer<typeof registerFormSchema>
 
-export const RegisterScreen: FC<RootNavigationStackScreenProps<'RegisterScreen'>> = ({ navigation }) => {
+export const RegisterScreen: FC<GuestNavigationStackScreenProps<'Register'>> = ({ navigation }) => {
     const [showPassword, setShowPassword] = useState(true);
     const [showConfirmPassword, setShowConfirmPassword] = useState(true);
     const [provinces, setProvinces] = useState<LocationAPI[]>([]);
@@ -153,7 +152,7 @@ export const RegisterScreen: FC<RootNavigationStackScreenProps<'RegisterScreen'>
         try {
             const response = await post(BackendApiUri.registerUser, body);
             if(response.status === 200) {
-                navigation.navigate("VerifyOTPScreen", {userId : response.data.Id, email : body.Email});
+                navigation.navigate("VerifyOTP", {userId : response.data.Id, email : body.Email});
             }
         } catch (e) {
             console.log(e)
@@ -393,7 +392,7 @@ export const RegisterScreen: FC<RootNavigationStackScreenProps<'RegisterScreen'>
 
                     <View className="flex-row justify-center top-5">
                         <Text>Already have an account?</Text>
-                        <TouchableOpacity onPress={() => navigation.navigate("LoginScreen")}>
+                        <TouchableOpacity onPress={() => navigation.navigate("Login")}>
                             <Text className="underline underline-offset-4" style={style.fontColor}> Sign In</Text>
                         </TouchableOpacity>
                     </View>

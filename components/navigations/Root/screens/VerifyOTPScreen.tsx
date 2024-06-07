@@ -2,15 +2,15 @@ import { FontAwesome6, Ionicons } from "@expo/vector-icons";
 import { FC, useState, useEffect } from "react";
 import { ActivityIndicator, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
-import { RootNavigationStackScreenProps } from "../../StackScreenProps";
 import { Button, TextInput } from "react-native-paper";
 import { post } from "../../../../functions/Fetch";
 import { BackendApiUri } from "../../../../functions/BackendApiUri";
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { GuestNavigationStackScreenProps } from "../../StackScreenProps";
 
 const RESEND_OTP_TIMEOUT = 120; // seconds
 
-export const VerifyOTPScreen: FC<RootNavigationStackScreenProps<'VerifyOTPScreen'>> = ({ navigation, route }) => {
+export const VerifyOTPScreen: FC<GuestNavigationStackScreenProps<'VerifyOTP'>> = ({ navigation, route }) => {
     const email = route.params.email;
     const userId = route.params.userId;
     const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
@@ -57,7 +57,7 @@ export const VerifyOTPScreen: FC<RootNavigationStackScreenProps<'VerifyOTPScreen
             if (res.status === 200) {
                 setOtp("");
                 setIsSubmitting(false);
-                navigation.navigate("EmailScreen");
+                navigation.navigate("Email");
             }
         } catch (e) {
             setIsSubmitting(false);
@@ -85,7 +85,7 @@ export const VerifyOTPScreen: FC<RootNavigationStackScreenProps<'VerifyOTPScreen
                 >
                     <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
                         <View className="absolute left-6 top-12">
-                            <Ionicons name="chevron-back" size={24} style={{ backgroundColor: "#ECECEC", borderRadius: 999, padding: 2.5 }} color="black" onPress={() => navigation.navigate("LoginScreen")} />
+                            <Ionicons name="chevron-back" size={24} style={{ backgroundColor: "#ECECEC", borderRadius: 999, padding: 2.5 }} color="black" onPress={() => navigation.navigate("Login")} />
                         </View>
                         <View className="items-center mt-[20%]">
                             <FontAwesome6 name="envelope-open-text" size={210} style={{ color: "#488DF4" }} />

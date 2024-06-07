@@ -1,15 +1,14 @@
 import { FC, useState } from "react";
-import { Image, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { ActivityIndicator, Image, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { CheckBox, Icon } from "react-native-elements";
 import { SafeAreaProvider } from "react-native-safe-area-context";
-import { RootNavigationStackScreenProps } from "../../StackScreenProps";
 import { z } from "zod";
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Controller, useForm } from 'react-hook-form';
-import axios from "axios";
 import { useAuth } from "../../../../app/context/AuthContext";
 import { post } from "../../../../functions/Fetch";
 import { BackendApiUri } from "../../../../functions/BackendApiUri";
+import { GuestNavigationStackScreenProps } from "../../StackScreenProps";
 
 const loginFormSchema = z.object({
     Email: z.string({ required_error: "Email cannot be empty" }).email({ message: "Invalid email address" }),
@@ -18,12 +17,14 @@ const loginFormSchema = z.object({
 
 type LoginFormType = z.infer<typeof loginFormSchema>
 
-export const LoginScreen: FC<RootNavigationStackScreenProps<'LoginScreen'>> = ({ navigation }) => {
+export const LoginScreen: FC<GuestNavigationStackScreenProps<'Login'>> = ({navigation}) => {
     const [showPassword, setShowPassword] = useState(false);
     const [rememberMe, setRememberMe] = useState(false);
     const {onLogin} = useAuth();
+    const [isLogin, setIsLogin] = useState(false);
 
     const login = async () => {
+        setIsLogin(true);
         const result = await onLogin!(email, password);
         if(result.data?.Data)  {
             try{
@@ -31,11 +32,12 @@ export const LoginScreen: FC<RootNavigationStackScreenProps<'LoginScreen'>> = ({
             } catch(e){
                 console.log(e)
             }
-            navigation.navigate("VerifyOTPScreen", { email: email, userId: result.data.Data });
+            navigation.navigate("VerifyOTP", { email: email, userId: result.data.Data });
         }
         if(result.error){
             setError('Email', { message: 'Invalid email or password' });
             setError('Password', { message: 'Invalid email or password' });
+            setIsLogin(false);
         }
     }
 
@@ -103,7 +105,7 @@ export const LoginScreen: FC<RootNavigationStackScreenProps<'LoginScreen'>> = ({
                             )}
                         />
                         <TouchableOpacity onPress={togglePasswordVisibility} style={style.passwordToggleIcon}>
-                            <Icon name={showPassword ? 'eye-slash' : 'eye'} type="font-awesome" size={18} color="#666" />
+                            <Icon name={!showPassword ? 'eye-slash' : 'eye'} type="font-awesome" size={18} color="#666" />
                         </TouchableOpacity>
                     </View>
                     <Text style={style.errorMessage}>{errors.Password?.message}</Text>
@@ -123,13 +125,26 @@ export const LoginScreen: FC<RootNavigationStackScreenProps<'LoginScreen'>> = ({
                         </TouchableOpacity>
                     </View>
 
-                    <TouchableOpacity style={style.button} onPress={login}>
-                        <Text className="text-center font-bold text-white">Sign In</Text>
+                    <TouchableOpacity style={style.button} onPress={login} disabled={isLogin} className={`flex-row items-center justify-center ${!isLogin ? 'bg-blue-500' : 'bg-slate-500'}`}>
+                        {isLogin ? 
+                            (
+                                <>
+                                    <ActivityIndicator animating={isLogin} color="#fff" className="mx-2" />
+                                    <Text className="text-center font-bold text-white">Signing In...</Text> 
+                                </>
+                            )
+                            : 
+                            (
+                                <>
+                                    <Text className="text-center font-bold text-white">Sign In</Text>
+                                </>
+                            )
+                        }
                     </TouchableOpacity>
 
                     <View className="flex-row justify-center top-5">
                         <Text>Don't have an account?</Text>
-                        <TouchableOpacity onPress={() => navigation.navigate("RegisterScreen")}>
+                        <TouchableOpacity onPress={() => navigation.navigate("Register")}>
                             <Text className="underline underline-offset-4" style={style.fontColor}> Sign Up</Text>
                         </TouchableOpacity>
                     </View>
@@ -150,7 +165,6 @@ const style = StyleSheet.create({
         flexDirection: 'row'
     },
     button: {
-        backgroundColor: "#378CE7",
         padding: 15,
         marginHorizontal: 30,
         borderRadius: 10,
