@@ -1,4 +1,4 @@
-export const baseUrl = "http://192.168.18.3:8080"
+export const baseUrl = "http://192.168.200.245:8080"
 // export const baseUrl = "http://192.168.43.15:8080"
 
 export const BackendApiUri = {
