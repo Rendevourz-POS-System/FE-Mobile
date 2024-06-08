@@ -1,15 +1,15 @@
 import { NativeStackNavigationOptions, createNativeStackNavigator } from "@react-navigation/native-stack";
 import { ProfileNavigationStackParams } from "./ProfileNavigationStackParams";
-import { ProfileScreen } from "./screens/ProfileScreen";
-import { ManageScreen } from "./screens/ManageScreen";
-import { NotificationScreen } from "./screens/NotificationScreen";
-import { HistoryScreen } from "./screens/HistoryScreen";
-import { FavoriteScreen } from "./screens/FavoriteScreen";
-import { ChangePasswordScreen } from "./screens/ChangePasswordScreen";
-import { ShelterScreen } from "./screens/ShelterScreen";
-import { ManageShelterScreen } from "./screens/ManageShelterScreen";
-import { CreatePetScreen } from "./screens/CreatePetScreen";
-import { HistoryShelterScreen } from "./screens/HistoryShelterScreen";
+import { ProfileScreen } from "../../navigations/Profile/screens/ProfileScreen";
+import { ManageScreen } from "../../navigations/Profile/screens/ManageScreen";
+import { NotificationScreen } from "../../navigations/Profile/screens/NotificationScreen";
+import { HistoryScreen } from "../../navigations/Profile/screens/HistoryScreen";
+import { FavoriteScreen } from "../../navigations/Profile/screens/FavoriteScreen";
+import { ChangePasswordScreen } from "../../navigations/Profile/screens/ChangePasswordScreen";
+import { ShelterScreen } from "../../navigations/Profile/screens/ShelterScreen";
+import { ManageShelterScreen } from "../../navigations/Profile/screens/ManageShelterScreen";
+import { CreatePetScreen } from "../../navigations/Profile/screens/CreatePetScreen";
+import { HistoryShelterScreen } from "../../navigations/Profile/screens/HistoryShelterScreen";
 
 const Stack = createNativeStackNavigator<ProfileNavigationStackParams>();
 

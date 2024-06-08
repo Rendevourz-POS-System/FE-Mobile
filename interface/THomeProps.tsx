@@ -2,4 +2,5 @@ import { UserBottomTabCompositeNavigationProps } from "../components/StackParams
 
 export type HomeProps = {
     navigation: UserBottomTabCompositeNavigationProps<'Home'>;
+    route : any;
 }

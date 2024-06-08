@@ -27,6 +27,12 @@ import { HomeUserNavigationStackParams } from "../User/HomeUserNavigationStackPa
 import { Header } from "../../Header";
 import { ProfileNavigationStackParams } from "../Profile/ProfileNavigationStackParams";
 import { NoHeaderStackParams } from "../NoHeader/NoHeaderStackParams";
+import { ManageScreen } from "../../navigations/Profile/screens/ManageScreen";
+import { ChangePasswordScreen } from "../../navigations/Profile/screens/ChangePasswordScreen";
+import { ManageShelterScreen } from "../../navigations/Profile/screens/ManageShelterScreen";
+import { NotificationScreen } from "../../navigations/Profile/screens/NotificationScreen";
+import { HistoryScreen } from "../../navigations/Profile/screens/HistoryScreen";
+import { FavoriteScreen } from "../../navigations/Profile/screens/FavoriteScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -102,6 +108,7 @@ const AppNavigationStack: FC = () => {
         )
     }
 
+    // Display Screen that doesnt have a Header
     const HomeUserStack = createNativeStackNavigator<NoHeaderStackParams>();
     const HomeStackGroup = () => (
         <HomeUserStack.Navigator screenOptions={{ headerShown: false }}>
@@ -122,6 +129,32 @@ const AppNavigationStack: FC = () => {
                 component={ProfileScreen}
                 options={noHeader}
             />
+            <ProfileUserStack.Screen
+                name="ManageScreen"
+                component={ManageScreen}
+                options={noHeader}
+            />
+            <ProfileUserStack.Screen
+                name="ChangePasswordScreen"
+                component={ChangePasswordScreen}
+                options={noHeader}
+            />
+            <ProfileUserStack.Screen
+                name="NotificationScreen"
+                component={NotificationScreen}
+                options={noHeader}
+            />
+            <ProfileUserStack.Screen
+                name="HistoryScreen"
+                component={HistoryScreen}
+                options={noHeader}
+            />
+            <ProfileUserStack.Screen
+                name="FavoriteScreen"
+                component={FavoriteScreen}
+                options={noHeader}
+            />
+
         </ProfileUserStack.Navigator>
     )
 

@@ -43,7 +43,7 @@ export const FavoriteScreen: FC<ProfileRootBottomTabCompositeScreenProps<'Favori
 
     return (
         <SafeAreaProvider className='flex-1'>
-            <View className="mt-14 mb-5 flex-row items-center justify-center">
+            <View className="mt-5 mb-5 flex-row items-center justify-center">
                 <Ionicons name="chevron-back" size={24} color="black" onPress={() => navigation.goBack()} style={{ position: 'absolute', left: 20 }} />
                 <Text className="text-xl">Favorite</Text>
             </View>

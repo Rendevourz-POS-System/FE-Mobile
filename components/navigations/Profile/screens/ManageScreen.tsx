@@ -175,7 +175,7 @@ export const ManageScreen: FC<ProfileRootBottomTabCompositeScreenProps<'ManageSc
         <SafeAreaProvider style={styles.container}>
             <GestureHandlerRootView style={{ flex: 1 }}>
                 <BottomSheetModalProvider>
-                    <View className="mt-14 flex-row items-center justify-center mb-3">
+                    <View className="mt-5 flex-row items-center justify-center mb-3">
                         <Ionicons name="chevron-back" size={24} color="black" onPress={() => navigation.goBack()} style={{ position: 'absolute', left: 20 }} />
                         <Text className="text-xl">Manage Profile</Text>
                     </View>

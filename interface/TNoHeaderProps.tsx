@@ -2,4 +2,5 @@ import { NoHeaderNavigationStackScreenProps } from "../components/StackParams/St
 
 export type NoHeaderProps = {
     navigation: NoHeaderNavigationStackScreenProps<'ShelterDetailScreen'>
+    route : any
 }

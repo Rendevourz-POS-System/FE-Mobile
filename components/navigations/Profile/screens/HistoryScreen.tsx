@@ -24,7 +24,7 @@ export const HistoryScreen: FC<ProfileRootBottomTabCompositeScreenProps<'History
 
     return (
         <SafeAreaProvider style={styles.container}>
-            <View className="mt-14 flex-row items-center justify-center">
+            <View className="mt-5 flex-row items-center justify-center">
                 <Ionicons name="chevron-back" size={24} color="black" onPress={() => navigation.goBack()} style={{ position: 'absolute', left: 20 }} />
                 <Text className="text-xl">History</Text>
             </View>
