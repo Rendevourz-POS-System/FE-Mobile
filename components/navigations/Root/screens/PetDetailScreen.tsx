@@ -3,7 +3,6 @@ import { ScrollView, TouchableOpacity, View, StyleSheet, ImageBackground, Toucha
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { Text } from 'react-native-elements';
 import { FontAwesome, Ionicons, MaterialIcons } from '@expo/vector-icons';
-import { RootNavigationStackScreenProps } from '../../../StackParams/StackScreenProps';
 import { PetData } from '../../../../interface/IPetList';
 import { get } from '../../../../functions/Fetch';
 import { BackendApiUri } from '../../../../functions/BackendApiUri';
@@ -12,7 +11,7 @@ interface PetProps{
     Data: PetData
 }
 
-export const PetDetailScreen: FC<RootNavigationStackScreenProps<'PetDetailScreen'>> = ({ navigation, route }: any) => {
+export const PetDetailScreen: FC<{}> = ({ navigation, route }: any) => {
     const [isFavorite, setIsFavorite] = useState(false);
     const [data, setData] = useState<PetProps>();
 
@@ -31,7 +30,7 @@ export const PetDetailScreen: FC<RootNavigationStackScreenProps<'PetDetailScreen
 
     return (
         <SafeAreaProvider className='bg-white'>
-            <View style={[styles.nextIcon, { position: 'absolute', left: 20, top: 45, zIndex: 1 }]}>
+            <View style={[styles.nextIcon, { position: 'absolute', left: 20, top: 17, zIndex: 1 }]}>
                 <Ionicons name="chevron-back" size={24} color="black" onPress={() => navigation.goBack()} />
             </View>
             <ScrollView>

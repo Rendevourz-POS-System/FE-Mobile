@@ -25,7 +25,6 @@ import { Searchbar } from 'react-native-paper';
 import { Dropdown } from 'react-native-element-dropdown';
 import { Button } from "react-native-elements";
 import { getIconName } from "../../../../functions/GetPetIconName";
-import { HomeProps } from "../../../../interface/THomeProps";
 import { NoHeaderProps } from "../../../../interface/TNoHeaderProps";
 
 export const ShelterListScreen : FC<NoHeaderProps> = ({navigation, route} : any) => {
@@ -39,12 +38,7 @@ export const ShelterListScreen : FC<NoHeaderProps> = ({navigation, route} : any)
     const [search, setSearch] = useState<string>('');
     const [debounceValue] = useDebounce(search, 1000);
     const bottomSheetModalRef = useRef<BottomSheetModal>(null);
-    const [page, setPage] = useState<number>(1);
-    const pageSize = 10;
-    const orderBy = "ascending";
-    const sort = "";
     const [refreshing, setRefreshing] = useState(false);
-    const [snapPoints, setSnapPoints] = useState(['45%']);
     // const [isModalVisible, setModalVisible] = useState(false);
 
     // console.log(navigateNoHeader)
@@ -73,15 +67,6 @@ export const ShelterListScreen : FC<NoHeaderProps> = ({navigation, route} : any)
             console.error(e);
         }
     };
-
-    // const toggleModal = () => {
-    //     setModalVisible(!isModalVisible);
-    // };
-
-    // const handleSelectItem = (item : any) => {
-    //     setFilterLocation(item.label);
-    //     toggleModal();
-    // };
 
     const handleFilterPress = useCallback(() => {
         bottomSheetModalRef.current?.present();
@@ -181,38 +166,6 @@ export const ShelterListScreen : FC<NoHeaderProps> = ({navigation, route} : any)
         setApplyPressed(false)
     }, [debounceValue, refreshing, favAttempt, applyPressed]);
 
-    const [selectedShelters, setSelectedShelters] = useState<string[]>([]);
-
-    const toggleShelterSelection = (shelterId: string) => {
-        setSelectedShelters((prevSelectedShelters) => {
-            if (prevSelectedShelters.includes(shelterId)) {
-                return prevSelectedShelters.filter((id) => id !== shelterId);
-            } else {
-                return [...prevSelectedShelters, shelterId];
-            }
-        });
-    };
-
-    const isShelterSelected = (shelterId: string) => {
-        return selectedShelters.includes(shelterId);
-    };
-
-    const [selectedPets, setSelectedPets] = useState<string[]>([]);
-
-    const togglePetSelection = (petId: string) => {
-        setSelectedPets((prevSelectedPets) => {
-            if (prevSelectedPets.includes(petId)) {
-                return prevSelectedPets.filter((id) => id !== petId);
-            } else {
-                return [...prevSelectedPets, petId];
-            }
-        });
-    };
-
-    const isPetSelected = (petId: string) => {
-        return selectedPets.includes(petId);
-    };
-
     const styles = StyleSheet.create({
         bottomSheetModal: {
             borderTopLeftRadius: 20,
@@ -297,12 +250,12 @@ export const ShelterListScreen : FC<NoHeaderProps> = ({navigation, route} : any)
                         <BottomSheetModal
                             ref={bottomSheetModalRef}
                             index={0}
-                            snapPoints={['45%']}
+                            snapPoints={['65%']}
                             backdropComponent={(props) => (
                                 <BottomSheetBackdrop
                                     {...props}
                                     disappearsOnIndex={-1}
-                                    appearsOnIndex={0}
+                                    appearsOnIndex={1}
                                     pressBehavior="close"
                                 />
                             )}
@@ -371,9 +324,6 @@ export const ShelterListScreen : FC<NoHeaderProps> = ({navigation, route} : any)
                                     renderItem={({item: shelter}) => (
                                         <TouchableOpacity 
                                             style={{ overflow: 'hidden' }} 
-                                            // onPress={() => navigation.navigation.navigate('Home', { screen: 'Home' })}
-                                            // onPress={() => navigation.navigation.navigate('Home', { screen: 'ShelterDetail', params : {shelterId : shelter.Id} })}
-                                            // onPress={() => navigateNoHeader.navigation.navigate("ShelterDetailScreen", {shelterId : shelter.Id})}
                                             onPress={() => navigation.navigate("ShelterDetailScreen", {shelterId : shelter.Id})}
                                             activeOpacity={1}>
                                                 {shelter.ImageBase64 === null ? (
@@ -445,129 +395,5 @@ export const ShelterListScreen : FC<NoHeaderProps> = ({navigation, route} : any)
                 </>
             </BottomSheetModalProvider>
         </>
-        // <BottomSheetModalProvider>
-        //     <View>
-        //         <View className='flex-row items-center justify-around'>
-        //             <Searchbar
-        //                 placeholder='Text Here...'
-        //                 value={search}
-        //                 onChangeText={setSearch}
-        //                 style={{backgroundColor: 'transparent', width:'87%'}}
-        //                 loading={isLoading}
-        //             />
-        //             <MaterialCommunityIcons name='tune-variant' size={24} color='black'
-        //                 style={{marginRight: 10}}
-        //                 onPress={toggleModal}
-        //             />
-
-        //             <BottomSheetModal
-        //                 ref={bottomSheetModalRef}
-        //                 index={0}
-        //                 snapPoints={snapPoints}
-        //                 backdropComponent={(props) => (
-        //                     <BottomSheetBackdrop
-        //                         {...props}
-        //                         disappearsOnIndex={-1}
-        //                         appearsOnIndex={0}
-        //                         pressBehavior="close"
-        //                     />
-        //                 )}
-        //                 style={styles.bottomSheetModal}
-        //             >
-        //                 <BottomSheetView style={{ flex: 1 }}>
-        //                     <View style={{ flex: 1 }}>
-        //                         <View className='mx-5'>
-        //                             <Text className='text-xl font-bold'>Filter</Text>
-        //                             <View className='flex flex-row items-center justify-between'>
-        //                                 <Text className='text-xl font-bold mt-6 mb-2'>Location</Text>
-        //                                 <TouchableOpacity className='mt-6 mb-2 px-10 py-3 rounded-2xl' onPress={() => setFilterLocation("")}>
-        //                                     <Text className='text-[#4689FD] text-lg font-bold'>Reset</Text>
-        //                                 </TouchableOpacity>
-        //                             </View>
-        //                             <Dropdown
-        //                                 style={{ borderWidth: 1, paddingHorizontal: 8, paddingVertical: 5, borderRadius: 10 }}
-        //                                 containerStyle={{ borderWidth: 10 }}
-        //                                 placeholderStyle={styles.placeholderStyle}
-        //                                 selectedTextStyle={styles.selectedTextStyle}
-        //                                 inputSearchStyle={styles.inputSearchStyle}
-        //                                 iconStyle={styles.iconStyle}
-        //                                 data={provinceData.map(item => ({ label: item.label, value: item.value }))}
-        //                                 search
-        //                                 maxHeight={300}
-        //                                 labelField="label"
-        //                                 valueField="value"
-        //                                 placeholder="Select item"
-        //                                 searchPlaceholder="Search..."
-        //                                 value={filterLocation}
-        //                                 onChange={item => {
-        //                                     setFilterLocation(item.label);
-        //                                 }}
-        //                                 renderItem={renderItem}
-        //                             />
-
-        //                         </View>
-        //                     </View>
-        //                     <View className='items-center my-5'>
-        //                         <Button
-        //                             title="Apply"
-        //                             accessibilityLabel='Apply this'
-        //                             containerStyle={{ width: '35%' }}
-        //                             onPress={handleApplyPress}
-        //                         />
-        //                     </View>
-        //                 </BottomSheetView>
-        //             </BottomSheetModal>
-
-        //             {/* <Modal
-        //                 isVisible={isModalVisible}
-        //                 onBackdropPress={toggleModal}
-        //                 backdropOpacity={0.5}
-        //                 animationIn="slideInUp"
-        //                 animationOut="slideOutDown"
-        //             >
-        //                 <View style={{ flex: 1 }}>
-        //                         <View className='mx-5'>
-        //                             <Text className='text-xl font-bold'>Filter</Text>
-        //                             <View className='flex flex-row items-center justify-between'>
-        //                                 <Text className='text-xl font-bold mt-6 mb-2'>Location</Text>
-        //                                 <TouchableOpacity className='mt-6 mb-2 px-10 py-3 rounded-2xl' onPress={() => setFilterLocation("")}>
-        //                                     <Text className='text-[#4689FD] text-lg font-bold'>Reset</Text>
-        //                                 </TouchableOpacity>
-        //                             </View>
-        //                             <Dropdown
-        //                                 style={{ borderWidth: 1, paddingHorizontal: 8, paddingVertical: 5, borderRadius: 10 }}
-        //                                 containerStyle={{ borderWidth: 10 }}
-        //                                 placeholderStyle={styles.placeholderStyle}
-        //                                 selectedTextStyle={styles.selectedTextStyle}
-        //                                 inputSearchStyle={styles.inputSearchStyle}
-        //                                 iconStyle={styles.iconStyle}
-        //                                 data={provinceData.map(item => ({ label: item.label, value: item.value }))}
-        //                                 search
-        //                                 maxHeight={300}
-        //                                 labelField="label"
-        //                                 valueField="value"
-        //                                 placeholder="Select item"
-        //                                 searchPlaceholder="Search..."
-        //                                 value={filterLocation}
-        //                                 onChange={item => {
-        //                                     setFilterLocation(item.label);
-        //                                 }}
-        //                                 renderItem={renderItem}
-        //                             />
-
-        //                         </View>
-        //                     </View>
-        //                     <View className='items-center my-5'>
-        //                         <Button
-        //                             title="Apply"
-        //                             accessibilityLabel='Apply this'
-        //                             containerStyle={{ width: '35%' }}
-        //                             onPress={handleApplyPress}
-        //                         />
-        //                     </View>
-        //             </Modal> */}
-        //         </View>
-        //     </View>
-        // </BottomSheetModalProvider>
     )
 }

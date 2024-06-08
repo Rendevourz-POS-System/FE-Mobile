@@ -33,6 +33,7 @@ import { ManageShelterScreen } from "../../navigations/Profile/screens/ManageShe
 import { NotificationScreen } from "../../navigations/Profile/screens/NotificationScreen";
 import { HistoryScreen } from "../../navigations/Profile/screens/HistoryScreen";
 import { FavoriteScreen } from "../../navigations/Profile/screens/FavoriteScreen";
+import { PetDetailScreen } from "../../navigations/Root/screens/PetDetailScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -109,6 +110,7 @@ const AppNavigationStack: FC = () => {
     }
 
     // Display Screen that doesnt have a Header
+    // This only for Home User because only ShelterListScreen and PetListScreen have a Header
     const HomeUserStack = createNativeStackNavigator<NoHeaderStackParams>();
     const HomeStackGroup = () => (
         <HomeUserStack.Navigator screenOptions={{ headerShown: false }}>
@@ -118,6 +120,7 @@ const AppNavigationStack: FC = () => {
                 options={noHeader}
             />
             <HomeUserStack.Screen name="ShelterDetailScreen" component={ShelterDetailScreen} options={noHeader}/>
+            <HomeUserStack.Screen name="PetDetailScreen" component={PetDetailScreen} options={noHeader}/>
         </HomeUserStack.Navigator>
     );
 
