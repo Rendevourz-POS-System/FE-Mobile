@@ -9,7 +9,7 @@ import { BackendApiUri } from "../../../../functions/BackendApiUri";
 import { get } from "../../../../functions/Fetch";
 import { ShelterUser } from "../../../../interface/IShelter";
 import { useFocusEffect } from "@react-navigation/native";
-import { ProfileNavigationStackScreenProps } from "../../StackScreenProps";
+import { ProfileNavigationStackScreenProps } from "../../../StackParams/StackScreenProps";
 
 interface IProfile {
     Username : string

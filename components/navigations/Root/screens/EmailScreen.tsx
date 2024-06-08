@@ -2,7 +2,7 @@ import React, { FC, useEffect, useState } from "react";
 import { BackHandler, Text, View, Image } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { useFocusEffect } from '@react-navigation/native';
-import { GuestNavigationStackScreenProps } from "../../StackScreenProps";
+import { GuestNavigationStackScreenProps } from "../../../StackParams/StackScreenProps";
 import { ActivityIndicator } from "react-native-paper";
 
 export const EmailScreen: FC<GuestNavigationStackScreenProps<'Email'>> = ({ navigation, route }) => {

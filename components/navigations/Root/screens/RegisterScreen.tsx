@@ -11,7 +11,7 @@ import { post } from "../../../../functions/Fetch";
 import { BackendApiUri } from "../../../../functions/BackendApiUri";
 import { getCity, getKabupaten, getProvince } from "../../../../functions/getLocation";
 import { LocationAPI } from "../../../../interface/ILocationAPI";
-import { GuestNavigationStackScreenProps } from "../../StackScreenProps";
+import { GuestNavigationStackScreenProps } from "../../../StackParams/StackScreenProps";
 
 const registerFormSchema = z.object({
     Username: z.string({ required_error: "Name cannot be empty" })

@@ -17,8 +17,8 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { BottomSheetBackdrop, BottomSheetModal, BottomSheetModalProvider, BottomSheetView } from "@gorhom/bottom-sheet";
 import { useAuth } from "../../../../app/context/AuthContext";
 import { useNavigation } from "@react-navigation/native";
-import { ProfileNavigationStackScreenProps } from "../../StackScreenProps";
-import { RootBottomTabParams } from "../../RootBottomTab/UserBottomTabParams";
+import { ProfileNavigationStackScreenProps } from "../../../StackParams/StackScreenProps";
+import { RootBottomTabParams } from "../../../BottomTabs/UserBottomTabParams";
 
 const createPetFormSchema = z.object({
     PetName: z.string({ required_error: "Nama hewan tidak boleh kosong" }).min(1, { message: "Nama hewan tidak boleh kosong" }),

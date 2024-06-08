@@ -8,7 +8,7 @@ import { Controller, useForm } from 'react-hook-form';
 import { useAuth } from "../../../../app/context/AuthContext";
 import { post } from "../../../../functions/Fetch";
 import { BackendApiUri } from "../../../../functions/BackendApiUri";
-import { GuestNavigationStackScreenProps } from "../../StackScreenProps";
+import { GuestNavigationStackScreenProps } from "../../../StackParams/StackScreenProps";
 
 const loginFormSchema = z.object({
     Email: z.string({ required_error: "Email cannot be empty" }).email({ message: "Invalid email address" }),

@@ -3,7 +3,7 @@ import { Image, ScrollView, TouchableOpacity, View, StyleSheet, TouchableHighlig
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { Text } from 'react-native-elements';
 import { FontAwesome, FontAwesome5, FontAwesome6, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
-import { RootNavigationStackScreenProps } from '../../StackScreenProps';
+import { RootNavigationStackScreenProps } from '../../../StackParams/StackScreenProps';
 import { PetData } from '../../../../interface/IPetList';
 import { get } from '../../../../functions/Fetch';
 import { BackendApiUri } from '../../../../functions/BackendApiUri';

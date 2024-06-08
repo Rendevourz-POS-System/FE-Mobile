@@ -9,7 +9,7 @@ import DatePicker from "../../../DatePicker";
 import { RadioButton } from "react-native-paper";
 import * as ImagePicker from 'expo-image-picker';
 import { SelectList } from "react-native-dropdown-select-list";
-import { RootNavigationStackScreenProps } from "../../StackScreenProps";
+import { RootNavigationStackScreenProps } from "../../../StackParams/StackScreenProps";
 import { dataJenisHewan, dataSpesiesHewan } from "../../../../constans/data";
 
 const surrenderFormSchema = z.object({

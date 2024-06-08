@@ -1,9 +1,9 @@
 import { NativeStackNavigationOptions, createNativeStackNavigator } from "@react-navigation/native-stack";
 import { AdminNavigationStackParams } from "./AdminNavigationStackParams";
-import HomeAdmin from "./screens/HomeAdmin";
-import { EditUserScreen } from "./screens/EditUserScreen";
-import { EditShelterScreen } from "./screens/EditShelterScreen";
-import { EditPetScreen } from "./screens/EditPetScreen";
+import HomeAdmin from "../../navigations/Admin/screens/HomeAdmin";
+import { EditUserScreen } from "../../navigations/Admin/screens/EditUserScreen";
+import { EditShelterScreen } from "../../navigations/Admin/screens/EditShelterScreen";
+import { EditPetScreen } from "../../navigations/Admin/screens/EditPetScreen";
 
 const Stack = createNativeStackNavigator<AdminNavigationStackParams>();
 

@@ -1,10 +1,18 @@
 import { ActivityIndicator, Image, RefreshControl, StyleSheet, Text, TouchableOpacity, View } from "react-native"
 import { useNavigation } from "@react-navigation/native";
-import { UserNavigationStackScreenProps } from "../../StackScreenProps";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { HomeUserNavigationStackScreenProps, NoHeaderNavigationStackScreenProps, UserBottomTabCompositeNavigationProps, UserNavigationStackScreenProps } from "../../../StackParams/StackScreenProps";
+import { FC, useCallback, useEffect, useRef, useState } from "react";
 import { ShelterData } from "../../../../interface/IShelterList";
 import { useDebounce } from "use-debounce";
-import { BottomSheetBackdrop, BottomSheetModal, BottomSheetView } from "@gorhom/bottom-sheet";
+import {
+    BottomSheetModal,
+    BottomSheetView,
+    BottomSheetBackdrop,
+} from '@gorhom/bottom-sheet';
+import {
+    BottomSheetModalProvider,
+} from '@gorhom/bottom-sheet';
+
 import { myProvince } from "../../../../functions/getLocation";
 import { get, post } from "../../../../functions/Fetch";
 import { BackendApiUri } from "../../../../functions/BackendApiUri";
@@ -12,16 +20,16 @@ import { ShelterFav } from "../../../../interface/IShelterFav";
 import { PetType } from "../../../../interface/IPetType";
 import { Location } from "../../../../interface/ILocation";
 import { FontAwesome, FontAwesome6, MaterialCommunityIcons } from "@expo/vector-icons";
-
 import { FlashList } from '@shopify/flash-list';
 import { Searchbar } from 'react-native-paper';
 import { Dropdown } from 'react-native-element-dropdown';
 import { Button } from "react-native-elements";
 import { getIconName } from "../../../../functions/GetPetIconName";
+import { HomeProps } from "../../../../interface/THomeProps";
+import { NoHeaderProps } from "../../../../interface/TNoHeaderProps";
 
-export const ShelterListScreen = ({route} : any) => {
+export const ShelterListScreen : FC<NoHeaderProps> = ({navigation, route} : any) => {
     const favAttempt = route.params;
-    const navigation = useNavigation<UserNavigationStackScreenProps<'Home'>>();
     const [provinceData, setProvinceData] = useState<Location[]>([]);
     const [shelterData, setShelterData] = useState<ShelterData[]>([]);
     const [shelterFav, setShelterFav] = useState<ShelterData[]>([]);
@@ -36,7 +44,10 @@ export const ShelterListScreen = ({route} : any) => {
     const orderBy = "ascending";
     const sort = "";
     const [refreshing, setRefreshing] = useState(false);
+    const [snapPoints, setSnapPoints] = useState(['45%']);
+    // const [isModalVisible, setModalVisible] = useState(false);
 
+    // console.log(navigateNoHeader)
     const onRefresh = async () => {
         try{
             setRefreshing(true);
@@ -62,14 +73,22 @@ export const ShelterListScreen = ({route} : any) => {
             console.error(e);
         }
     };
-    
+
+    // const toggleModal = () => {
+    //     setModalVisible(!isModalVisible);
+    // };
+
+    // const handleSelectItem = (item : any) => {
+    //     setFilterLocation(item.label);
+    //     toggleModal();
+    // };
 
     const handleFilterPress = useCallback(() => {
         bottomSheetModalRef.current?.present();
     }, []);
     const fetchShelter = async () => {
         try{
-            const response = await get(`${BackendApiUri.getShelterList}/?search=${search}&page=${page}&page_size=${pageSize}&location_name=${filterLocation}`);
+            const response = await get(`${BackendApiUri.getShelterList}/?search=${search}&location_name=${filterLocation}`);
             if(response && response.status === 200) {
                 setShelterData(response.data);
             } else {
@@ -260,8 +279,174 @@ export const ShelterListScreen = ({route} : any) => {
     
 
     return (
-        // <>
-        //     <View className=''>
+        <>
+            <BottomSheetModalProvider>
+                <View className=''>
+                    <View className='flex-row items-center justify-around'>
+                        <Searchbar
+                            placeholder='Text Here...'
+                            value={search}
+                            onChangeText={setSearch}
+                            style={{backgroundColor: 'transparent', width:'87%'}}
+                            loading={isLoading}
+                        />
+                        <MaterialCommunityIcons name='tune-variant' size={24} color='black'
+                            style={{marginRight: 10}}
+                            onPress={handleFilterPress}
+                        />
+                        <BottomSheetModal
+                            ref={bottomSheetModalRef}
+                            index={0}
+                            snapPoints={['45%']}
+                            backdropComponent={(props) => (
+                                <BottomSheetBackdrop
+                                    {...props}
+                                    disappearsOnIndex={-1}
+                                    appearsOnIndex={0}
+                                    pressBehavior="close"
+                                />
+                            )}
+                            style={styles.bottomSheetModal}
+                            >
+                            <BottomSheetView style={{ flex: 1 }}>
+                                <View style={{ flex: 1 }}>
+                                    <View className='mx-5'>
+                                        <Text className='text-xl font-bold'>Filter</Text>
+                                        <View className='flex flex-row items-center justify-between'>
+                                            <Text className='text-xl font-bold mt-6 mb-2'>Location</Text>
+                                            <TouchableOpacity className='mt-6 mb-2 px-10 py-3 rounded-2xl' onPress={() => setFilterLocation("")}>
+                                                <Text className='text-[#4689FD] text-lg font-bold'>Reset</Text>
+                                            </TouchableOpacity>
+                                        </View>
+                                        <Dropdown
+                                            style={{ borderWidth: 1, paddingHorizontal: 8, paddingVertical: 5, borderRadius: 10 }}
+                                            containerStyle={{ borderWidth: 10 }}
+                                            placeholderStyle={styles.placeholderStyle}
+                                            selectedTextStyle={styles.selectedTextStyle}
+                                            inputSearchStyle={styles.inputSearchStyle}
+                                            iconStyle={styles.iconStyle}
+                                            data={provinceData.map(item => ({ label: item.label, value: item.value }))}
+                                            search
+                                            maxHeight={300}
+                                            labelField="label"
+                                            valueField="value"
+                                            placeholder="Select item"
+                                            searchPlaceholder="Search..."
+                                            value={filterLocation}
+                                            onChange={item => {
+                                                setFilterLocation(item.label);
+                                            }}
+                                            renderItem={renderItem}
+                                        />
+
+                                    </View>
+                                </View>
+                                <View className='items-center my-5'>
+                                    <Button
+                                        title="Apply"
+                                        accessibilityLabel='Apply this'
+                                        containerStyle={{ width: '35%' }}
+                                        onPress={handleApplyPress}
+                                    />
+                                </View>
+                            </BottomSheetView>
+                        </BottomSheetModal>
+                    </View>
+                </View>
+                <>
+                    {isLoading ? (
+                        <View className='flex-1 justify-center items-center'>
+                            <ActivityIndicator color="blue" size="large"/>
+                        </View>
+                    ) : (
+                        <>
+                            {shelterData !== null && shelterData.length > 0 ? (
+                                <FlashList
+                                    refreshControl={
+                                        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+                                    }
+                                    showsVerticalScrollIndicator={false}
+                                    estimatedItemSize={50}
+                                    data={mergedData || []}
+                                    renderItem={({item: shelter}) => (
+                                        <TouchableOpacity 
+                                            style={{ overflow: 'hidden' }} 
+                                            // onPress={() => navigation.navigation.navigate('Home', { screen: 'Home' })}
+                                            // onPress={() => navigation.navigation.navigate('Home', { screen: 'ShelterDetail', params : {shelterId : shelter.Id} })}
+                                            // onPress={() => navigateNoHeader.navigation.navigate("ShelterDetailScreen", {shelterId : shelter.Id})}
+                                            onPress={() => navigation.navigate("ShelterDetailScreen", {shelterId : shelter.Id})}
+                                            activeOpacity={1}>
+                                                {shelter.ImageBase64 === null ? (
+                                                    <Image source={require('../../../../assets/animal-shelter.png')} 
+                                                        resizeMode='center'
+                                                        style={{ width: '100%', height: 290, marginBottom: 15, marginTop: 5, borderTopLeftRadius: 20, borderTopRightRadius: 20 }} 
+                                                    />
+                                                ) : (
+                                                    <Image source={{ uri: `data:image/*;base64,${shelter.ImageBase64}` }} 
+                                                        resizeMode='contain'
+                                                        style={{ width: '100%', height: 290, marginBottom: 15, marginTop: 5, borderTopLeftRadius: 20, borderTopRightRadius: 20 }} 
+                                                    />
+                                                )}
+                                                <View style={{ position: 'absolute', top: 170, left: 0, right: 0, bottom: 0}}>
+                                                    <View style={{ marginTop: 10, backgroundColor: "#FFFDFF", paddingHorizontal: 20, paddingVertical: 15, borderTopLeftRadius: 15, borderTopRightRadius: 15}}>
+                                                        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                                                            <Text style={{ fontSize: 20, fontWeight: 'bold' }}>{shelter.ShelterName}</Text>
+                                                            <TouchableOpacity onPress={() => onPressFav(shelter.Id)}>
+                                                                {
+                                                                    shelter.isFav ? (
+                                                                        <FontAwesome
+                                                                            name='heart'
+                                                                            size={24}
+                                                                            style={{color: '#FF0000'}}
+                                                                        />
+                                                                    ) : (
+                                                                        <FontAwesome
+                                                                            name='heart-o'
+                                                                            size={24}
+                                                                            style={{color: '#4689FD'}}
+                                                                        />
+                                                                    )
+                                                                }
+                                                            </TouchableOpacity>
+
+                                                        </View>
+                                                        <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10 }}>
+                                                            <FontAwesome6 name='location-dot' size={20} color='#4689FD' />
+                                                            <Text style={{ fontSize: 14, fontWeight: 'normal', marginLeft: 5 }}>{shelter.ShelterLocationName}</Text>
+                                                        </View>
+
+                                                        <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10 }}>
+                                                            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', flex: 1 }}>
+                                                                {shelter.PetTypeAccepted.map((itemId) => {
+                                                                    const matchingPet = petTypes.find((pet) => pet.Id === itemId.toString());
+                                                                    if (matchingPet) {
+                                                                        const iconName = getIconName(matchingPet.Type);
+                                                                        if (iconName === 'rabbit') {
+                                                                            return <MaterialCommunityIcons key={matchingPet.Id} name={iconName} size={29} color='#8A8A8A' style={{ marginEnd: 5 }} />;
+                                                                        }
+                                                                        return <FontAwesome6 key={matchingPet.Id} name={iconName} size={24} color='#8A8A8A' style={{ marginEnd: 5 }} />;
+                                                                    }
+                                                                    return null;
+                                                                })}
+                                                            </View>
+                                                        </View>
+                                                    </View>
+                                                </View>
+                                        </TouchableOpacity>
+                                    )}
+                                />
+                            ) : (
+                                <View className='flex flex-1 justify-center items-center'>
+                                    <Text className='text-center'>Sorry, data not found</Text>
+                                </View>
+                            )}
+                        </>
+                    )}
+                </>
+            </BottomSheetModalProvider>
+        </>
+        // <BottomSheetModalProvider>
+        //     <View>
         //         <View className='flex-row items-center justify-around'>
         //             <Searchbar
         //                 placeholder='Text Here...'
@@ -272,12 +457,13 @@ export const ShelterListScreen = ({route} : any) => {
         //             />
         //             <MaterialCommunityIcons name='tune-variant' size={24} color='black'
         //                 style={{marginRight: 10}}
-        //                 onPress={handleFilterPress}
+        //                 onPress={toggleModal}
         //             />
+
         //             <BottomSheetModal
         //                 ref={bottomSheetModalRef}
         //                 index={0}
-        //                 snapPoints={['45%']}
+        //                 snapPoints={snapPoints}
         //                 backdropComponent={(props) => (
         //                     <BottomSheetBackdrop
         //                         {...props}
@@ -287,8 +473,7 @@ export const ShelterListScreen = ({route} : any) => {
         //                     />
         //                 )}
         //                 style={styles.bottomSheetModal}
-                        
-        //                 >
+        //             >
         //                 <BottomSheetView style={{ flex: 1 }}>
         //                     <View style={{ flex: 1 }}>
         //                         <View className='mx-5'>
@@ -331,98 +516,58 @@ export const ShelterListScreen = ({route} : any) => {
         //                         />
         //                     </View>
         //                 </BottomSheetView>
-
-
         //             </BottomSheetModal>
+
+        //             {/* <Modal
+        //                 isVisible={isModalVisible}
+        //                 onBackdropPress={toggleModal}
+        //                 backdropOpacity={0.5}
+        //                 animationIn="slideInUp"
+        //                 animationOut="slideOutDown"
+        //             >
+        //                 <View style={{ flex: 1 }}>
+        //                         <View className='mx-5'>
+        //                             <Text className='text-xl font-bold'>Filter</Text>
+        //                             <View className='flex flex-row items-center justify-between'>
+        //                                 <Text className='text-xl font-bold mt-6 mb-2'>Location</Text>
+        //                                 <TouchableOpacity className='mt-6 mb-2 px-10 py-3 rounded-2xl' onPress={() => setFilterLocation("")}>
+        //                                     <Text className='text-[#4689FD] text-lg font-bold'>Reset</Text>
+        //                                 </TouchableOpacity>
+        //                             </View>
+        //                             <Dropdown
+        //                                 style={{ borderWidth: 1, paddingHorizontal: 8, paddingVertical: 5, borderRadius: 10 }}
+        //                                 containerStyle={{ borderWidth: 10 }}
+        //                                 placeholderStyle={styles.placeholderStyle}
+        //                                 selectedTextStyle={styles.selectedTextStyle}
+        //                                 inputSearchStyle={styles.inputSearchStyle}
+        //                                 iconStyle={styles.iconStyle}
+        //                                 data={provinceData.map(item => ({ label: item.label, value: item.value }))}
+        //                                 search
+        //                                 maxHeight={300}
+        //                                 labelField="label"
+        //                                 valueField="value"
+        //                                 placeholder="Select item"
+        //                                 searchPlaceholder="Search..."
+        //                                 value={filterLocation}
+        //                                 onChange={item => {
+        //                                     setFilterLocation(item.label);
+        //                                 }}
+        //                                 renderItem={renderItem}
+        //                             />
+
+        //                         </View>
+        //                     </View>
+        //                     <View className='items-center my-5'>
+        //                         <Button
+        //                             title="Apply"
+        //                             accessibilityLabel='Apply this'
+        //                             containerStyle={{ width: '35%' }}
+        //                             onPress={handleApplyPress}
+        //                         />
+        //                     </View>
+        //             </Modal> */}
         //         </View>
         //     </View>
-        //     <>
-        //         {isLoading ? (
-        //             <View className='flex-1 justify-center items-center'>
-        //                 <ActivityIndicator color="blue" size="large"/>
-        //             </View>
-        //         ) : (
-        //             <>
-        //                 {shelterData !== null && shelterData.length > 0 ? (
-        //                     <FlashList
-        //                         refreshControl={
-        //                             <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-        //                         }
-        //                         estimatedItemSize={50}
-        //                         data={mergedData || []}
-        //                         renderItem={({item: shelter}) => (
-        //                             <TouchableOpacity 
-        //                                 style={{ overflow: 'hidden' }} 
-        //                                 onPress={() => navigation.navigation.navigate('Home', { screen: 'Home' })}
-        //                                 activeOpacity={1}>
-        //                                     {shelter.ImageBase64 === null ? (
-        //                                         <Image source={require('../../../../assets/animal-shelter.png')} 
-        //                                             resizeMode='center'
-        //                                             style={{ width: '100%', height: 290, marginBottom: 15, marginTop: 5, borderTopLeftRadius: 20, borderTopRightRadius: 20 }} 
-        //                                         />
-        //                                     ) : (
-        //                                         <Image source={{ uri: `data:image/*;base64,${shelter.ImageBase64}` }} 
-        //                                             resizeMode='contain'
-        //                                             style={{ width: '100%', height: 290, marginBottom: 15, marginTop: 5, borderTopLeftRadius: 20, borderTopRightRadius: 20 }} 
-        //                                         />
-        //                                     )}
-        //                                     <View style={{ position: 'absolute', top: 170, left: 0, right: 0, bottom: 0}}>
-        //                                         <View style={{ marginTop: 10, backgroundColor: "#FFFDFF", paddingHorizontal: 20, paddingVertical: 15, borderTopLeftRadius: 15, borderTopRightRadius: 15}}>
-        //                                             <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-        //                                                 <Text style={{ fontSize: 20, fontWeight: 'bold' }}>{shelter.ShelterName}</Text>
-        //                                                 <TouchableOpacity onPress={() => onPressFav(shelter.Id)}>
-        //                                                     {
-        //                                                         shelter.isFav ? (
-        //                                                             <FontAwesome
-        //                                                                 name='heart'
-        //                                                                 size={24}
-        //                                                                 style={{color: '#FF0000'}}
-        //                                                             />
-        //                                                         ) : (
-        //                                                             <FontAwesome
-        //                                                                 name='heart-o'
-        //                                                                 size={24}
-        //                                                                 style={{color: '#4689FD'}}
-        //                                                             />
-        //                                                         )
-        //                                                     }
-        //                                                 </TouchableOpacity>
-
-        //                                             </View>
-        //                                             <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10 }}>
-        //                                                 <FontAwesome6 name='location-dot' size={20} color='#4689FD' />
-        //                                                 <Text style={{ fontSize: 14, fontWeight: 'normal', marginLeft: 5 }}>{shelter.ShelterLocationName}</Text>
-        //                                             </View>
-
-        //                                             <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10 }}>
-        //                                                 <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', flex: 1 }}>
-        //                                                     {shelter.PetTypeAccepted.map((itemId) => {
-        //                                                         const matchingPet = petTypes.find((pet) => pet.Id === itemId.toString());
-        //                                                         if (matchingPet) {
-        //                                                             const iconName = getIconName(matchingPet.Type);
-        //                                                             if (iconName === 'rabbit') {
-        //                                                                 return <MaterialCommunityIcons key={matchingPet.Id} name={iconName} size={29} color='#8A8A8A' style={{ marginEnd: 5 }} />;
-        //                                                             }
-        //                                                             return <FontAwesome6 key={matchingPet.Id} name={iconName} size={24} color='#8A8A8A' style={{ marginEnd: 5 }} />;
-        //                                                         }
-        //                                                         return null;
-        //                                                     })}
-        //                                                 </View>
-        //                                             </View>
-        //                                         </View>
-        //                                     </View>
-        //                             </TouchableOpacity>
-        //                         )}
-        //                     />
-        //                 ) : (
-        //                     <View className='flex flex-1 justify-center items-center'>
-        //                         <Text className='text-center'>Sorry, data not found</Text>
-        //                     </View>
-        //                 )}
-        //             </>
-        //         )}
-        //     </>
-        // </>
-        <Text>Hello Shelter List</Text>
+        // </BottomSheetModalProvider>
     )
 }

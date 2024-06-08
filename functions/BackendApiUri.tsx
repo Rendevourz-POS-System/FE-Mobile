@@ -1,5 +1,6 @@
-export const baseUrl = "http://192.168.200.245:8080"
-// export const baseUrl = "http://192.168.43.15:8080"
+export const baseUrl = "http://192.168.43.15:8080"
+// export const baseUrl = "http://192.168.200.245:8080"
+// export const baseUrl = "http://172.20.10.4:8080"
 
 export const BackendApiUri = {
     registerUser : '/user/register',

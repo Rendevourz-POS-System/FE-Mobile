@@ -1,5 +1,5 @@
 import { FC, useEffect, useState } from "react"
-import { AdminNavigationStackScreenProps } from "../../StackScreenProps"
+import { AdminNavigationStackScreenProps } from "../../../StackParams/StackScreenProps"
 import { SafeAreaProvider } from "react-native-safe-area-context"
 import { View, Text, TouchableOpacity, ScrollView, StyleSheet, TextInput, Image } from "react-native";
 import { FontAwesome, Ionicons } from "@expo/vector-icons";

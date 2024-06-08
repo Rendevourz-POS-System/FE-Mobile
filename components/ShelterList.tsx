@@ -21,8 +21,8 @@ import { Dropdown } from 'react-native-element-dropdown';
 import { Location } from '../interface/ILocation';
 import { myProvince } from '../functions/getLocation';
 import { RootBottomTabCompositeNavigationProp } from './navigations/CompositeNavigationProps';
-import { AppNavigationStackParams } from './navigations/Root/AppNavigationStackParams';
-import { UserNavigationStackScreenProps } from './navigations/StackScreenProps';
+import { AppNavigationStackParams } from './StackParams/App/AppNavigationStackParams';
+import { UserNavigationStackScreenProps } from './StackParams/StackScreenProps';
 
 export const ShelterList = ({favAttempt} : any) => {
     const navigation = useNavigation<UserNavigationStackScreenProps<'Home'>>();
@@ -356,7 +356,7 @@ export const ShelterList = ({favAttempt} : any) => {
                                 renderItem={({item: shelter}) => (
                                     <TouchableOpacity 
                                         style={{ overflow: 'hidden' }} 
-                                        onPress={() => navigation.navigation.navigate('Home', { screen: 'Home' })}
+                                        onPress={() => console.log("Pressed")}
                                         activeOpacity={1}>
                                             {shelter.ImageBase64 === null ? (
                                                 <Image source={require('../assets/animal-shelter.png')} 

@@ -3,11 +3,12 @@ import { ScrollView, TouchableOpacity, View, StyleSheet, Linking, ImageBackgroun
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { Text } from 'react-native-elements';
 import { FontAwesome, FontAwesome5, FontAwesome6, Ionicons, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
-import { RootNavigationStackScreenProps } from '../../StackScreenProps';
 import { BackendApiUri } from '../../../../functions/BackendApiUri';
 import { get, post } from '../../../../functions/Fetch';
 import { PetType } from '../../../../interface/IPetType';
 import { getIconName } from '../../../../functions/GetPetIconName';
+import { UserBottomTabCompositeNavigationProps, UserNavigationStackScreenProps } from '../../../StackParams/StackScreenProps';
+import { UserBottomTabParams } from '../../../BottomTabs/UserBottomTabParams';
 interface ShelterData {
     Id: string,
     UserId: string,
@@ -29,7 +30,7 @@ interface ShelterProps {
     Message: string,
     Data: ShelterData
 }
-export const ShelterDetailScreen: FC<RootNavigationStackScreenProps<'ShelterDetailScreen'>> = ({ navigation, route }: any) => {
+export const ShelterDetailScreen: FC<{}> = ({ navigation, route }: any) => {
     const [isFavorite, setIsFavorite] = useState<Boolean>();
     const [favAttempt, setFavAttempt] = useState<number>(0);
     const [data, setData] = useState<ShelterProps>({
@@ -142,7 +143,7 @@ export const ShelterDetailScreen: FC<RootNavigationStackScreenProps<'ShelterDeta
             <View style={[styles.nextIcon, { position: 'absolute', left: 20, top: 45, zIndex: 1 }]}>
                 {/* DONT REMOVE THIS COMMENT
                 Passing refFav to HomeScreen to trigger refresh if not the list shelter not updated */}
-                <Ionicons name="chevron-back" size={24} color="black" onPress={() => navigation.navigate("HomeScreen", {screen: "Home", params : {favAttempt : favAttempt}})} />
+                <Ionicons name="chevron-back" size={24} color="black" onPress={() => navigation.navigate('ShelterListScreen', { refFav: favAttempt } )} />
             </View>
             <ScrollView>
                 {data.Data.ImageBase64 && data.Data.ImageBase64.length > 0 ? (

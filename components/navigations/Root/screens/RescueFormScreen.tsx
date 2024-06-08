@@ -3,7 +3,7 @@ import { Image, ScrollView, TouchableOpacity, View, StyleSheet, TextInput } from
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { Text } from 'react-native-elements';
 import { FontAwesome, FontAwesome5, FontAwesome6, Ionicons, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
-import { RootNavigationStackScreenProps } from '../../StackScreenProps';
+import { RootNavigationStackScreenProps } from '../../../StackParams/StackScreenProps';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Controller, useForm } from 'react-hook-form';

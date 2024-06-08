@@ -13,8 +13,6 @@ import { ProfileRootBottomTabCompositeScreenProps, RootBottomTabCompositeNavigat
 import { useNavigation } from "@react-navigation/native";
 import { useAuth } from "../app/context/AuthContext";
 import * as FileSystem from 'expo-file-system';
-import { ProfileNavigationStackParams } from "./navigations/Profile/ProfileNavigationStackParams";
-import { RootNavigationStackParams } from "./navigations/Root/AppNavigationStackParams";
 import { BottomSheetBackdrop, BottomSheetModal, BottomSheetView } from "@gorhom/bottom-sheet";
 
 const createShelterFormSchema = z.object({

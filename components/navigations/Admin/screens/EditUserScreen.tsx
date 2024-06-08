@@ -5,7 +5,7 @@ import { Text } from 'react-native-elements';
 import { BackendApiUri } from '../../../../functions/BackendApiUri';
 import { IUser } from '../../../../interface/IUser';
 import { get } from '../../../../functions/Fetch';
-import { AdminNavigationStackScreenProps } from '../../StackScreenProps';
+import { AdminNavigationStackScreenProps } from '../../../StackParams/StackScreenProps';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 

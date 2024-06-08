@@ -9,7 +9,7 @@ import { deletes, get } from '../../../../functions/Fetch';
 import { MaterialIcons } from '@expo/vector-icons';
 import { IShelter } from '../../../../interface/IShelter';
 import { PetData } from '../../../../interface/IPetList';
-import { AdminNavigationStackScreenProps } from '../../StackScreenProps';
+import { AdminNavigationStackScreenProps } from '../../../StackParams/StackScreenProps';
 
 export const HomeAdmin: FC<AdminNavigationStackScreenProps<'HomeAdmin'>> = ({ navigation }: any) => {
     const [userData, setUserData] = useState<IUser[]>();

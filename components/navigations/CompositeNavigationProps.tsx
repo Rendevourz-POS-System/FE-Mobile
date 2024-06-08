@@ -1,9 +1,9 @@
 import { BottomTabNavigationProp, BottomTabScreenProps } from "@react-navigation/bottom-tabs";
 import { NativeStackNavigationProp, NativeStackScreenProps } from "@react-navigation/native-stack";
 import { CompositeNavigationProp, CompositeScreenProps } from "@react-navigation/native";
-import { ProfileNavigationStackParams } from "./Profile/ProfileNavigationStackParams";
-import { UserBottomTabParams } from "./RootBottomTab/UserBottomTabParams";
-import { AppNavigationStackParams } from "./Root/AppNavigationStackParams";
+import { UserBottomTabParams } from "../BottomTabs/UserBottomTabParams";
+import { AppNavigationStackParams } from "../StackParams/App/AppNavigationStackParams";
+import { ProfileNavigationStackParams } from "../StackParams/Profile/ProfileNavigationStackParams";
 
 export type RootBottomTabCompositeNavigationProp<T extends keyof UserBottomTabParams> = CompositeNavigationProp<
     BottomTabNavigationProp<UserBottomTabParams, T>,

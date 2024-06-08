@@ -4,7 +4,7 @@ import { StyleSheet, TouchableOpacity, View, ScrollView, TextInput, Alert, Image
 import { Text } from 'react-native-elements';
 import { BackendApiUri } from '../../../../functions/BackendApiUri';
 import { get } from '../../../../functions/Fetch';
-import { AdminNavigationStackScreenProps } from '../../StackScreenProps';
+import { AdminNavigationStackScreenProps } from '../../../StackParams/StackScreenProps';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { FontAwesome, Ionicons } from '@expo/vector-icons';
 import { IShelter } from '../../../../interface/IShelter';

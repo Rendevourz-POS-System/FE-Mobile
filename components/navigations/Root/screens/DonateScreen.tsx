@@ -3,7 +3,7 @@ import { Image, ScrollView, TouchableOpacity, View, StyleSheet } from 'react-nat
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { Text } from 'react-native-elements';
 import { Ionicons } from '@expo/vector-icons';
-import { RootNavigationStackScreenProps } from '../../StackScreenProps';
+import { RootNavigationStackScreenProps } from '../../../StackParams/StackScreenProps';
 
 export const DonateScreen: FC<RootNavigationStackScreenProps<'DonateScreen'>> = ({ navigation, route }: any) => {
     return (

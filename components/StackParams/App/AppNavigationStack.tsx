@@ -5,25 +5,28 @@ import { IUser } from "../../../interface/IUser";
 import { BackendApiUri } from "../../../functions/BackendApiUri";
 import { get } from "../../../functions/Fetch";
 import { AdminNavigationStackParams } from "../Admin/AdminNavigationStackParams";
-import HomeAdmin from "../Admin/screens/HomeAdmin";
+import HomeAdmin from "../../navigations/Admin/screens/HomeAdmin";
 import { BottomTabNavigationOptions, createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { UserBottomTabParams } from "../RootBottomTab/UserBottomTabParams";
-import { GuestNavigationStackParams } from "../GuestNavigationStackParams";
-import { LoginScreen } from "./screens/LoginScreen";
-import { EmailScreen } from "./screens/EmailScreen";
-import { VerifyOTPScreen } from "./screens/VerifyOTPScreen";
-import { RegisterScreen } from "./screens/RegisterScreen";
+import { UserBottomTabParams } from "../../BottomTabs/UserBottomTabParams";
+import { GuestNavigationStackParams } from "../Guest/GuestNavigationStackParams";
+import { LoginScreen } from "../../navigations/Root/screens/LoginScreen";
+import { EmailScreen } from "../../navigations/Root/screens/EmailScreen";
+import { VerifyOTPScreen } from "../../navigations/Root/screens/VerifyOTPScreen";
+import { RegisterScreen } from "../../navigations/Root/screens/RegisterScreen";
 import { NavigationContainer } from "@react-navigation/native";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
-import { ShelterListScreen } from "../RootBottomTab/screens/ShelterListScreen";
-import { PetListScreen } from "../RootBottomTab/screens/PetListScreen";
-import { ShelterDetailScreen } from "./screens/ShelterDetailScreen";
+import { ShelterListScreen } from "../../navigations/RootBottomTab/screens/ShelterListScreen";
+import { PetListScreen } from "../../navigations/RootBottomTab/screens/PetListScreen";
+import { ShelterDetailScreen } from "../../navigations/Root/screens/ShelterDetailScreen";
 import { Dimensions, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { Avatar } from "react-native-elements";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
+import { ProfileScreen } from "../../navigations/Profile/screens/ProfileScreen";
+import { HomeUserNavigationStackParams } from "../User/HomeUserNavigationStackParams";
+import { Header } from "../../Header";
 import { ProfileNavigationStackParams } from "../Profile/ProfileNavigationStackParams";
-import { ProfileScreen } from "../Profile/screens/ProfileScreen";
+import { NoHeaderStackParams } from "../NoHeader/NoHeaderStackParams";
 
 const Stack = createNativeStackNavigator();
 
@@ -54,33 +57,6 @@ const AppNavigationStack: FC = () => {
         </AdminStack.Navigator>
     );
 
-    const getAvatarSize = () => {
-        const { width } = Dimensions.get('window');
-        return width * 0.18;
-    };
-
-    const Header = () => (
-        <View className="flex-row items-center justify-between bg-white px-3 py-2">
-            <View className="flex-row items-center ">
-                <TouchableOpacity onPress={() => console.log("avatar")}>
-                    <Avatar
-                        rounded
-                        source={
-                            userData?.ImageBase64 ? { uri: `data:image/*;base64,${userData.ImageBase64}` } : require('../../../assets/Default_Acc.jpg')
-                        }
-                        size={getAvatarSize()}
-                    />
-                </TouchableOpacity>
-                <Text style={{ marginLeft: 8, fontSize: 16, fontWeight: '600' }}>
-                    Welcome back, {'\n'}{userData?.Username}
-                </Text>
-            </View>
-            <TouchableOpacity onPress={onLogout} className="mr-2">
-                <MaterialCommunityIcons name="logout" size={25} color="black" />
-            </TouchableOpacity>
-        </View>
-    );
-
     const UserTab = createBottomTabNavigator<UserBottomTabParams>();
     const UserTabGroup = () => (
         <UserTab.Navigator>
@@ -104,7 +80,8 @@ const AppNavigationStack: FC = () => {
             elevation: 0, // Remove shadow on Android
             shadowOpacity: 0, // Remove shadow on iOS
         },
-        header : () => <Header />,
+        headerShown: false,
+        // header : () => <Header />,
         tabBarIcon : ({ size, focused }) => (
             <MaterialCommunityIcons 
                 name="home" 
@@ -125,15 +102,15 @@ const AppNavigationStack: FC = () => {
         )
     }
 
-    const HomeUserStack = createNativeStackNavigator();
+    const HomeUserStack = createNativeStackNavigator<NoHeaderStackParams>();
     const HomeStackGroup = () => (
-        <HomeUserStack.Navigator>
+        <HomeUserStack.Navigator screenOptions={{ headerShown: false }}>
             <HomeUserStack.Screen
                 name="TopTabs"
-                component={TopTabsGroup}
+                component={TopTabsWithHeader}
                 options={noHeader}
             />
-            <HomeUserStack.Screen name="ShelterDetail" component={ShelterDetailScreen} options={noHeader} />
+            <HomeUserStack.Screen name="ShelterDetailScreen" component={ShelterDetailScreen} options={noHeader}/>
         </HomeUserStack.Navigator>
     );
 
@@ -158,7 +135,18 @@ const AppNavigationStack: FC = () => {
         </GuestStack.Navigator>
     );
 
-    const TopTabs = createMaterialTopTabNavigator();
+    // Top Tabs
+    const TopTabs = createMaterialTopTabNavigator<HomeUserNavigationStackParams>();
+    const TopTabsWithHeader = () => (
+        <SafeAreaProvider style={{ flex: 1 }}>
+            <SafeAreaView style={{ flex: 1 }}>
+                <View style={{ flex: 1 }}>
+                    <Header />
+                    <TopTabsGroup/>
+                </View>
+            </SafeAreaView>
+        </SafeAreaProvider>
+    );
     const TopTabsGroup = () => (
         <TopTabs.Navigator
             screenOptions={{
@@ -168,8 +156,8 @@ const AppNavigationStack: FC = () => {
                 }
             }}
         >
-            <TopTabs.Screen name="Shelter" component={ShelterListScreen} />
-            <TopTabs.Screen name="Pet" component={PetListScreen} />
+            <TopTabs.Screen name="ShelterListScreen" component={ShelterListScreen} options={{title: "Shelters"}}/>
+            <TopTabs.Screen name="PetListScreen" component={PetListScreen} options={{title: "Pets"}} />
         </TopTabs.Navigator>
     );
 

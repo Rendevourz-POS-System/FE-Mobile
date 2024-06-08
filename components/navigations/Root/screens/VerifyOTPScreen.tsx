@@ -6,7 +6,7 @@ import { Button, TextInput } from "react-native-paper";
 import { post } from "../../../../functions/Fetch";
 import { BackendApiUri } from "../../../../functions/BackendApiUri";
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { GuestNavigationStackScreenProps } from "../../StackScreenProps";
+import { GuestNavigationStackScreenProps } from "../../../StackParams/StackScreenProps";
 
 const RESEND_OTP_TIMEOUT = 120; // seconds
 
