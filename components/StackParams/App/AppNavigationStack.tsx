@@ -119,7 +119,7 @@ const AppNavigationStack: FC = () => {
                 component={TopTabsWithHeader}
                 options={noHeader}
             />
-            <HomeUserStack.Screen name="ShelterDetailScreen" component={ShelterDetailScreen} options={noHeader}/>
+            <HomeUserStack.Screen name="ShelterDetailScreen" component={ShelterDetailScreen} options={{ presentation: "modal"}}/>
             <HomeUserStack.Screen name="PetDetailScreen" component={PetDetailScreen} options={noHeader}/>
         </HomeUserStack.Navigator>
     );

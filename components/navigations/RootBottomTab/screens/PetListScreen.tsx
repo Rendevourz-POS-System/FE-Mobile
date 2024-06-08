@@ -275,8 +275,10 @@ export const PetListScreen : FC<NoHeaderProps> = ({navigation, route} : any) => 
                                             onPress={() => navigation.navigate("PetDetailScreen", {petId : pet.Id})}
                                         >
                                         <Image
-                                            source={{ uri: `data:image/*;base64,${pet.ImageBase64}` }}
+                                            // source={{ uri: `data:image/*;base64,${pet.ImageBase64}` }}
+                                            source={ pet.ImageBase64 == null ? require("../../../../assets/default_paw2.jpg") : { uri: `data:image/*;base64,${pet.ImageBase64}` } }
                                             className="w-full h-80 rounded-3xl"
+                                            resizeMode="cover"
                                             />
                                             <TouchableHighlight
                                                 style={{
@@ -301,16 +303,16 @@ export const PetListScreen : FC<NoHeaderProps> = ({navigation, route} : any) => 
                                                 <View style={{ marginTop: 5, backgroundColor: "#FFFDFF", paddingHorizontal: 20, paddingVertical: 15, borderRadius: 15 }}>
                                                     <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
                                                         <Text style={{ fontSize: 20, fontWeight: 'bold' }}>{pet.PetName}</Text>
-                                                        {pet.PetType === "Male" ? (
-                                                                <FontAwesome6 name='venus' size={20} color='#FF6EC7' />
-                                                            ) : (
-                                                                <FontAwesome6 name='mars' size={20} color='#4689FD' />
+                                                        {pet.PetGender === "Male" ? (
+                                                            <FontAwesome6 name='mars' size={22} color='#4689FD' />
+                                                        ) : (
+                                                            <FontAwesome6 name='venus' size={22} color='#FF6EC7' />
                                                         )}
                                                     </View>
                                                     <View className="flex-row">
                                                         <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10 }}>
                                                             <FontAwesome6 name='location-dot' size={20} color='#4689FD' />
-                                                            <Text style={{ fontSize: 14, fontWeight: 'normal', marginLeft: 5 }}>Jakarta Barat</Text>
+                                                            <Text style={{ fontSize: 14, fontWeight: 'normal', marginLeft: 5 }}>{pet.ShelterLocation}</Text>
                                                         </View>
                                                     </View>
                                                 </View>
