@@ -9,17 +9,19 @@ import { Searchbar, TextInput } from "react-native-paper";
 import { PetData } from "../../../../interface/IPetList";
 import { useDebounce } from "use-debounce";
 import { BackendApiUri } from "../../../../functions/BackendApiUri";
-import { get } from "../../../../functions/Fetch";
+import { get, post } from "../../../../functions/Fetch";
 import { Location } from "../../../../interface/ILocation";
 import { dataJenisHewan, dataProvinsi } from "../../../../constans/data";
 import { ProfileProps } from "../../../../interface/TProfileProps";
 import { NoHeaderProps } from "../../../../interface/TNoHeaderProps";
+import { PetFav } from "../../../../interface/IPetFav";
 
 type PetImageMap = {
     [key: string]: any; // This allows indexing with strings
 };
 
 export const PetListScreen : FC<NoHeaderProps> = ({navigation, route} : any) => {
+    const favAttempt = route.params;
     const [filterLocation, setFilterLocation] = useState<string>();
     const [petData, setPetData] = useState<PetData[]>([]);
     const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -32,6 +34,8 @@ export const PetListScreen : FC<NoHeaderProps> = ({navigation, route} : any) => 
     const forceUpdate = useCallback(() => updateState({}), []);
     const [applyPressed, setApplyPressed] = useState<boolean>(false);
     const [shelterName, setShelterName] = useState<string>("");
+    const [petFav, setPetFav] = useState<PetData[]>([]);
+    const [mergedData, setMergedData] = useState<PetFav[]>([]);
 
     const [page, setPage] = useState<number>(1);
     const pageSize = 10;
@@ -51,7 +55,31 @@ export const PetListScreen : FC<NoHeaderProps> = ({navigation, route} : any) => 
         bottomSheetModalRef.current?.present();
     }, []);
 
-    const fetchData = async () => {
+    function mergePets() {
+        if(!petData || petData.length === 0) {
+            return [];
+        } else if(!petFav || petFav.length === 0) {
+            return petData.map(data => ({ ...data, isFav : false}))
+        } else {
+            return petData.map(data => {
+                const isFav = petFav.some(favPet => favPet.Id === data.Id);
+                return { ...data, isFav }
+            })
+        }
+    }
+
+    const fetchPetFav = async () => {
+        try {
+            const response = await get(`${BackendApiUri.getPetFav}`);
+            if(response && response.status === 200) {
+                setPetFav(response.data);
+            }
+        } catch (e) {
+            console.error(e);
+        }
+    }
+
+    const fetchPet = async () => {
         try{
             const responsePet = await get(`${BackendApiUri.getPetList}/?search=${search}&page=1&page_size=200&order_by=${orderBy}&sort=${sort}&locatio=${filterLocation}&shelter_name=${shelterName}`)
             if(responsePet && responsePet.status === 200) {
@@ -62,6 +90,11 @@ export const PetListScreen : FC<NoHeaderProps> = ({navigation, route} : any) => 
         } finally {
             setIsLoading(false);
         }
+    }
+
+    const fetchData = async () => {
+        const data = mergePets();
+        setMergedData(data);
     };
 
     useEffect(() => {
@@ -71,44 +104,18 @@ export const PetListScreen : FC<NoHeaderProps> = ({navigation, route} : any) => 
     useEffect(() => {
         fetchData();
         setRefreshing(false);
-    }, [debounceValue, refreshing, applyPressed]);
+    }, [petFav, petData]);
 
-    const [selectedShelters, setSelectedShelters] = useState<string[]>([]);
+    useEffect(() => {
+        fetchPet();
+        fetchPetFav();
 
-    const toggleShelterSelection = (shelterId: string) => {
-        setSelectedShelters((prevSelectedShelters) => {
-            if (prevSelectedShelters.includes(shelterId)) {
-                return prevSelectedShelters.filter((id) => id !== shelterId);
-            } else {
-                return [...prevSelectedShelters, shelterId];
-            }
-        });
-    };
+    }, [debounceValue, refreshing, favAttempt, applyPressed]);
 
-    const isShelterSelected = (shelterId: string) => {
-        return selectedShelters.includes(shelterId);
-    };
     const petImages : PetImageMap = {
         Dog: require('../../../../assets/icon_Dog.jpg'),
         Cat: require('../../../../assets/icon_Cat.jpg'),
         Rabbit: require('../../../../assets/icon_Rabbit.jpg'),
-    };
-    
-
-    const [selectedPets, setSelectedPets] = useState<string[]>([]);
-
-    const togglePetSelection = (petId: string) => {
-        setSelectedPets((prevSelectedPets) => {
-            if (prevSelectedPets.includes(petId)) {
-                return prevSelectedPets.filter((id) => id !== petId);
-            } else {
-                return [...prevSelectedPets, petId];
-            }
-        });
-    };
-
-    const isPetSelected = (petId: string) => {
-        return selectedPets.includes(petId);
     };
 
     const renderItem = (item : Location) => {
@@ -122,6 +129,25 @@ export const PetListScreen : FC<NoHeaderProps> = ({navigation, route} : any) => 
     const handleApplyPress = () => {
         setApplyPressed(true);
         bottomSheetModalRef.current?.dismiss();
+    }
+
+    const onPressFav = async (petId : string) => {
+        try {
+            const body = {"PetId": petId};
+            const res = await post(BackendApiUri.postPetFav, body);
+            if(res.status === 200) {
+                setMergedData(prev => {
+                    return prev.map(pet => {
+                        if(pet.Id === petId) {
+                            return {...pet, isFav: !pet.isFav};
+                        }
+                        return pet;
+                    })
+                })
+            }
+        } catch(e) {
+            console.error(e)
+        }
     }
 
     return (
@@ -209,8 +235,9 @@ export const PetListScreen : FC<NoHeaderProps> = ({navigation, route} : any) => 
                                             <Text className='text-xl font-bold mt-3'>Name</Text>
                                             <TextInput
                                                 placeholder="Shelter Name"
-                                                style={{ backgroundColor: "#F7F7F9", marginLeft: 5, borderRadius: 10 }}
-                                                activeUnderlineColor="#488DF4"
+                                                style={{ backgroundColor: "transparent", marginLeft: 5, borderRadius: 10 }}
+                                                underlineColor="#488DF4"
+                                                underlineStyle={{ borderWidth: 1, borderColor: "#488DF4", borderRadius: 10 }}
                                                 mode="flat"
                                                 onChangeText={setShelterName}
                                                 value={shelterName}
@@ -265,7 +292,7 @@ export const PetListScreen : FC<NoHeaderProps> = ({navigation, route} : any) => 
                                     <RefreshControl refreshing={refreshing} onRefresh={onRefresh}/>
                                 }
                                 estimatedItemSize={50}
-                                data={petData || []}
+                                data={mergedData || []}
                                 numColumns={2}
                                 keyExtractor={item => item.Id.toString()}
                                 renderItem={({ item: pet }) => (
@@ -290,13 +317,24 @@ export const PetListScreen : FC<NoHeaderProps> = ({navigation, route} : any) => 
                                                     borderRadius: 999
                                                 }}
                                                 underlayColor="transparent"
-                                                onPress={() => {
-                                                    // Add your onPress logic here
-                                                }}
                                             >
-                                                <View className="rounded-full">
-                                                    <FontAwesome name='heart' size={20} color="#FF0000" />
-                                                </View>
+                                                <TouchableOpacity onPress={() => onPressFav(pet.Id)}>
+                                                    {
+                                                        pet.isFav ? (
+                                                            <FontAwesome
+                                                                name='heart'
+                                                                size={19}
+                                                                style={{color: '#FF0000'}}
+                                                            />
+                                                        ) : (
+                                                            <FontAwesome
+                                                                name='heart-o'
+                                                                size={19}
+                                                                style={{color: '#4689FD'}}
+                                                            />
+                                                        )
+                                                    }
+                                                </TouchableOpacity>
                                             </TouchableHighlight>
 
                                             <View style={{ position: 'absolute', top: 230, left: 0, right: 0, bottom: 0 }}>

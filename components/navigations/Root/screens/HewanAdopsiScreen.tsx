@@ -3,11 +3,11 @@ import { Image, ScrollView, TouchableOpacity, View, StyleSheet, TouchableHighlig
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { Text } from 'react-native-elements';
 import { FontAwesome, FontAwesome5, FontAwesome6, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
-import { NoHeaderNavigationStackScreenProps } from '../../../StackParams/StackScreenProps';
 import { PetData } from '../../../../interface/IPetList';
 import { get } from '../../../../functions/Fetch';
 import { BackendApiUri } from '../../../../functions/BackendApiUri';
 import { FlashList } from '@shopify/flash-list';
+import { NoHeaderNavigationStackScreenProps } from '../../../StackParams/StackScreenProps';
 
 export const HewanAdopsiScreen: FC<NoHeaderNavigationStackScreenProps<'HewanAdopsiScreen'>> = ({ navigation, route }: any) => {
     const [isFavorite, setIsFavorite] = useState(false);
@@ -34,7 +34,7 @@ export const HewanAdopsiScreen: FC<NoHeaderNavigationStackScreenProps<'HewanAdop
 
     return (
         <SafeAreaProvider className='flex-1'>
-            <View className="mt-14 flex-row items-center justify-center mb-3">
+            <View className="mt-5 flex-row items-center justify-center mb-3">
                 <Ionicons name="chevron-back" size={24} color="black" onPress={() => navigation.goBack()} style={{ position: 'absolute', left: 20 }} />
                 <Text className="text-xl">Hewan Adopsi</Text>
             </View>

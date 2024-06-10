@@ -9,8 +9,8 @@ import DatePicker from "../../../DatePicker";
 import { RadioButton } from "react-native-paper";
 import * as ImagePicker from 'expo-image-picker';
 import { SelectList } from "react-native-dropdown-select-list";
-import { RootNavigationStackScreenProps } from "../../../StackParams/StackScreenProps";
 import { dataJenisHewan, dataSpesiesHewan } from "../../../../constans/data";
+import { NoHeaderNavigationStackScreenProps } from "../../../StackParams/StackScreenProps";
 
 const surrenderFormSchema = z.object({
     name: z.string({ required_error: "Nama tidak boleh kosong" }).min(1, { message: "Nama tidak boleh kosong" }),
@@ -25,7 +25,7 @@ const surrenderFormSchema = z.object({
 
 type SurrenderFormType = z.infer<typeof surrenderFormSchema>
 
-export const SurrenderFormScreen: FC<RootNavigationStackScreenProps<'SurrenderFormScreen'>> = ({ navigation }) => {
+export const SurrenderFormScreen: FC<NoHeaderNavigationStackScreenProps<'SurrenderFormScreen'>> = ({ navigation }) => {
     const {
         control,
         watch,
@@ -83,7 +83,7 @@ export const SurrenderFormScreen: FC<RootNavigationStackScreenProps<'SurrenderFo
 
     return (
         <SafeAreaProvider style={styles.container}>
-            <View className="mt-14 mb-5 flex-row items-center justify-center">
+            <View className="mt-5 mb-5 flex-row items-center justify-center">
                 <Ionicons name="chevron-back" size={24} color="black" onPress={() => navigation.goBack()} style={{ position: 'absolute', left: 20 }} />
                 <Text className="text-xl">Penyerahan Hewan</Text>
             </View>
