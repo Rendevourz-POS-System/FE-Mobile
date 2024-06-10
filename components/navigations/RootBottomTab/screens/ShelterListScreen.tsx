@@ -323,7 +323,7 @@ export const ShelterListScreen : FC<NoHeaderProps> = ({navigation, route} : any)
                                     data={mergedData || []}
                                     renderItem={({item: shelter}) => (
                                         <TouchableOpacity 
-                                            style={{ overflow: 'hidden' }} 
+                                            style={{ overflow: 'hidden', marginHorizontal: 15 }} 
                                             onPress={() => navigation.navigate("ShelterDetailScreen", {shelterId : shelter.Id})}
                                             activeOpacity={1}>
                                                 {shelter.ImageBase64 === null ? (

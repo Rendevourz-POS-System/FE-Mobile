@@ -1,4 +1,4 @@
-import { FontAwesome, FontAwesome6, Ionicons, MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
+import { FontAwesome, FontAwesome6, Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import React, { FC, useCallback, useEffect, useLayoutEffect, useState } from "react";
 import { Text, View, StyleSheet, Modal, Alert, TouchableOpacity, TextInput, ScrollView, Image, TouchableHighlight } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
@@ -96,37 +96,17 @@ export const ShelterScreen: FC<ProfileRootBottomTabCompositeScreenProps<'Shelter
                                 </View>
                                 <ScrollView className="mt-5">
                                     <View className="mt-10 flex-row justify-around">
-                                        <TouchableOpacity style={styles.button} onPress={() => setIsModalOpen(true)}>
+                                        <TouchableOpacity style={[styles.button]} onPress={() => setIsModalOpen(true)}>
                                             <View style={styles.iconContainer}>
                                                 <Ionicons name="settings-outline" size={25} color="white" />
                                             </View>
                                             <Text style={styles.text}>Manage Shelter</Text>
                                         </TouchableOpacity>
-                                        <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("NotificationScreen")}>
-                                            <View style={styles.iconContainer}>
-                                                <Ionicons name="notifications" size={25} color="white" />
-                                            </View>
-                                            <Text style={styles.text}>Notification</Text>
-                                        </TouchableOpacity>
-                                        <TouchableOpacity style={styles.button}>
-                                            <View style={styles.iconContainer}>
-                                                <MaterialIcons name="tv" size={25} color="white" />
-                                            </View>
-                                            <Text style={styles.text}>Monitoring</Text>
-                                        </TouchableOpacity>
-                                    </View>
-                                    <View className="mt-10 flex-row justify-around">
                                         <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("CreatePetScreen", {shelterId : shelterId})}>
                                             <View style={styles.iconContainer}>
                                                 <MaterialCommunityIcons name="plus" color="white" size={25} />
                                             </View>
                                             <Text style={styles.text}>Tambah Hewan</Text>
-                                        </TouchableOpacity>
-                                        <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("HistoryShelterScreen")}>
-                                            <View style={styles.iconContainer}>
-                                                <MaterialCommunityIcons name="history" color="white" size={25} />
-                                            </View>
-                                            <Text style={styles.text}>History List</Text>
                                         </TouchableOpacity>
                                         <TouchableOpacity style={styles.button}>
                                             <View style={styles.iconContainer}>

@@ -3,7 +3,7 @@ import React, { FC, useEffect, useState } from 'react';
 import { StyleSheet, TouchableOpacity, View, ScrollView, TextInput, Alert, Image } from 'react-native';
 import { Text } from 'react-native-elements';
 import { BackendApiUri } from '../../../../functions/BackendApiUri';
-import { get } from '../../../../functions/Fetch';
+import { get, putForm } from '../../../../functions/Fetch';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { FontAwesome, Ionicons } from '@expo/vector-icons';
 import { IShelter } from '../../../../interface/IShelter';
@@ -61,7 +61,6 @@ export const EditShelterScreen: FC<AdminNavigationStackScreenProps<'EditShelterS
         try {
             setIsLoading(false)
             const response = await get(`${BackendApiUri.getShelterDetail}/${route.params.shelterId}`);
-            console.log("tes", response)
             if (response && response.status === 200) {
                 setShelterData(response.data);
                 setValue("ShelterName", response.data.Data.ShelterName)
@@ -92,32 +91,16 @@ export const EditShelterScreen: FC<AdminNavigationStackScreenProps<'EditShelterS
         }
 
         const formData = new FormData();
-        // Add image file
-        if (image) {
-            const fileInfo = await FileSystem.getInfoAsync(image);
-            formData.append('files', {
-                uri: image,
-                name: fileInfo.uri.split('/').pop(),
-                type: 'image/jpeg'
-            } as any); // You can also check and set the type dynamically based on file extension
+        formData.append('data', JSON.stringify(payload));
+        try {
+            const response = await putForm(BackendApiUri.putAdminShelterUpdate, formData);
+            if(response.status == 200){
+                Alert.alert('Shelter Berhasil Terupdate', 'Data Shelter telah berhasil terupdate.', [{ text: "OK", onPress: () => navigation.goBack() }]);
+            }
+        } catch (e) {
+            console.log(e);
         }
 
-        formData.append('data', JSON.stringify(payload));
-        console.log(formData)
-        const res = await fetch('http://192.168.200.87:8080/shelter/update', {
-            method: 'PUT',
-            body: formData,
-            headers: {
-                'Content-Type': 'multipart/form-data',
-                'Authorization': `Bearer ${authState?.token}`,
-            }
-        }).then(response => {
-            removeImage(image!);
-            Alert.alert('Shelter Berhasil Terupdate', 'Data shelter anda telah berhasil terupdate.', [{ text: "OK", onPress: () => navigation.goBack() }]);
-        }).catch(err => {
-            Alert.alert('Shelter Gagal Update', 'Data shelter anda gagal terupdate.');
-            console.log(err)
-        });
     }
 
     const fetchPetType = async () => {
@@ -151,64 +134,6 @@ export const EditShelterScreen: FC<AdminNavigationStackScreenProps<'EditShelterS
             setValue('PetTypeAccepted', selectedValue);
         }
     }, [selected, setValue]);
-
-    const selectImage = async (useLibrary: boolean) => {
-        let result;
-        const options: ImagePicker.ImagePickerOptions = {
-            mediaTypes: ImagePicker.MediaTypeOptions.Images,
-            allowsEditing: true,
-            aspect: [1, 1],
-            quality: 1,
-        }
-
-        if (useLibrary) {
-            result = await ImagePicker.launchImageLibraryAsync(options);
-        } else {
-            await ImagePicker.requestCameraPermissionsAsync();
-            result = await ImagePicker.launchCameraAsync(options);
-        }
-
-        if (!result.canceled) {
-            saveImage(result.assets[0].uri);
-        }
-    };
-
-    const ensureDirExists = async () => {
-        const dirInfo = await FileSystem.getInfoAsync(imgDir);
-        if (!dirInfo.exists) {
-            await FileSystem.makeDirectoryAsync(imgDir, { intermediates: true });
-        }
-    }
-
-    const saveImage = async (uri: string) => {
-        await ensureDirExists();
-        const fileName = uri.substring(uri.lastIndexOf('/') + 1);
-        const dest = imgDir + fileName;
-        await FileSystem.copyAsync({ from: uri, to: dest });
-        setImage(dest);
-    }
-
-    useEffect(() => {
-        loadImages();
-    }, []);
-
-    const loadImages = async () => {
-        await ensureDirExists();
-        const files = await FileSystem.readDirectoryAsync(imgDir);
-        if (files.length > 0) {
-            setImage(imgDir + files[0]);
-        }
-    }
-
-    const removeImage = async (imageUri: string) => {
-        await FileSystem.deleteAsync(imageUri);
-        setImage(null);
-        setShelterImage(null);
-    }
-
-    const removeShelterImage = async (imageUri: string) => {
-        setShelterImage(null);
-    }
 
     return (
         <SafeAreaProvider className='flex-1'>

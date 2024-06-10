@@ -6,12 +6,13 @@ import { FontAwesome, FontAwesome6, Ionicons, MaterialIcons } from '@expo/vector
 import { PetData } from '../../../../interface/IPetList';
 import { get } from '../../../../functions/Fetch';
 import { BackendApiUri } from '../../../../functions/BackendApiUri';
+import { NoHeaderNavigationStackScreenProps } from '../../../StackParams/StackScreenProps';
 
 interface PetProps{
     Data: PetData
 }
 
-export const PetDetailScreen: FC<{}> = ({ navigation, route }: any) => {
+export const PetDetailScreen: FC<NoHeaderNavigationStackScreenProps<"PetDetailScreen">> = ({ navigation, route }: any) => {
     const [isFavorite, setIsFavorite] = useState(false);
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [data, setData] = useState<PetProps>();

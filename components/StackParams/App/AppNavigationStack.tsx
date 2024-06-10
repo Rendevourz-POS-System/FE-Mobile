@@ -18,10 +18,9 @@ import { createMaterialTopTabNavigator } from "@react-navigation/material-top-ta
 import { ShelterListScreen } from "../../navigations/RootBottomTab/screens/ShelterListScreen";
 import { PetListScreen } from "../../navigations/RootBottomTab/screens/PetListScreen";
 import { ShelterDetailScreen } from "../../navigations/Root/screens/ShelterDetailScreen";
-import { Dimensions, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { Avatar } from "react-native-elements";
+import { StyleSheet, View } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
-import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { ProfileScreen } from "../../navigations/Profile/screens/ProfileScreen";
 import { HomeUserNavigationStackParams } from "../User/HomeUserNavigationStackParams";
 import { Header } from "../../Header";
@@ -34,7 +33,13 @@ import { NotificationScreen } from "../../navigations/Profile/screens/Notificati
 import { HistoryScreen } from "../../navigations/Profile/screens/HistoryScreen";
 import { FavoriteScreen } from "../../navigations/Profile/screens/FavoriteScreen";
 import { PetDetailScreen } from "../../navigations/Root/screens/PetDetailScreen";
+import { AdoptionFormScreen } from "../../navigations/Root/screens/AdoptionFormScreen";
+import { ShelterScreen } from "../../navigations/Profile/screens/ShelterScreen";
+import { CreatePetScreen } from "../../navigations/Profile/screens/CreatePetScreen";
 import { AdminNavigationStack } from "../Admin/AdminNavigationStack";
+import { HewanAdopsiScreen } from "../../navigations/Root/screens/HewanAdopsiScreen";
+import { DonateScreen } from "../../navigations/Root/screens/DonateScreen";
+import { RescueFormScreen } from "../../navigations/Root/screens/RescueFormScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -75,7 +80,7 @@ const AppNavigationStack: FC = () => {
     );
 
     // Icon Botom Tab 
-    const homeTabOptions : BottomTabNavigationOptions = {
+    const homeTabOptions: BottomTabNavigationOptions = {
         headerTitle: "",
         headerStyle: {
             elevation: 0, // Remove shadow on Android
@@ -83,22 +88,22 @@ const AppNavigationStack: FC = () => {
         },
         headerShown: false,
         // header : () => <Header />,
-        tabBarIcon : ({ size, focused }) => (
-            <MaterialCommunityIcons 
-                name="home" 
+        tabBarIcon: ({ size, focused }) => (
+            <MaterialCommunityIcons
+                name="home"
                 color={focused ? "#4689FD" : "#A9A9A9"}
-                size={size} 
+                size={size}
             />
         )
     }
-    
-    const profileTabOptions : BottomTabNavigationOptions = {
-        headerShown : false,
-        tabBarIcon : ({size, focused}) => (
-            <MaterialCommunityIcons 
-                name="account" 
-                color={focused ? "#4689FD" : "#A9A9A9"} 
-                size={size} 
+
+    const profileTabOptions: BottomTabNavigationOptions = {
+        headerShown: false,
+        tabBarIcon: ({ size, focused }) => (
+            <MaterialCommunityIcons
+                name="account"
+                color={focused ? "#4689FD" : "#A9A9A9"}
+                size={size}
             />
         )
     }
@@ -113,45 +118,28 @@ const AppNavigationStack: FC = () => {
                 component={TopTabsWithHeader}
                 options={noHeader}
             />
-            <HomeUserStack.Screen name="ShelterDetailScreen" component={ShelterDetailScreen} options={{ presentation: "modal"}}/>
-            <HomeUserStack.Screen name="PetDetailScreen" component={PetDetailScreen} options={noHeader}/>
+            <HomeUserStack.Screen name="ShelterDetailScreen" component={ShelterDetailScreen} options={{ presentation: "modal" }} />
+            <HomeUserStack.Screen name="HewanAdopsiScreen" component={HewanAdopsiScreen} options={{ presentation: "modal" }} />
+            <HomeUserStack.Screen name="PetDetailScreen" component={PetDetailScreen} options={{ presentation: "modal" }} />
+            <HomeUserStack.Screen name="AdoptionFormScreen" component={AdoptionFormScreen} options={{ presentation: "modal" }} />
+            <HomeUserStack.Screen name="DonateScreen" component={DonateScreen} options={{ presentation: "modal" }} />
+            <HomeUserStack.Screen name="RescueFormScreen" component={RescueFormScreen} options={{ presentation: "modal" }} />
         </HomeUserStack.Navigator>
     );
 
     const ProfileUserStack = createNativeStackNavigator<ProfileNavigationStackParams>();
     const ProfileStackGroup = () => (
         <ProfileUserStack.Navigator>
-            <ProfileUserStack.Screen
-                name="ProfileScreen"
-                component={ProfileScreen}
-                options={noHeader}
-            />
-            <ProfileUserStack.Screen
-                name="ManageScreen"
-                component={ManageScreen}
-                options={noHeader}
-            />
-            <ProfileUserStack.Screen
-                name="ChangePasswordScreen"
-                component={ChangePasswordScreen}
-                options={noHeader}
-            />
-            <ProfileUserStack.Screen
-                name="NotificationScreen"
-                component={NotificationScreen}
-                options={noHeader}
-            />
-            <ProfileUserStack.Screen
-                name="HistoryScreen"
-                component={HistoryScreen}
-                options={noHeader}
-            />
-            <ProfileUserStack.Screen
-                name="FavoriteScreen"
-                component={FavoriteScreen}
-                options={noHeader}
-            />
+            <ProfileUserStack.Screen name="ProfileScreen" component={ProfileScreen} options={noHeader} />
+            <ProfileUserStack.Screen name="ManageScreen" component={ManageScreen} options={noHeader} />
+            <ProfileUserStack.Screen name="ChangePasswordScreen" component={ChangePasswordScreen} options={noHeader} />
+            <ProfileUserStack.Screen name="NotificationScreen" component={NotificationScreen} options={noHeader} />
+            <ProfileUserStack.Screen name="HistoryScreen" component={HistoryScreen} options={noHeader} />
+            <ProfileUserStack.Screen name="FavoriteScreen" component={FavoriteScreen} options={noHeader} />
 
+            <ProfileUserStack.Screen name="ShelterScreen" component={ShelterScreen} options={noHeader} />
+            <ProfileUserStack.Screen name="ManageShelterScreen" component={ManageShelterScreen} options={noHeader} />
+            <ProfileUserStack.Screen name="CreatePetScreen" component={CreatePetScreen} options={noHeader} />
         </ProfileUserStack.Navigator>
     )
 
@@ -172,7 +160,7 @@ const AppNavigationStack: FC = () => {
             <SafeAreaView style={{ flex: 1 }}>
                 <View style={{ flex: 1 }}>
                     <Header />
-                    <TopTabsGroup/>
+                    <TopTabsGroup />
                 </View>
             </SafeAreaView>
         </SafeAreaProvider>
@@ -186,8 +174,8 @@ const AppNavigationStack: FC = () => {
                 }
             }}
         >
-            <TopTabs.Screen name="ShelterListScreen" component={ShelterListScreen} options={{title: "Shelters"}}/>
-            <TopTabs.Screen name="PetListScreen" component={PetListScreen} options={{title: "Pets"}} />
+            <TopTabs.Screen name="ShelterListScreen" component={ShelterListScreen} options={{ title: "Shelters" }} />
+            <TopTabs.Screen name="PetListScreen" component={PetListScreen} options={{ title: "Pets" }} />
         </TopTabs.Navigator>
     );
 

@@ -3,13 +3,13 @@ import { Image, ScrollView, TouchableOpacity, View, StyleSheet, TouchableHighlig
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { Text } from 'react-native-elements';
 import { FontAwesome, FontAwesome5, FontAwesome6, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
-import { RootNavigationStackScreenProps } from '../../../StackParams/StackScreenProps';
+import { NoHeaderNavigationStackScreenProps } from '../../../StackParams/StackScreenProps';
 import { PetData } from '../../../../interface/IPetList';
 import { get } from '../../../../functions/Fetch';
 import { BackendApiUri } from '../../../../functions/BackendApiUri';
 import { FlashList } from '@shopify/flash-list';
 
-export const HewanAdopsiScreen: FC<RootNavigationStackScreenProps<'HewanAdopsiScreen'>> = ({ navigation, route }: any) => {
+export const HewanAdopsiScreen: FC<NoHeaderNavigationStackScreenProps<'HewanAdopsiScreen'>> = ({ navigation, route }: any) => {
     const [isFavorite, setIsFavorite] = useState(false);
     const [petData, setPetData] = useState<PetData[]>([]);
     
