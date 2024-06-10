@@ -35,6 +35,11 @@ import { HistoryScreen } from "../../navigations/Profile/screens/HistoryScreen";
 import { FavoriteScreen } from "../../navigations/Profile/screens/FavoriteScreen";
 import { PetDetailScreen } from "../../navigations/Root/screens/PetDetailScreen";
 import { AdminNavigationStack } from "../Admin/AdminNavigationStack";
+import { AdoptionFormScreen } from "../../navigations/Root/screens/AdoptionFormScreen";
+import { HewanAdopsiScreen } from "../../navigations/Root/screens/HewanAdopsiScreen";
+import { SurrenderFormScreen } from "../../navigations/Root/screens/SurrenderFormScreen";
+import { DonateScreen } from "../../navigations/Root/screens/DonateScreen";
+import { RescueFormScreen } from "../../navigations/Root/screens/RescueFormScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -104,7 +109,6 @@ const AppNavigationStack: FC = () => {
     }
 
     // Display Screen that doesnt have a Header
-    // This only for Home User because only ShelterListScreen and PetListScreen have a Header
     const HomeUserStack = createNativeStackNavigator<NoHeaderStackParams>();
     const HomeStackGroup = () => (
         <HomeUserStack.Navigator screenOptions={{ headerShown: false }}>
@@ -115,6 +119,11 @@ const AppNavigationStack: FC = () => {
             />
             <HomeUserStack.Screen name="ShelterDetailScreen" component={ShelterDetailScreen} options={{ presentation: "modal"}}/>
             <HomeUserStack.Screen name="PetDetailScreen" component={PetDetailScreen} options={noHeader}/>
+            <HomeUserStack.Screen name="AdoptionFormScreen" component={AdoptionFormScreen} options={noHeader}/>
+            <HomeUserStack.Screen name="HewanAdopsiScreen" component={HewanAdopsiScreen} options={noHeader}/>
+            <HomeUserStack.Screen name="SurrenderFormScreen" component={SurrenderFormScreen} options={noHeader}/>
+            <HomeUserStack.Screen name="DonateScreen" component={DonateScreen} options={noHeader}/>
+            <HomeUserStack.Screen name="RescueFormScreen" component={RescueFormScreen} options={noHeader}/>
         </HomeUserStack.Navigator>
     );
 

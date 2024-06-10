@@ -3,11 +3,11 @@ import { Image, ScrollView, TouchableOpacity, View, StyleSheet, TextInput } from
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { Text } from 'react-native-elements';
 import { FontAwesome, FontAwesome5, FontAwesome6, Ionicons, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
-import { RootNavigationStackScreenProps } from '../../../StackParams/StackScreenProps';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Controller, useForm } from 'react-hook-form';
 import * as ImagePicker from 'expo-image-picker';
+import { NoHeaderNavigationStackScreenProps } from '../../../StackParams/StackScreenProps';
 
 const rescueFormSchema = z.object({
     condition: z.string({ required_error: "Kondisi hewan tidak boleh kosong" }).min(1, { message: "Kondisi hewan tidak boleh kosong" }),
@@ -16,7 +16,7 @@ const rescueFormSchema = z.object({
 
 type RescueFormType = z.infer<typeof rescueFormSchema>
 
-export const RescueFormScreen: FC<RootNavigationStackScreenProps<'RescueFormScreen'>> = ({ navigation, route }: any) => {
+export const RescueFormScreen: FC<NoHeaderNavigationStackScreenProps<'RescueFormScreen'>> = ({ navigation, route }: any) => {
     const [image, setImage] = useState('');
 
     const {
@@ -49,7 +49,7 @@ export const RescueFormScreen: FC<RootNavigationStackScreenProps<'RescueFormScre
 
     return (
         <SafeAreaProvider className='flex-1'>
-            <View className="mt-14 flex-row items-center justify-center mb-3">
+            <View className="mt-5 flex-row items-center justify-center mb-3">
                 <Ionicons name="chevron-back" size={24} color="black" onPress={() => navigation.goBack()} style={{ position: 'absolute', left: 20 }} />
                 <Text className="text-xl">Lapor Penyelamatan</Text>
             </View>

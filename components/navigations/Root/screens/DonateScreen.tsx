@@ -3,12 +3,12 @@ import { Image, ScrollView, TouchableOpacity, View, StyleSheet } from 'react-nat
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { Text } from 'react-native-elements';
 import { Ionicons } from '@expo/vector-icons';
-import { RootNavigationStackScreenProps } from '../../../StackParams/StackScreenProps';
+import { NoHeaderNavigationStackScreenProps } from '../../../StackParams/StackScreenProps';
 
-export const DonateScreen: FC<RootNavigationStackScreenProps<'DonateScreen'>> = ({ navigation, route }: any) => {
+export const DonateScreen: FC<NoHeaderNavigationStackScreenProps<'DonateScreen'>> = ({ navigation, route }: any) => {
     return (
         <SafeAreaProvider className='flex-1'>
-             <View className="mt-14 flex-row items-center justify-center mb-3">
+             <View className="mt-5 flex-row items-center justify-center mb-3">
                 <Ionicons name="chevron-back" size={24} color="black" onPress={() => navigation.goBack()} style={{ position: 'absolute', left: 20 }} />
                 <Text className="text-xl">Donasi</Text>
             </View>

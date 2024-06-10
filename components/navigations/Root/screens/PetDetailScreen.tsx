@@ -4,17 +4,36 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { Text } from 'react-native-elements';
 import { FontAwesome, FontAwesome6, Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { PetData } from '../../../../interface/IPetList';
-import { get } from '../../../../functions/Fetch';
+import { get, post } from '../../../../functions/Fetch';
 import { BackendApiUri } from '../../../../functions/BackendApiUri';
+import { useNavigation } from '@react-navigation/native';
+import { UserBottomTabCompositeNavigationProps } from '../../../StackParams/StackScreenProps';
 
 interface PetProps{
     Data: PetData
 }
 
 export const PetDetailScreen: FC<{}> = ({ navigation, route }: any) => {
-    const [isFavorite, setIsFavorite] = useState(false);
+    const [isFavorite, setIsFavorite] = useState<boolean>();
+    const [favAttempt, setFavAttempt] = useState<number>(0);
     const [isLoading, setIsLoading] = useState<boolean>(true);
-    const [data, setData] = useState<PetProps>();
+    const [data, setData] = useState<PetProps>({
+        Data: {
+            Id : "",
+            ShelterId : "",
+            PetName : "",
+            PetType : "",
+            PetAge : 0,
+            PetGender : "",
+            PetStatus : false,
+            PetDescription : "",
+            ShelterLocation : "",
+            IsVaccinated : false,
+            Image : [],
+            ImageBase64: [],
+            CreatedAt : new Date(),
+        }
+    })
 
     const fetchData = async() => {
         try{
@@ -29,9 +48,41 @@ export const PetDetailScreen: FC<{}> = ({ navigation, route }: any) => {
         }
     }
 
+    const petFavData = async () => {
+        try {
+            const res = await get(`${BackendApiUri.getPetFav}`);
+            if (res?.data && res.status === 200) {
+                const detail = await res.data.find((pet: PetData) => pet.Id === data?.Data.Id);
+                if (detail != null) {
+                    setIsFavorite(true);
+                }
+            }
+        } catch(e) {
+            console.error(e)
+        }
+    }
+
     useEffect(() => {
         fetchData()
     }, [route.params.petId])
+
+    useEffect(() => {
+        petFavData();
+    }, [data?.Data.Id])
+
+    const handlePressFavorite = async (petId : string) => {
+        try {
+            const body = {"PetId" : petId};
+            const res = await post(BackendApiUri.postPetFav, body);
+            if(res.status === 200) {
+                setIsFavorite(!isFavorite);
+            }
+        } catch(e) {
+            console.error(e)
+        } finally {
+            setFavAttempt(prev => prev + 1)
+        }
+    }
 
     return (
         <SafeAreaProvider className='bg-white'>
@@ -42,7 +93,7 @@ export const PetDetailScreen: FC<{}> = ({ navigation, route }: any) => {
             ) : (
                 <>
                     <View style={[styles.nextIcon, { position: 'absolute', left: 20, top: 17, zIndex: 1 }]}>
-                        <Ionicons name="chevron-back" size={24} color="black" onPress={() => navigation.goBack()} />
+                        <Ionicons name="chevron-back" size={24} color="black" onPress={() => navigation.navigate('PetListScreen', {route: favAttempt})} />
                     </View>
                     <ScrollView>
                         <ImageBackground source={data?.Data.ImageBase64 == null ? require('../../../../assets/default_paw2.jpg') : { uri: `data:image/*;base64,${data?.Data.ImageBase64}` }} style={{ width: '100%', height: 350 }} />
@@ -58,7 +109,7 @@ export const PetDetailScreen: FC<{}> = ({ navigation, route }: any) => {
                                 </View>
                                 <View className='flex flex-row items-center'>
                                     <TouchableHighlight
-                                        // onPress={() => handlePressFavorite(data.Data.Id)}
+                                        onPress={() => handlePressFavorite(data?.Data.Id)}
                                         underlayColor="transparent"
                                         >
                                         <FontAwesome name={isFavorite ? 'heart' : 'heart-o'} size={24} style={{ color: isFavorite ? '#FF0000' : '#4689FD' }}  />
