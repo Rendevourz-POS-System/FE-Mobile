@@ -171,7 +171,7 @@ export const HomeAdmin: FC<AdminNavigationStackScreenProps<'HomeAdmin'>> = ({ na
                         <Text className='ml-2 mr-5'>{index + 1}</Text>
                         <Text className='flex-1 ml-2'>{item.Email}</Text>
                         <Text className='flex-2'>
-                            <TouchableOpacity className='pr-3' onPress={() => navigation.navigate("EditUserScreen", { userId: item.Id })}>
+                            <TouchableOpacity className='pr-3' onPress={() => navigation.navigate("EditUserScreen", {userId: item.Id})}>
                                 <MaterialIcons name="edit" size={24} color="black" />
                             </TouchableOpacity>
                             <TouchableOpacity onPress={() => handleDeleteUser(item.Id, item.Email)}>

@@ -12,6 +12,7 @@ export interface IShelter {
     BankAccountNumber: string;
     Pin: string;
     ImagePath: [],
+    ImageBase64:[],
     ShelterVerified: boolean;
     CreatedAt: string;
 }

@@ -34,6 +34,7 @@ import { NotificationScreen } from "../../navigations/Profile/screens/Notificati
 import { HistoryScreen } from "../../navigations/Profile/screens/HistoryScreen";
 import { FavoriteScreen } from "../../navigations/Profile/screens/FavoriteScreen";
 import { PetDetailScreen } from "../../navigations/Root/screens/PetDetailScreen";
+import { AdminNavigationStack } from "../Admin/AdminNavigationStack";
 
 const Stack = createNativeStackNavigator();
 
@@ -56,13 +57,6 @@ const AppNavigationStack: FC = () => {
     }, [authState]);
 
     const noHeader = { headerShown: false };
-
-    const AdminStack = createNativeStackNavigator<AdminNavigationStackParams>();
-    const AdminStackGroup = () => (
-        <AdminStack.Navigator>
-            <AdminStack.Screen name="HomeAdmin" component={HomeAdmin} options={noHeader} />
-        </AdminStack.Navigator>
-    );
 
     const UserTab = createBottomTabNavigator<UserBottomTabParams>();
     const UserTabGroup = () => (
@@ -204,7 +198,7 @@ const AppNavigationStack: FC = () => {
                     <Stack.Navigator>
                         {authState?.authenticated ? (
                             userData?.Role === "admin" ? (
-                                <Stack.Screen name="AdminStack" component={AdminStackGroup} options={noHeader} />
+                                <Stack.Screen name="AdminStack" component={AdminNavigationStack} options={noHeader} />
                             ) : (
                                 <Stack.Screen name="UserStack" component={UserTabGroup} options={noHeader} />
                             )

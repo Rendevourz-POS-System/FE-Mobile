@@ -4,7 +4,6 @@ import { StyleSheet, TouchableOpacity, View, ScrollView, TextInput, Alert, Image
 import { Text } from 'react-native-elements';
 import { BackendApiUri } from '../../../../functions/BackendApiUri';
 import { get } from '../../../../functions/Fetch';
-import { AdminNavigationStackScreenProps } from '../../../StackParams/StackScreenProps';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { FontAwesome, Ionicons } from '@expo/vector-icons';
 import { IShelter } from '../../../../interface/IShelter';
@@ -17,6 +16,7 @@ import { SelectList } from 'react-native-dropdown-select-list';
 import { Checkbox } from 'react-native-paper';
 import { PetType, ShelterLocation } from '../../../../interface/IPetType';
 import { useAuth } from '../../../../app/context/AuthContext';
+import { AdminNavigationStackScreenProps } from '../../../StackParams/StackScreenProps';
 
 interface ShelterProps {
     Data: IShelter
@@ -41,7 +41,7 @@ export const EditShelterScreen: FC<AdminNavigationStackScreenProps<'EditShelterS
     const { authState } = useAuth();
     const [shelterData, setShelterData] = useState<ShelterProps>();
     const [shelterImage, setShelterImage] = useState<string | null>();
-    const [shelterOldImage, setShelterOldImage] = useState<string[]| null>([]);
+    const [shelterOldImage, setShelterOldImage] = useState<string[] | null>([]);
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [image, setImage] = useState<string | null>(null);
     const imgDir = FileSystem.documentDirectory + 'images/';
@@ -61,6 +61,7 @@ export const EditShelterScreen: FC<AdminNavigationStackScreenProps<'EditShelterS
         try {
             setIsLoading(false)
             const response = await get(`${BackendApiUri.getShelterDetail}/${route.params.shelterId}`);
+            console.log("tes", response)
             if (response && response.status === 200) {
                 setShelterData(response.data);
                 setValue("ShelterName", response.data.Data.ShelterName)
@@ -102,8 +103,8 @@ export const EditShelterScreen: FC<AdminNavigationStackScreenProps<'EditShelterS
         }
 
         formData.append('data', JSON.stringify(payload));
-
-        const res = await fetch('http://192.168.18.3:8080/shelter/update', {
+        console.log(formData)
+        const res = await fetch('http://192.168.200.87:8080/shelter/update', {
             method: 'PUT',
             body: formData,
             headers: {
@@ -217,48 +218,8 @@ export const EditShelterScreen: FC<AdminNavigationStackScreenProps<'EditShelterS
             </View>
 
             <ScrollView>
-                {shelterImage && (
-                    <View className="items-end mx-10">
-                        <TouchableOpacity className="flex-row items-center" onPress={() => removeShelterImage(shelterImage)}>
-                            <Ionicons name="trash" size={20} color="black" />
-                            <Text className="text-xs">Hapus Gambar</Text>
-                        </TouchableOpacity>
-                    </View>
-                )}
-                {image && shelterImage &&(
-                    <View className="items-end mx-10">
-                        <TouchableOpacity className="flex-row items-center" onPress={() => removeImage(image)}>
-                            <Ionicons name="trash" size={20} color="black" />
-                            <Text className="text-xs">Hapus Gambar</Text>
-                        </TouchableOpacity>
-                    </View>
-                )}
-                <View className="items-center mb-5">
-                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: 350 }}>
-                        {shelterImage == null && image == null && (
-                            <>
-                                <TouchableOpacity
-                                    style={{ width: 170, height: 200, backgroundColor: '#2E3A59', borderRadius: 10, justifyContent: 'center', alignItems: 'center', marginRight: 5 }}
-                                    onPress={() => selectImage(true)}
-                                >
-                                    <Ionicons name="images" size={40} color="white" />
-                                </TouchableOpacity>
-
-                                <TouchableOpacity
-                                    style={{ width: 170, height: 200, backgroundColor: '#2E3A59', borderRadius: 10, justifyContent: 'center', alignItems: 'center', marginLeft: 5 }}
-                                    onPress={() => selectImage(false)}
-                                >
-                                    <Ionicons name="camera" size={40} color="white" />
-                                </TouchableOpacity>
-                            </>
-                        )}
-                    </View>
-                    {image && (
-                        <Image source={{ uri: image }} style={{ width: 350, height: 200, borderRadius: 10 }} resizeMode="cover" />
-                    )}
-                    {shelterImage && (
-                        <Image source={{ uri: `data:image/*;base64,${shelterImage}` }} style={{ width: 350, height: 200, borderRadius: 10 }} resizeMode="cover" />
-                    )}
+                <View className="mb-10 items-center">
+                    <Image source={{ uri: `data:image/*;base64,${shelterData?.Data.ImageBase64}` }} style={{ width: 350, height: 200, backgroundColor: '#2E3A59', borderRadius: 10, justifyContent: 'center', alignItems: 'center' }} />
                 </View>
 
                 <Text style={styles.textColor}>Nama Shelter<Text className='text-[#ff0000]'>*</Text></Text>
