@@ -5,13 +5,13 @@ import { Text } from 'react-native-elements';
 import { FontAwesome, FontAwesome6, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { BackendApiUri } from '../../../../functions/BackendApiUri';
 import { get } from '../../../../functions/Fetch';
-import { ProfileRootBottomTabCompositeScreenProps } from '../../CompositeNavigationProps';
 import { ShelterData } from '../../../../interface/IShelterList';
 import { FlashList } from '@shopify/flash-list';
 import { PetType } from '../../../../interface/IPetType';
 import { getIconName } from '../../../../functions/GetPetIconName';
+import { ProfileNavigationStackScreenProps } from '../../../StackParams/StackScreenProps';
 
-export const FavoriteScreen: FC<ProfileRootBottomTabCompositeScreenProps<'FavoriteScreen'>> = ({ navigation }: any) => {
+export const FavoriteScreen: FC<ProfileNavigationStackScreenProps<'FavoriteScreen'>> = ({ navigation }: any) => {
     const [shelterData, setShelterData] = useState<ShelterData[]>([]);
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const fetchData = async () => {
@@ -31,7 +31,7 @@ export const FavoriteScreen: FC<ProfileRootBottomTabCompositeScreenProps<'Favori
         try {
             const res = await get(BackendApiUri.getPetTypes);
             setPetTypes(res.data)
-        } catch(e) {
+        } catch (e) {
             console.error(e)
         }
     }
@@ -63,7 +63,17 @@ export const FavoriteScreen: FC<ProfileRootBottomTabCompositeScreenProps<'Favori
                                         style={{ overflow: 'hidden' }}
                                         onPress={() => navigation.navigate("ShelterDetailScreen", { shelterId: shelter.Id })}
                                         activeOpacity={1}>
-                                        <Image source={require('../../../../assets/image.png')} style={{ width: '100%', height: 290, marginBottom: 15, marginTop: 5, borderTopLeftRadius: 20, borderTopRightRadius: 20 }} />
+                                        {shelter.ImageBase64 === null ? (
+                                            <Image source={require('../../../../assets/animal-shelter.png')}
+                                                resizeMode='stretch'
+                                                style={{ width: '100%', height: 290, marginBottom: 15, marginTop: 5, borderTopLeftRadius: 20, borderTopRightRadius: 20 }}
+                                            />
+                                        ) : (
+                                            <Image source={{ uri: `data:image/*;base64,${shelter.ImageBase64}` }}
+                                                resizeMode='contain'
+                                                style={{ width: '100%', height: 290, marginBottom: 15, marginTop: 5, borderTopLeftRadius: 20, borderTopRightRadius: 20 }}
+                                            />
+                                        )}
                                         <View style={{ position: 'absolute', top: 170, left: 0, right: 0, bottom: 0 }}>
                                             <View style={{ marginTop: 10, backgroundColor: "#FFFDFF", paddingHorizontal: 20, paddingVertical: 15, borderTopLeftRadius: 15, borderTopRightRadius: 15 }}>
                                                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -72,7 +82,7 @@ export const FavoriteScreen: FC<ProfileRootBottomTabCompositeScreenProps<'Favori
                                                 </View>
                                                 <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10 }}>
                                                     <FontAwesome6 name='location-dot' size={20} color='#4689FD' />
-                                                    <Text style={{ fontSize: 14, fontWeight: 'normal', marginLeft: 5 }}>{shelter.ShelterLocation}</Text>
+                                                    <Text style={{ fontSize: 14, fontWeight: 'normal', marginLeft: 5 }}>{shelter.ShelterLocationName}</Text>
                                                 </View>
                                                 <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10 }}>
                                                     <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', flex: 1 }}>

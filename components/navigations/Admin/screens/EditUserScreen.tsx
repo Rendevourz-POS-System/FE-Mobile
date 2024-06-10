@@ -40,7 +40,7 @@ export const EditUserScreen: FC<AdminNavigationStackScreenProps<'EditUserScreen'
     const fetchUser = async () => {
         try {
             setIsLoading(true)
-            const response = await get(`${BackendApiUri.getUserDetails}/${route.params.userId}`);
+            const response = await get(`${BackendApiUri.getAdminUserDetails}/${route.params.userId}`);
             if (response && response.status === 200) {
                 setUserData(response.data);
                 setValue("Username", response.data.Username);

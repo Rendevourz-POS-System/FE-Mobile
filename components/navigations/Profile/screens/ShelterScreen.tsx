@@ -1,8 +1,7 @@
-import { FontAwesome, FontAwesome6, Ionicons, MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
-import React, { FC, useCallback, useEffect, useLayoutEffect, useState } from "react";
-import { Text, View, StyleSheet, Modal, Alert, TouchableOpacity, TextInput, ScrollView, Image, TouchableHighlight } from "react-native";
+import { FontAwesome, FontAwesome6, Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
+import React, { FC, useCallback, useEffect, useState } from "react";
+import { Text, View, StyleSheet, Modal, TouchableOpacity, TextInput, ScrollView, Image, TouchableHighlight, Alert } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
-import { ProfileRootBottomTabCompositeScreenProps } from "../../CompositeNavigationProps";
 import { CreateShelter } from "../../../CreateShelter";
 import { get } from "../../../../functions/Fetch";
 import { BackendApiUri } from "../../../../functions/BackendApiUri";
@@ -12,23 +11,21 @@ import { FlashList } from "@shopify/flash-list";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import { useFocusEffect } from "@react-navigation/native";
+import { ProfileNavigationStackScreenProps } from "../../../StackParams/StackScreenProps";
 
-export const ShelterScreen: FC<ProfileRootBottomTabCompositeScreenProps<'ShelterScreen'>> = ({ navigation }) => {
+export const ShelterScreen: FC<ProfileNavigationStackScreenProps<'ShelterScreen'>> = ({ navigation }) => {
     const [data, setData] = useState<ShelterUser | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [inputValue, setInputValue] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
-    const [shelterId, setShelterId] = useState('');
+    const [loading, setLoading] = useState(true);
     const [petData, setPetData] = useState<PetData[]>([]);
 
     const fetchProfile = async () => {
         try {
             const res = await get(BackendApiUri.getUserShelter);
-            if (!res.data.Error) {
-            }
-            if (res.data.Data) {
+            if (res.data) {
                 setData(res.data)
-                setShelterId(res.data.Data.Id);
             }
         } catch (error) {
             console.log(error)
@@ -36,14 +33,20 @@ export const ShelterScreen: FC<ProfileRootBottomTabCompositeScreenProps<'Shelter
     };
 
     const fetchPetData = async () => {
-        try{
-            const responsePet = await get(`${BackendApiUri.getPetList}/?shelter_id=${shelterId}`)
-            if(responsePet && responsePet.status === 200) {
-                setPetData(responsePet.data);
+        try {
+            if (data?.Data.Id == undefined) {
+                setLoading(true)
+            } else {
+                const responsePet = await get(`${BackendApiUri.getPetList}/?shelter_id=${data?.Data.Id}&page=1&page_size=200`)
+                if (responsePet && responsePet.status === 200) {
+                    setPetData(responsePet.data);
+                }
+                setLoading(false)
             }
-        } catch(e) {
+
+        } catch (e) {
             throw Error;
-        } 
+        }
     };
 
     useFocusEffect(
@@ -56,19 +59,18 @@ export const ShelterScreen: FC<ProfileRootBottomTabCompositeScreenProps<'Shelter
     const handleInputChange = (text: string) => {
         setInputValue(text);
     };
-    
-    const handleSubmitModal = () => {
-        if (data) {
-            if (inputValue == data?.Data.Pin) {
-                setIsModalOpen(false);
-                setInputValue("");
-                navigation.navigate("ManageShelterScreen");
-            } else {
-                setErrorMessage("Pin Salah")
-            }
-        }
-    }
 
+    const handleSubmitModal = () => {
+        if (inputValue == data?.Data.Pin) {
+            setIsModalOpen(false);
+            setInputValue("");
+            Alert.alert("Success", "Pin correct. Navigating to ManageShelterScreen.",
+                [{ text: "OK", onPress: () => navigation.navigate("ManageShelterScreen") }]);
+        } else {
+            setErrorMessage("Pin Salah");
+            setInputValue("");
+        }
+    };
     const handleCancelModal = () => {
         setIsModalOpen(false);
         setInputValue("");
@@ -96,37 +98,17 @@ export const ShelterScreen: FC<ProfileRootBottomTabCompositeScreenProps<'Shelter
                                 </View>
                                 <ScrollView className="mt-5">
                                     <View className="mt-10 flex-row justify-around">
-                                        <TouchableOpacity style={styles.button} onPress={() => setIsModalOpen(true)}>
+                                        <TouchableOpacity style={[styles.button]} onPress={() => setIsModalOpen(true)}>
                                             <View style={styles.iconContainer}>
                                                 <Ionicons name="settings-outline" size={25} color="white" />
                                             </View>
                                             <Text style={styles.text}>Manage Shelter</Text>
                                         </TouchableOpacity>
-                                        <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("NotificationScreen")}>
-                                            <View style={styles.iconContainer}>
-                                                <Ionicons name="notifications" size={25} color="white" />
-                                            </View>
-                                            <Text style={styles.text}>Notification</Text>
-                                        </TouchableOpacity>
-                                        <TouchableOpacity style={styles.button}>
-                                            <View style={styles.iconContainer}>
-                                                <MaterialIcons name="tv" size={25} color="white" />
-                                            </View>
-                                            <Text style={styles.text}>Monitoring</Text>
-                                        </TouchableOpacity>
-                                    </View>
-                                    <View className="mt-10 flex-row justify-around">
-                                        <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("CreatePetScreen", {shelterId : shelterId})}>
+                                        <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("CreatePetScreen", { shelterId: data.Data.Id })}>
                                             <View style={styles.iconContainer}>
                                                 <MaterialCommunityIcons name="plus" color="white" size={25} />
                                             </View>
                                             <Text style={styles.text}>Tambah Hewan</Text>
-                                        </TouchableOpacity>
-                                        <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("HistoryShelterScreen")}>
-                                            <View style={styles.iconContainer}>
-                                                <MaterialCommunityIcons name="history" color="white" size={25} />
-                                            </View>
-                                            <Text style={styles.text}>History List</Text>
                                         </TouchableOpacity>
                                         <TouchableOpacity style={styles.button}>
                                             <View style={styles.iconContainer}>
@@ -135,7 +117,7 @@ export const ShelterScreen: FC<ProfileRootBottomTabCompositeScreenProps<'Shelter
                                             <Text style={styles.text}>Approval List</Text>
                                         </TouchableOpacity>
                                     </View>
-                                                                
+
                                     {petData &&
                                         <View style={{ flex: 1, padding: 10 }}>
                                             <FlashList
@@ -146,9 +128,9 @@ export const ShelterScreen: FC<ProfileRootBottomTabCompositeScreenProps<'Shelter
                                                 renderItem={({ item: pet }) => (
                                                     <View style={{ flex: 1, marginBottom: 35, marginTop: 20 }}>
                                                         <TouchableOpacity className="mx-2 justify-center" activeOpacity={1}>
-                                                        <Image
-                                                            source={{ uri: `data:image/*;base64,${pet.ImageBase64}` }}
-                                                            className="w-full h-80 rounded-3xl"
+                                                            <Image
+                                                                source={{ uri: `data:image/*;base64,${pet.ImageBase64}` }}
+                                                                className="w-full h-80 rounded-3xl"
                                                             />
                                                             <TouchableHighlight
                                                                 style={{
@@ -174,9 +156,9 @@ export const ShelterScreen: FC<ProfileRootBottomTabCompositeScreenProps<'Shelter
                                                                     <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
                                                                         <Text style={{ fontSize: 20, fontWeight: 'bold' }}>{pet.PetName}</Text>
                                                                         {pet.PetType === "Male" ? (
-                                                                                <FontAwesome6 name='venus' size={20} color='#FF6EC7' />
-                                                                            ) : (
-                                                                                <FontAwesome6 name='mars' size={20} color='#4689FD' />
+                                                                            <FontAwesome6 name='venus' size={20} color='#FF6EC7' />
+                                                                        ) : (
+                                                                            <FontAwesome6 name='mars' size={20} color='#4689FD' />
                                                                         )}
                                                                     </View>
                                                                     <View className="flex-row">

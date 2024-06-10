@@ -6,14 +6,14 @@ import { FontAwesome, FontAwesome6, Ionicons, MaterialIcons } from '@expo/vector
 import { PetData } from '../../../../interface/IPetList';
 import { get, post } from '../../../../functions/Fetch';
 import { BackendApiUri } from '../../../../functions/BackendApiUri';
-import { useNavigation } from '@react-navigation/native';
-import { UserBottomTabCompositeNavigationProps } from '../../../StackParams/StackScreenProps';
+import { NoHeaderNavigationStackScreenProps } from '../../../StackParams/StackScreenProps';
 
 interface PetProps{
     Data: PetData
 }
 
-export const PetDetailScreen: FC<{}> = ({ navigation, route }: any) => {
+
+export const PetDetailScreen: FC<NoHeaderNavigationStackScreenProps<"PetDetailScreen">> = ({ navigation, route }: any) => {
     const [isFavorite, setIsFavorite] = useState<boolean>();
     const [favAttempt, setFavAttempt] = useState<number>(0);
     const [isLoading, setIsLoading] = useState<boolean>(true);

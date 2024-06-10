@@ -1,13 +1,15 @@
-import React, { FC, useState } from 'react';
+import React, { FC, useCallback, useRef, useState } from 'react';
 import { Image, ScrollView, TouchableOpacity, View, StyleSheet, TextInput } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { Text } from 'react-native-elements';
-import { FontAwesome, FontAwesome5, FontAwesome6, Ionicons, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
+import { Ionicons } from '@expo/vector-icons';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Controller, useForm } from 'react-hook-form';
 import * as ImagePicker from 'expo-image-picker';
+import * as FileSystem from 'expo-file-system';
 import { NoHeaderNavigationStackScreenProps } from '../../../StackParams/StackScreenProps';
+import { BottomSheetBackdrop, BottomSheetModal, BottomSheetView } from "@gorhom/bottom-sheet";
 
 const rescueFormSchema = z.object({
     condition: z.string({ required_error: "Kondisi hewan tidak boleh kosong" }).min(1, { message: "Kondisi hewan tidak boleh kosong" }),
@@ -17,15 +19,11 @@ const rescueFormSchema = z.object({
 type RescueFormType = z.infer<typeof rescueFormSchema>
 
 export const RescueFormScreen: FC<NoHeaderNavigationStackScreenProps<'RescueFormScreen'>> = ({ navigation, route }: any) => {
-    const [image, setImage] = useState('');
+    const [image, setImage] = useState<string | null>(null);
+    const imgDir = FileSystem.documentDirectory + 'images/';
+    const bottomSheetModalRef = useRef<BottomSheetModal>(null);
 
-    const {
-        control,
-        watch,
-        setValue,
-        handleSubmit,
-        formState: { errors },
-    } = useForm<RescueFormType>({
+    const { control, setValue, handleSubmit, formState: { errors } } = useForm<RescueFormType>({
         resolver: zodResolver(rescueFormSchema),
     });
 
@@ -33,19 +31,51 @@ export const RescueFormScreen: FC<NoHeaderNavigationStackScreenProps<'RescueForm
         console.log(data)
     }
 
-    const pickImage = async () => {
-        let result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ImagePicker.MediaTypeOptions.All,
+    const ensureDirExists = async () => {
+        const dirInfo = await FileSystem.getInfoAsync(imgDir);
+        if (!dirInfo.exists) {
+            await FileSystem.makeDirectoryAsync(imgDir, { intermediates: true });
+        }
+    }
+
+    const selectImage = async (useLibrary: boolean) => {
+        let result;
+        const options: ImagePicker.ImagePickerOptions = {
+            mediaTypes: ImagePicker.MediaTypeOptions.Images,
             allowsEditing: true,
             aspect: [1, 1],
             quality: 1,
-        })
+        }
+
+        if (useLibrary) {
+            result = await ImagePicker.launchImageLibraryAsync(options);
+        } else {
+            await ImagePicker.requestCameraPermissionsAsync();
+            result = await ImagePicker.launchCameraAsync(options);
+        }
 
         if (!result.canceled) {
-            setImage(result.assets[0].uri)
+            saveImage(result.assets[0].uri);
         }
+        bottomSheetModalRef.current?.close();
     };
 
+    const saveImage = async (uri: string) => {
+        await ensureDirExists();
+        const fileName = uri.substring(uri.lastIndexOf('/') + 1);
+        const dest = imgDir + fileName;
+        await FileSystem.copyAsync({ from: uri, to: dest });
+        setImage(dest);
+    }
+
+    const removeImage = async (imageUri: string) => {
+        await FileSystem.deleteAsync(imageUri);
+        setImage(null);
+    }
+
+    const handleImagePress = useCallback(() => {
+        bottomSheetModalRef.current?.present();
+    }, []);
 
     return (
         <SafeAreaProvider className='flex-1'>
@@ -55,7 +85,40 @@ export const RescueFormScreen: FC<NoHeaderNavigationStackScreenProps<'RescueForm
             </View>
 
             <ScrollView>
-                <Text className='mt-5 mb-8 text-xs text-center text-[#8A8A8A]'>Isilah data Anda dengan baik dan benar</Text>
+                <Text className='mt-5 mb-5 text-xs text-center text-[#8A8A8A]'>Isilah data Anda dengan baik dan benar</Text>
+
+                {image && (
+                    <View className="items-end mx-5 ">
+                        <TouchableOpacity className="flex-row items-center" onPress={() => removeImage(image)}>
+                            <Ionicons name="trash" size={20} color="black" />
+                            <Text className="text-xs">Hapus Gambar</Text>
+                        </TouchableOpacity>
+                    </View>
+                )}
+                <View className="items-center mb-5">
+                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: 350 }}>
+                        {image == null && (
+                            <>
+                                <TouchableOpacity
+                                    style={{ width: 170, height: 200, backgroundColor: '#2E3A59', borderRadius: 10, justifyContent: 'center', alignItems: 'center', marginRight: 5 }}
+                                    onPress={() => selectImage(true)}
+                                >
+                                    <Ionicons name="images" size={40} color="white" />
+                                </TouchableOpacity>
+
+                                <TouchableOpacity
+                                    style={{ width: 170, height: 200, backgroundColor: '#2E3A59', borderRadius: 10, justifyContent: 'center', alignItems: 'center', marginLeft: 5 }}
+                                    onPress={() => selectImage(false)}
+                                >
+                                    <Ionicons name="camera" size={40} color="white" />
+                                </TouchableOpacity>
+                            </>
+                        )}
+                    </View>
+                    {image && (
+                        <Image source={{ uri: image }} style={{ width: 350, height: 200, borderRadius: 10 }} resizeMode="cover" />
+                    )}
+                </View>
 
                 <Text style={styles.textColor}>Kondisi Hewan<Text className='text-[#ff0000]'>*</Text></Text>
                 <View style={styles.inputBox}>
@@ -88,12 +151,6 @@ export const RescueFormScreen: FC<NoHeaderNavigationStackScreenProps<'RescueForm
                     />
                 </View>
                 <Text style={styles.errorMessage}>{errors.address?.message}</Text>
-
-                <Text style={styles.textColor}>Gambar<Text className='text-[#ff0000]'>*</Text></Text>
-                <TouchableOpacity onPress={pickImage} style={styles.imageBox}>
-                    <Text className='text-center text-gray-500'>Pilih Gambar</Text>
-                </TouchableOpacity>
-                {image ? (<Image source={{ uri: image }} style={{ width: 100, height: 100, marginHorizontal: 30}} />) : (<Ionicons name="camera" size={40} color="white" />)}
 
                 <TouchableOpacity style={styles.submitButton} onPress={handleSubmit(onSubmit)} className='mb-5'>
                     <Text className="text-center font-bold text-white">Submit</Text>

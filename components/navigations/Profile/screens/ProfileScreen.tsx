@@ -98,15 +98,6 @@ export const ProfileScreen: FC<ProfileNavigationStackScreenProps<'ProfileScreen'
 
                 <View className="mx-5 my-5">
                     <Text style={styles.title}>Settings</Text>
-                    <TouchableOpacity style={styles.rowContainer} onPress={() => navigation.navigate("NotificationScreen")}>
-                        <View style={styles.iconContainer}>
-                            <Ionicons name="notifications" size={25} color="white" />
-                        </View>
-                        <Text style={styles.text}>Notifications</Text>
-                        <View style={styles.nextIconContainer}>
-                            <MaterialIcons name="navigate-next" size={25} color="black" />
-                        </View>
-                    </TouchableOpacity>
                     <TouchableOpacity style={styles.rowContainer} onPress={() => navigation.navigate("HistoryScreen")}>
                         <View style={styles.iconContainer}>
                             <Ionicons name="receipt-outline" size={25} color="white" />

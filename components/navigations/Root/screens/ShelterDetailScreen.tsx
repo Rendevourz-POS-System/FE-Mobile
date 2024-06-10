@@ -7,30 +7,31 @@ import { BackendApiUri } from '../../../../functions/BackendApiUri';
 import { get, post } from '../../../../functions/Fetch';
 import { PetType } from '../../../../interface/IPetType';
 import { getIconName } from '../../../../functions/GetPetIconName';
-import { UserBottomTabCompositeNavigationProps, UserNavigationStackScreenProps } from '../../../StackParams/StackScreenProps';
-import { UserBottomTabParams } from '../../../BottomTabs/UserBottomTabParams';
+import { NoHeaderNavigationStackScreenProps } from '../../../StackParams/StackScreenProps';
+
 interface ShelterData {
     Id: string,
     UserId: string,
     ShelterName: string,
     ShelterLocationName: string,
     ShelterCapacity: number,
-    ShelterAddress : string,
+    ShelterAddress: string,
     ShelterContactNumber: string,
     ShelterDescription: string,
     TotalPet: number,
     BankAccountNumber: string,
-    PetTypeAccepted : [],
-    ImageBase64 : string[],
+    PetTypeAccepted: [],
+    ImageBase64: string[],
     Pin: string,
     ShelterVertified: boolean,
     CreatedAt: Date
 }
+
 interface ShelterProps {
     Message: string,
     Data: ShelterData
 }
-export const ShelterDetailScreen: FC<{}> = ({ navigation, route }: any) => {
+export const ShelterDetailScreen: FC<NoHeaderNavigationStackScreenProps<'ShelterDetailScreen'>> = ({ navigation, route }: any) => {
     const [isFavorite, setIsFavorite] = useState<Boolean>();
     const [favAttempt, setFavAttempt] = useState<number>(0);
     const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -44,7 +45,7 @@ export const ShelterDetailScreen: FC<{}> = ({ navigation, route }: any) => {
             ShelterCapacity: 0,
             ShelterContactNumber: "",
             ShelterDescription: "",
-            ShelterAddress : "",
+            ShelterAddress: "",
             TotalPet: 0,
             BankAccountNumber: "",
             PetTypeAccepted: [],
@@ -67,16 +68,16 @@ export const ShelterDetailScreen: FC<{}> = ({ navigation, route }: any) => {
                         UserId: response.data.Data.UserId,
                         ShelterName: response.data.Data.ShelterName,
                         ShelterLocationName: response.data.Data.ShelterLocationNName,
-                        ShelterAddress : response.data.Data.ShelterAddress,
+                        ShelterAddress: response.data.Data.ShelterAddress,
                         ShelterCapacity: response.data.Data.ShelterCapacity,
                         ShelterContactNumber: response.data.Data.ShelterContactNumber,
                         ShelterDescription: response.data.Data.ShelterDescription,
                         TotalPet: response.data.Data.TotalPet,
                         BankAccountNumber: response.data.Data.BankAccountNumber,
-                        PetTypeAccepted : response.data.Data.PetTypeAccepted,
+                        PetTypeAccepted: response.data.Data.PetTypeAccepted,
                         Pin: response.data.Data.Pin,
                         ShelterVertified: response.data.Data.ShelterVertified,
-                        ImageBase64 : response.data.Data.ImageBase64 || [],
+                        ImageBase64: response.data.Data.ImageBase64 || [],
                         CreatedAt: response.data.Data.CreatedAt
                     }
                 });
@@ -91,9 +92,9 @@ export const ShelterDetailScreen: FC<{}> = ({ navigation, route }: any) => {
     const shelterFavData = async () => {
         try {
             const res = await get(`${BackendApiUri.getShelterFav}`);
-            if(res && res.status === 200) {
-                const detail = await res.data.find((shelter : ShelterData) => shelter.Id === data.Data.Id);
-                if(detail != null) {
+            if (res && res.status === 200) {
+                const detail = await res.data.find((shelter: ShelterData) => shelter.Id === data.Data.Id);
+                if (detail != null) {
                     setIsFavorite(true);
                 }
             }
@@ -107,7 +108,7 @@ export const ShelterDetailScreen: FC<{}> = ({ navigation, route }: any) => {
         try {
             const res = await get(BackendApiUri.getPetTypes);
             setPetTypes(res.data)
-        } catch(e) {
+        } catch (e) {
             console.error(e)
         }
     }
@@ -121,11 +122,11 @@ export const ShelterDetailScreen: FC<{}> = ({ navigation, route }: any) => {
         fetchPetType();
     }, [data.Data.Id]);
 
-    const handlePressFavorite = async (shelterId : string) => {
+    const handlePressFavorite = async (shelterId: string) => {
         try {
             const body = { "ShelterId": shelterId }; // Body as an array containing an object
             const res = await post(BackendApiUri.postShelterFav, body);
-            if(res && res.status === 200) {
+            if (res && res.status === 200) {
                 setIsFavorite(!isFavorite);
             }
         } catch (error) {
@@ -142,16 +143,16 @@ export const ShelterDetailScreen: FC<{}> = ({ navigation, route }: any) => {
 
     return (
         <SafeAreaProvider className='bg-white'>
-            { isLoading ? (
+            {isLoading ? (
                 <View className='flex-1 justify-center items-center'>
-                    <ActivityIndicator color="blue" size="large"/>
+                    <ActivityIndicator color="blue" size="large" />
                 </View>
             ) : (
                 <>
-                    <View style={[styles.nextIcon, { position: 'absolute', left: 20, top: 17, zIndex: 1 }]}>
+                    <View style={[styles.nextIcon, { position: 'absolute', left: 20, top: 45, zIndex: 1 }]}>
                         {/* DONT REMOVE THIS COMMENT
                         Passing refFav to HomeScreen to trigger refresh if not the list shelter not updated */}
-                        <Ionicons name="chevron-back" size={24} color="black" onPress={() => navigation.navigate('ShelterListScreen', { refFav: favAttempt } )} />
+                        <Ionicons name="chevron-back" size={24} color="black" onPress={() => navigation.navigate('ShelterListScreen', { refFav: favAttempt })} />
                     </View>
                     <ScrollView>
                         {data.Data.ImageBase64 && data.Data.ImageBase64.length > 0 ? (
@@ -167,8 +168,8 @@ export const ShelterDetailScreen: FC<{}> = ({ navigation, route }: any) => {
                                     <TouchableHighlight
                                         onPress={() => handlePressFavorite(data.Data.Id)}
                                         underlayColor="transparent"
-                                        >
-                                        <FontAwesome name={isFavorite ? 'heart' : 'heart-o'} size={24} style={{ color: isFavorite ? '#FF0000' : '#4689FD' }}  />
+                                    >
+                                        <FontAwesome name={isFavorite ? 'heart' : 'heart-o'} size={24} style={{ color: isFavorite ? '#FF0000' : '#4689FD' }} />
                                     </TouchableHighlight>
                                 </View>
                             </View>
@@ -179,15 +180,15 @@ export const ShelterDetailScreen: FC<{}> = ({ navigation, route }: any) => {
                             </View>
 
                             <View className="flex flex-row justify-between items-center mt-4">
-                                <View className="flex-1 border-2 border-gray-300 px-4 py-5 mx-1 rounded-xl items-center justify-center" style={{height: 75}}>
+                                <View className="flex-1 border-2 border-gray-300 px-4 py-5 mx-1 rounded-xl items-center justify-center" style={{ height: 75 }}>
                                     <Text className="text-gray-500 text-center">Total Hewan</Text>
                                     <Text className="text-black font-bold">{data.Data.TotalPet}</Text>
                                 </View>
-                                <View className="flex-1 border-2 border-gray-300 px-4 py-3 mx-1 text-center rounded-xl items-center justify-center" style={{height: 75}}>
+                                <View className="flex-1 border-2 border-gray-300 px-4 py-3 mx-1 text-center rounded-xl items-center justify-center" style={{ height: 75 }}>
                                     <Text className="text-gray-500 text-center">Adopsi Available</Text>
                                     <Text className="text-black font-bold">{data.Data.ShelterCapacity}</Text>
                                 </View>
-                                <View className="flex-1 border-2 border-gray-300 px-4 py-[4] mx-1 text-center rounded-xl items-center justify-center" style={{height: 75}}>
+                                <View className="flex-1 border-2 border-gray-300 px-4 py-[4] mx-1 text-center rounded-xl items-center justify-center" style={{ height: 75 }}>
                                     <Text className="text-gray-500 text-center">Menerima Hewan</Text>
                                     <View className="flex flex-row justify-center items-center mt-1">
                                         {data.Data.PetTypeAccepted.map((item) => {
@@ -210,7 +211,7 @@ export const ShelterDetailScreen: FC<{}> = ({ navigation, route }: any) => {
                         </View>
                         <View className='my-3'>
                             <View className='flex-row justify-around'>
-                                <TouchableOpacity style={styles.buttonBox} onPress={() => navigation.navigate("HewanAdopsiScreen", {shelterId: route.params.shelterId})}>
+                                <TouchableOpacity style={styles.buttonBox} onPress={() => navigation.navigate("HewanAdopsiScreen", { shelterId: route.params.shelterId })}>
                                     <MaterialIcons name="pets" size={24} color="white" />
                                     <Text style={styles.fontButton} className='ml-3 text-s text-center'>Adoption Pet</Text>
                                 </TouchableOpacity>
@@ -219,9 +220,9 @@ export const ShelterDetailScreen: FC<{}> = ({ navigation, route }: any) => {
                                     <Text style={styles.fontButton} className='ml-3 text-s text-center'>Surrender Pet</Text>
                                 </TouchableOpacity>
                             </View>
-                            
+
                             <View className='mt-3 flex-row justify-around'>
-                                <TouchableOpacity disabled={data.Data.BankAccountNumber === ""} style={styles.buttonBox} onPress={() => navigation.navigate("DonateScreen", {bankNumber : data.Data.BankAccountNumber})}>
+                                <TouchableOpacity disabled={data.Data.BankAccountNumber === ""} style={styles.buttonBox} onPress={() => navigation.navigate("DonateScreen", { shelterId: route.params.shelterId, bankNumber: data.Data.BankAccountNumber })}>
                                     <FontAwesome6 name="hand-holding-heart" size={24} color="white" />
                                     <Text style={styles.fontButton} className='ml-3 text-s text-center'>Donation</Text>
                                 </TouchableOpacity>
@@ -233,7 +234,6 @@ export const ShelterDetailScreen: FC<{}> = ({ navigation, route }: any) => {
                         </View>
                     </ScrollView>
                 </>
-
             )}
         </SafeAreaProvider>
     );

@@ -2,23 +2,20 @@ import { FontAwesome, Ionicons } from "@expo/vector-icons";
 import React, { FC, useCallback, useEffect, useRef, useState } from "react";
 import { ScrollView, Text, View, StyleSheet, TextInput, TouchableOpacity, Image, Alert } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
-import { ProfileRootBottomTabCompositeScreenProps } from "../../CompositeNavigationProps";
 import { z } from "zod";
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Controller, useForm } from 'react-hook-form';
 import { RadioButton } from "react-native-paper";
 import * as ImagePicker from 'expo-image-picker';
 import * as FileSystem from 'expo-file-system';
-import { get, postForm } from "../../../../functions/Fetch";
+import { get } from "../../../../functions/Fetch";
 import { BackendApiUri, baseUrl } from "../../../../functions/BackendApiUri";
 import { PetType } from "../../../../interface/IPetType";
 import { SelectList } from "react-native-dropdown-select-list";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { BottomSheetBackdrop, BottomSheetModal, BottomSheetModalProvider, BottomSheetView } from "@gorhom/bottom-sheet";
 import { useAuth } from "../../../../app/context/AuthContext";
-import { useNavigation } from "@react-navigation/native";
 import { ProfileNavigationStackScreenProps } from "../../../StackParams/StackScreenProps";
-import { RootBottomTabParams } from "../../../BottomTabs/UserBottomTabParams";
 
 const createPetFormSchema = z.object({
     PetName: z.string({ required_error: "Nama hewan tidak boleh kosong" }).min(1, { message: "Nama hewan tidak boleh kosong" }),
@@ -31,7 +28,7 @@ const createPetFormSchema = z.object({
 
 type CreatePetFormType = z.infer<typeof createPetFormSchema>
 
-export const CreatePetScreen: FC<ProfileRootBottomTabCompositeScreenProps<'CreatePetScreen'>> = ({ navigation, route }) => {
+export const CreatePetScreen: FC<ProfileNavigationStackScreenProps<'CreatePetScreen'>> = ({ navigation, route }) => {
     const { authState } = useAuth();
     const [image, setImage] = useState<string | null>(null);
     const [petTypes, setPetTypes] = useState<PetType[]>([]);

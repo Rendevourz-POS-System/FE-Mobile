@@ -1,21 +1,17 @@
-import React, { FC, useState } from 'react';
-import { Image, ScrollView, TouchableOpacity, View, StyleSheet, TextInput } from 'react-native';
+import React, { FC } from 'react';
+import { ScrollView, TouchableOpacity, View, StyleSheet, TextInput, Alert } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { Text } from 'react-native-elements';
-import { FontAwesome, FontAwesome5, FontAwesome6, Ionicons, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
+import { Ionicons } from '@expo/vector-icons';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Controller, useForm } from 'react-hook-form';
+import { post } from '../../../../functions/Fetch';
+import { BackendApiUri } from '../../../../functions/BackendApiUri';
 import { NoHeaderNavigationStackScreenProps } from '../../../StackParams/StackScreenProps';
 
 const adoptionFormSchema = z.object({
-    fullName: z.string({ required_error: "Nama lengkap tidak boleh kosong" }).min(1, { message: "Nama lengkap tidak boleh kosong" }),
-    nik: z.string({ required_error: "NIK tidak boleh kosong" }).min(5, { message: "NIK minimal 5 karakter" }).regex(/^\d{16}$/, { message: "Format NIK tidak valid" }),
-    address: z.string({ required_error: "Alamat rumah tidak boleh kosong" }).min(5, { message: "Alamat rumah harus lebih dari 5 karakter" }),
-    city: z.string({ required_error: "Kabupaten/Kota tidak boleh kosong" }).min(1, { message: "Kabupaten/Kota tidak boleh kosong" }),
-    postalCode: z.string({ required_error: 'Kode pos tidak boleh kosong' }).min(5, { message: "Kode pos minimal 5 karakter" }).regex(/^\d{5}$/, { message: "Format kode pos tidak valid" }),
-    work: z.string({ required_error: "Pekerjaan tidak boleh kosong" }).min(1, { message: "Pekerjaan minimal tidak boleh kosong" }),
-    reasonAdoption: z.string({ required_error: "Alasan adopsi tidak boleh kosong" }).min(5, { message: "Alasan adopsi harus lebih dari 5 karakter" }),
+    Reason: z.string({ required_error: "Alasan adopsi tidak boleh kosong" }).min(5, { message: "Alasan adopsi harus lebih dari 5 karakter" }),
 })
 
 type AdoptionFormType = z.infer<typeof adoptionFormSchema>
@@ -32,6 +28,28 @@ export const AdoptionFormScreen: FC<NoHeaderNavigationStackScreenProps<'Adoption
     });
 
     const onSubmit = async (data: AdoptionFormType) => {
+        const payload = {
+            ShelterId: route.params.shelterId,
+            PetId: route.params.petId,
+            Type: "Adoption",
+            Reason: data.Reason
+        }
+
+        try {
+            const response = await post(BackendApiUri.postRequest, payload);
+            if (response.status == 200) {
+                Alert.alert("Data Anda Berhasil Tersimpan", "", [
+                    {
+                        text: 'OK',
+                        onPress: () => navigation.navigate("Home"),
+                    },
+                ],
+                    { cancelable: false })
+            }
+        } catch (e) {
+
+        }
+        console.log(payload)
     }
 
     return (
@@ -42,121 +60,24 @@ export const AdoptionFormScreen: FC<NoHeaderNavigationStackScreenProps<'Adoption
             </View>
 
             <ScrollView>
-                <Text className='mt-5 mb-8 text-xs text-center text-[#8A8A8A]'>Isilah data Anda dengan baik dan benar</Text>
-
-                <Text style={styles.textColor}>Nama Lengkap (Sesuai KTP)<Text className='text-[#ff0000]'>*</Text></Text>
-                <View style={styles.inputBox}>
-                    <Controller
-                        name="fullName"
-                        control={control}
-                        render={() => (
-                            <TextInput
-                                placeholder="Masukkan Nama Lengkap"
-                                style={{ flex: 1 }}
-                                onChangeText={(text: string) => setValue('fullName', text)}
-                            />
-                        )}
-                    />
-                </View>
-                <Text style={styles.errorMessage}>{errors.fullName?.message}</Text>
-
-                <Text style={styles.textColor}>NIK<Text className='text-[#ff0000]'>*</Text></Text>
-                <View style={styles.inputBox}>
-                    <Controller
-                        name="nik"
-                        control={control}
-                        render={() => (
-                            <TextInput
-                                placeholder="Masukkan NIK"
-                                style={{ flex: 1 }}
-                                onChangeText={(text: string) => setValue('nik', text)}
-                            />
-                        )}
-                    />
-                </View>
-                <Text style={styles.errorMessage}>{errors.nik?.message}</Text>
-
-                <Text style={styles.textColor}>Alamat Rumah<Text className='text-[#ff0000]'>*</Text></Text>
-                <View style={styles.inputBox}>
-                    <Controller
-                        name="address"
-                        control={control}
-                        render={() => (
-                            <TextInput
-                                multiline
-                                numberOfLines={4}
-                                placeholder="Masukkan Alamat Rumah"
-                                style={{ flex: 1 }}
-                                onChangeText={(text: string) => setValue('address', text)}
-                            />
-                        )}
-                    />
-                </View>
-                <Text style={styles.errorMessage}>{errors.address?.message}</Text>
-
-                <Text style={styles.textColor}>Kabupaten/Kota<Text className='text-[#ff0000]'>*</Text></Text>
-                <View style={styles.inputBox}>
-                    <Controller
-                        name="city"
-                        control={control}
-                        render={() => (
-                            <TextInput
-                                placeholder="Masukkan Kabupaten/Kota"
-                                style={{ flex: 1 }}
-                                onChangeText={(text: string) => setValue('city', text)}
-                            />
-                        )}
-                    />
-                </View>
-                <Text style={styles.errorMessage}>{errors.city?.message}</Text>
-
-                <Text style={styles.textColor}>Kode Pos<Text className='text-[#ff0000]'>*</Text></Text>
-                <View style={styles.inputBox}>
-                    <Controller
-                        name="postalCode"
-                        control={control}
-                        render={() => (
-                            <TextInput
-                                placeholder="Masukkan Kode Pos"
-                                style={{ flex: 1 }}
-                                onChangeText={(text: string) => setValue('postalCode', text)}
-                            />
-                        )}
-                    />
-                </View>
-                <Text style={styles.errorMessage}>{errors.postalCode?.message}</Text>
-
-                <Text style={styles.textColor}>Pekerjaan<Text className='text-[#ff0000]'>*</Text></Text>
-                <View style={styles.inputBox}>
-                    <Controller
-                        name="work"
-                        control={control}
-                        render={() => (
-                            <TextInput
-                                placeholder="Masukkan Pekerjaan"
-                                style={{ flex: 1 }}
-                                onChangeText={(text: string) => setValue('work', text)}
-                            />
-                        )}
-                    />
-                </View>
-                <Text style={styles.errorMessage}>{errors.work?.message}</Text>
+                <Text className='mt-5 mb-8 text-xs text-center text-[#8A8A8A]'>Isilah Alasan Anda dengan baik dan benar</Text>
 
                 <Text style={styles.textColor}>Alasan Adopsi<Text className='text-[#ff0000]'>*</Text></Text>
                 <View style={styles.inputBox}>
                     <Controller
-                        name="reasonAdoption"
+                        name="Reason"
                         control={control}
                         render={() => (
                             <TextInput
                                 placeholder="Masukkan Alasan Adopsi"
                                 style={{ flex: 1 }}
-                                onChangeText={(text: string) => setValue('reasonAdoption', text)}
+                                multiline
+                                onChangeText={(text: string) => setValue('Reason', text)}
                             />
                         )}
                     />
                 </View>
-                <Text style={styles.errorMessage}>{errors.reasonAdoption?.message}</Text>
+                <Text style={styles.errorMessage}>{errors.Reason?.message}</Text>
 
                 <TouchableOpacity style={styles.submitButton} onPress={handleSubmit(onSubmit)} className='mb-5'>
                     <Text className="text-center font-bold text-white">Submit</Text>

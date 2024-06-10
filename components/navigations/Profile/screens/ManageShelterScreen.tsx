@@ -2,7 +2,6 @@ import { FontAwesome, Ionicons } from "@expo/vector-icons";
 import React, { FC, useEffect, useState } from "react";
 import { ScrollView, Text, View, StyleSheet, TouchableOpacity, TextInput, Alert, Image } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
-import { ProfileRootBottomTabCompositeScreenProps } from "../../CompositeNavigationProps";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from 'react-hook-form';
@@ -12,6 +11,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { SelectList } from "react-native-dropdown-select-list";
 import { PetType, ShelterLocation } from "../../../../interface/IPetType";
 import { Checkbox } from "react-native-paper";
+import { ProfileNavigationStackScreenProps } from "../../../StackParams/StackScreenProps";
 
 const editShelterFormSchema = z.object({
     ShelterName: z.string({ required_error: "Nama shelter tidak boleh kosong" }).min(1, { message: "Nama shelter tidak boleh kosong" }),
@@ -28,7 +28,7 @@ const editShelterFormSchema = z.object({
 
 type CreateShelterFormType = z.infer<typeof editShelterFormSchema>
 
-export const ManageShelterScreen: FC<ProfileRootBottomTabCompositeScreenProps<'ManageShelterScreen'>> = ({ navigation }) => {
+export const ManageShelterScreen: FC<ProfileNavigationStackScreenProps<'ManageShelterScreen'>> = ({ navigation }) => {
     const [image, setImage] = useState('');
     const [selected, setSelected] = useState<string[]>();
     const [shelterLocation, setShelterLocation] = useState<ShelterLocation[]>([]);
@@ -66,11 +66,11 @@ export const ManageShelterScreen: FC<ProfileRootBottomTabCompositeScreenProps<'M
         formData.append('file', image);
         formData.append('data', payloadString);
         const res = await putForm(`${BackendApiUri.putShelterUpdate}`, formData);
-        if(res.status == 200){
-            Alert.alert('Shelter Berhasil Terupdate', 'Data shelter anda telah berhasil terupdate.', [{ text: "OK", onPress: () => navigation.goBack() } ]);
-        }else{
+        if (res.status == 200) {
+            Alert.alert('Shelter Berhasil Terupdate', 'Data shelter anda telah berhasil terupdate.', [{ text: "OK", onPress: () => navigation.goBack() }]);
+        } else {
             Alert.alert('Shelter Gagal Update', 'Data shelter anda gagal terupdate.');
-        } 
+        }
     }
 
     const pickImage = async () => {
@@ -120,7 +120,7 @@ export const ManageShelterScreen: FC<ProfileRootBottomTabCompositeScreenProps<'M
 
     return (
         <SafeAreaProvider style={styles.container}>
-            <View className="mt-14 flex-row items-center justify-center mb-3">
+            <View className="mt-5 flex-row items-center justify-center mb-3">
                 <Ionicons name="chevron-back" size={24} color="black" onPress={() => navigation.goBack()} style={{ position: 'absolute', left: 20 }} />
                 <Text className="text-xl">Manage Shelter Profile</Text>
             </View>
@@ -298,7 +298,7 @@ export const ManageShelterScreen: FC<ProfileRootBottomTabCompositeScreenProps<'M
                     name="PetTypeAccepted"
                     control={control}
                     render={({ field: { value } }) => (
-                        <View style={{marginHorizontal: 35}}>
+                        <View style={{ marginHorizontal: 35 }}>
                             {petTypeData.map((petType) => (
                                 <View key={petType.key} style={{ flexDirection: 'row', alignItems: 'center' }}>
                                     <Checkbox
