@@ -3,10 +3,10 @@ import { Image, ScrollView, TouchableOpacity, View, StyleSheet, TextInput } from
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { Text } from 'react-native-elements';
 import { FontAwesome, FontAwesome5, FontAwesome6, Ionicons, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
-import { RootNavigationStackScreenProps } from '../../../StackParams/StackScreenProps';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Controller, useForm } from 'react-hook-form';
+import { NoHeaderNavigationStackScreenProps } from '../../../StackParams/StackScreenProps';
 
 const adoptionFormSchema = z.object({
     fullName: z.string({ required_error: "Nama lengkap tidak boleh kosong" }).min(1, { message: "Nama lengkap tidak boleh kosong" }),
@@ -20,7 +20,7 @@ const adoptionFormSchema = z.object({
 
 type AdoptionFormType = z.infer<typeof adoptionFormSchema>
 
-export const AdoptionFormScreen: FC<RootNavigationStackScreenProps<'AdoptionFormScreen'>> = ({ navigation, route }: any) => {
+export const AdoptionFormScreen: FC<NoHeaderNavigationStackScreenProps<'AdoptionFormScreen'>> = ({ navigation, route }: any) => {
     const {
         control,
         watch,
@@ -36,7 +36,7 @@ export const AdoptionFormScreen: FC<RootNavigationStackScreenProps<'AdoptionForm
 
     return (
         <SafeAreaProvider className='flex-1'>
-            <View className="mt-14 flex-row items-center justify-center mb-3">
+            <View className="mt-5 flex-row items-center justify-center mb-3">
                 <Ionicons name="chevron-back" size={24} color="black" onPress={() => navigation.goBack()} style={{ position: 'absolute', left: 20 }} />
                 <Text className="text-xl">Adopsi Hewan</Text>
             </View>

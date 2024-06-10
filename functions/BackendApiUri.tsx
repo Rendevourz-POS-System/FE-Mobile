@@ -24,6 +24,8 @@ export const BackendApiUri = {
     postPet: '/pet/create',
     putShelterUpdate: '/shelter/update',
     getPet: '/pet',
+    postPetFav : '/pet_favorite/update',
+    getPetFav : '/pet/favorite',
     getUser: '/user',
     postRequest: '/request/create',
     putPetUpdate: '/pet/update',

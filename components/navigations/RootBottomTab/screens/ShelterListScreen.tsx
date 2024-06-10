@@ -266,8 +266,8 @@ export const ShelterListScreen : FC<NoHeaderProps> = ({navigation, route} : any)
                                     <View className='mx-5'>
                                         <Text className='text-xl font-bold'>Filter</Text>
                                         <View className='flex flex-row items-center justify-between'>
-                                            <Text className='text-xl font-bold mt-6 mb-2'>Location</Text>
-                                            <TouchableOpacity className='mt-6 mb-2 px-10 py-3 rounded-2xl' onPress={() => setFilterLocation("")}>
+                                            <Text className='text-xl font-bold mt-2 mb-2'>Location</Text>
+                                            <TouchableOpacity className='mt-2 mb-2 px-10 py-3 rounded-2xl' onPress={() => setFilterLocation("")}>
                                                 <Text className='text-[#4689FD] text-lg font-bold'>Reset</Text>
                                             </TouchableOpacity>
                                         </View>
