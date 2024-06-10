@@ -2,13 +2,12 @@ import { Ionicons } from "@expo/vector-icons";
 import React, { FC, useCallback, useEffect, useRef, useState } from "react";
 import { ScrollView, Text, View, StyleSheet, TouchableOpacity, TextInput, Alert, Image } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
-import { ProfileRootBottomTabCompositeScreenProps } from "../../CompositeNavigationProps";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from 'react-hook-form';
 import { FontAwesome6 } from '@expo/vector-icons';
 import { BackendApiUri, baseUrl } from "../../../../functions/BackendApiUri";
-import { get, putForm } from "../../../../functions/Fetch";
+import { get } from "../../../../functions/Fetch";
 import * as ImagePicker from 'expo-image-picker';
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import {
@@ -19,6 +18,7 @@ import {
 } from '@gorhom/bottom-sheet';
 import * as FileSystem from 'expo-file-system';
 import { useAuth } from "../../../../app/context/AuthContext";
+import { ProfileNavigationStackScreenProps } from "../../../StackParams/StackScreenProps";
 
 interface User {
     Username: string,
@@ -50,7 +50,7 @@ const profileFormSchema = z.object({
 
 type ProfileFormType = z.infer<typeof profileFormSchema>
 
-export const ManageScreen: FC<ProfileRootBottomTabCompositeScreenProps<'ManageScreen'>> = ({ navigation }) => {
+export const ManageScreen: FC<ProfileNavigationStackScreenProps<'ManageScreen'>> = ({ navigation }) => {
     const [userData, setUserData] = useState<User>();
     const [image, setImage] = useState<string | null>(null);
     const bottomSheetModalRef = useRef<BottomSheetModal>(null);

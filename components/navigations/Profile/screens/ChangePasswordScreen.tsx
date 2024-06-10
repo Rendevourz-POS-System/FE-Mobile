@@ -2,13 +2,13 @@ import { Ionicons } from "@expo/vector-icons";
 import React, { FC, useState } from "react";
 import { ScrollView, Text, View, StyleSheet, TouchableOpacity, TextInput, Alert, Image } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
-import { ProfileRootBottomTabCompositeScreenProps } from "../../CompositeNavigationProps";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from 'react-hook-form';
 import { Icon } from "react-native-elements";
 import { BackendApiUri } from "../../../../functions/BackendApiUri";
 import { put } from "../../../../functions/Fetch";
+import { ProfileNavigationStackScreenProps } from "../../../StackParams/StackScreenProps";
 
 const changePasswordFormSchema = z.object({
     Password: z.string({ required_error: "Current password tidak kosong" }).min(8, { message: "Harus lebih dari 8 karakter" }).regex(/[^A-Za-z0-9]/, { message: "Harus mengandung minimal 1 simbol" }),
@@ -21,7 +21,7 @@ const changePasswordFormSchema = z.object({
 
 type changePasswordFormType = z.infer<typeof changePasswordFormSchema>
 
-export const ChangePasswordScreen: FC<ProfileRootBottomTabCompositeScreenProps<'ChangePasswordScreen'>> = ({ navigation }) => {
+export const ChangePasswordScreen: FC<ProfileNavigationStackScreenProps<'ChangePasswordScreen'>> = ({ navigation }) => {
     const [showPassword, setShowPassword] = useState(false);
     const [showNewPassword, setShowNewPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);

@@ -131,15 +131,15 @@ const AppNavigationStack: FC = () => {
     const ProfileStackGroup = () => (
         <ProfileUserStack.Navigator>
             <ProfileUserStack.Screen name="ProfileScreen" component={ProfileScreen} options={noHeader} />
-            <ProfileUserStack.Screen name="ManageScreen" component={ManageScreen} options={noHeader} />
-            <ProfileUserStack.Screen name="ChangePasswordScreen" component={ChangePasswordScreen} options={noHeader} />
-            <ProfileUserStack.Screen name="NotificationScreen" component={NotificationScreen} options={noHeader} />
-            <ProfileUserStack.Screen name="HistoryScreen" component={HistoryScreen} options={noHeader} />
-            <ProfileUserStack.Screen name="FavoriteScreen" component={FavoriteScreen} options={noHeader} />
+            <ProfileUserStack.Screen name="ManageScreen" component={ManageScreen} options={{ presentation: "modal", headerShown: false }} />
+            <ProfileUserStack.Screen name="ChangePasswordScreen" component={ChangePasswordScreen} options={{ presentation: "modal", headerShown: false }} />
+            <ProfileUserStack.Screen name="NotificationScreen" component={NotificationScreen} options={{ presentation: "modal", headerShown: false }} />
+            <ProfileUserStack.Screen name="HistoryScreen" component={HistoryScreen} options={{ presentation: "modal", headerShown: false }} />
+            <ProfileUserStack.Screen name="FavoriteScreen" component={FavoriteScreen} options={{ presentation: "modal", headerShown: false }} />
 
-            <ProfileUserStack.Screen name="ShelterScreen" component={ShelterScreen} options={noHeader} />
-            <ProfileUserStack.Screen name="ManageShelterScreen" component={ManageShelterScreen} options={noHeader} />
-            <ProfileUserStack.Screen name="CreatePetScreen" component={CreatePetScreen} options={noHeader} />
+            <ProfileUserStack.Screen name="ShelterScreen" component={ShelterScreen} options={{ presentation: "modal", headerShown: false }} />
+            <ProfileUserStack.Screen name="ManageShelterScreen" component={ManageShelterScreen} options={{ presentation: "modal", headerShown: false }} />
+            <ProfileUserStack.Screen name="CreatePetScreen" component={CreatePetScreen} options={{ presentation: "modal", headerShown: false }} />
         </ProfileUserStack.Navigator>
     )
 

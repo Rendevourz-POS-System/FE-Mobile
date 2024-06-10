@@ -2,9 +2,9 @@ import { Ionicons } from "@expo/vector-icons";
 import React, { FC, useState } from "react";
 import { ScrollView, Text, View, StyleSheet } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
-import { ProfileRootBottomTabCompositeScreenProps } from "../../CompositeNavigationProps";
+import { ProfileNavigationStackScreenProps } from "../../../StackParams/StackScreenProps";
 
-export const HistoryScreen: FC<ProfileRootBottomTabCompositeScreenProps<'HistoryScreen'>> = ({ navigation }) => {
+export const HistoryScreen: FC<ProfileNavigationStackScreenProps<'HistoryScreen'>> = ({ navigation }) => {
     const [historyData, setHistoryData] = useState([
         {
             date: 'March 2023', events: [
