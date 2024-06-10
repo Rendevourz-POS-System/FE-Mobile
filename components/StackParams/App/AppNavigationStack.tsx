@@ -37,7 +37,6 @@ import { AdoptionFormScreen } from "../../navigations/Root/screens/AdoptionFormS
 import { ShelterScreen } from "../../navigations/Profile/screens/ShelterScreen";
 import { CreatePetScreen } from "../../navigations/Profile/screens/CreatePetScreen";
 import { AdminNavigationStack } from "../Admin/AdminNavigationStack";
-import { AdoptionFormScreen } from "../../navigations/Root/screens/AdoptionFormScreen";
 import { HewanAdopsiScreen } from "../../navigations/Root/screens/HewanAdopsiScreen";
 import { SurrenderFormScreen } from "../../navigations/Root/screens/SurrenderFormScreen";
 import { DonateScreen } from "../../navigations/Root/screens/DonateScreen";
