@@ -32,7 +32,11 @@ export const ShelterListScreen : FC<NoHeaderProps> = ({navigation, route} : any)
     const [provinceData, setProvinceData] = useState<Location[]>([]);
     const [shelterData, setShelterData] = useState<ShelterData[]>([]);
     const [shelterFav, setShelterFav] = useState<ShelterData[]>([]);
-    const [filterLocation, setFilterLocation] = useState<string>("");
+    const [filterLocation, setFilterLocation] = useState<Location>({
+        label: "",
+        value: ""
+    });
+    // console.log(filterLocation)
     const [applyPressed, setApplyPressed] = useState<boolean>(false);
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [search, setSearch] = useState<string>('');
@@ -73,7 +77,7 @@ export const ShelterListScreen : FC<NoHeaderProps> = ({navigation, route} : any)
     }, []);
     const fetchShelter = async () => {
         try{
-            const response = await get(`${BackendApiUri.getShelterList}/?search=${search}&location_name=${filterLocation}`);
+            const response = await get(`${BackendApiUri.getShelterList}/?search=${search}&location_name=${filterLocation?.label}`);
             if(response && response.status === 200) {
                 setShelterData(response.data);
             } else {
@@ -267,7 +271,7 @@ export const ShelterListScreen : FC<NoHeaderProps> = ({navigation, route} : any)
                                         <Text className='text-xl font-bold'>Filter</Text>
                                         <View className='flex flex-row items-center justify-between'>
                                             <Text className='text-xl font-bold mt-2 mb-2'>Location</Text>
-                                            <TouchableOpacity className='mt-2 mb-2 px-10 py-3 rounded-2xl' onPress={() => setFilterLocation("")}>
+                                            <TouchableOpacity className='mt-2 mb-2 px-10 py-3 rounded-2xl' onPress={() => setFilterLocation({label: '', value: ''})}>
                                                 <Text className='text-[#4689FD] text-lg font-bold'>Reset</Text>
                                             </TouchableOpacity>
                                         </View>
@@ -283,11 +287,10 @@ export const ShelterListScreen : FC<NoHeaderProps> = ({navigation, route} : any)
                                             maxHeight={300}
                                             labelField="label"
                                             valueField="value"
-                                            placeholder="Select item"
                                             searchPlaceholder="Search..."
-                                            value={filterLocation}
-                                            onChange={item => {
-                                                setFilterLocation(item.label);
+                                            value={filterLocation?.value}
+                                            onChange={(item) => {
+                                                setFilterLocation(item);
                                             }}
                                             renderItem={renderItem}
                                         />

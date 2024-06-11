@@ -80,7 +80,7 @@ export const AuthProvider = ({children} : any) => {
     const login = async (email: string, password: string) => {
         try{
             const result = await axios.post(`${BackendApiUri.loginUser}`, {email, password});
-            console.log(result.data.Data)
+            // console.log(result.data.Data)
             if(result.data.Data) {
                 setAuthState({
                     token: null,
