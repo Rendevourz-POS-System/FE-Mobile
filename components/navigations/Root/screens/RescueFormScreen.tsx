@@ -9,7 +9,8 @@ import { Controller, useForm } from 'react-hook-form';
 import * as ImagePicker from 'expo-image-picker';
 import * as FileSystem from 'expo-file-system';
 import { NoHeaderNavigationStackScreenProps } from '../../../StackParams/StackScreenProps';
-import { BottomSheetBackdrop, BottomSheetModal, BottomSheetView } from "@gorhom/bottom-sheet";
+import { BottomSheetBackdrop, BottomSheetModal, BottomSheetModalProvider, BottomSheetView } from "@gorhom/bottom-sheet";
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 const rescueFormSchema = z.object({
     condition: z.string({ required_error: "Kondisi hewan tidak boleh kosong" }).min(1, { message: "Kondisi hewan tidak boleh kosong" }),
@@ -79,83 +80,109 @@ export const RescueFormScreen: FC<NoHeaderNavigationStackScreenProps<'RescueForm
 
     return (
         <SafeAreaProvider className='flex-1'>
-            <View className="mt-5 flex-row items-center justify-center mb-3">
-                <Ionicons name="chevron-back" size={24} color="black" onPress={() => navigation.goBack()} style={{ position: 'absolute', left: 20 }} />
-                <Text className="text-xl">Lapor Penyelamatan</Text>
-            </View>
+            <GestureHandlerRootView style={{ flex: 1 }}>
+                <BottomSheetModalProvider>
 
-            <ScrollView>
-                <Text className='mt-5 mb-5 text-xs text-center text-[#8A8A8A]'>Isilah data Anda dengan baik dan benar</Text>
+                    <BottomSheetModal
+                        ref={bottomSheetModalRef}
+                        index={0}
+                        snapPoints={['20%%']}
+                        backdropComponent={(props) => (
+                            <BottomSheetBackdrop
+                                {...props}
+                                disappearsOnIndex={-1}
+                                appearsOnIndex={0}
+                                pressBehavior="close"
+                            />
+                        )}
+                    >
+                        <BottomSheetView className="flex items-center justify-center">
+                            <View className="flex flex-col items-center">
+                                <TouchableOpacity className="py-4" onPress={() => selectImage(true)}>
+                                    <Text className="text-lg ">Choose Photo</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity className="py-4" onPress={() => selectImage(false)}>
+                                    <Text className="text-lg ">Take Photo</Text>
+                                </TouchableOpacity>
+                            </View>
+                        </BottomSheetView>
+                    </BottomSheetModal>
 
-                {image && (
-                    <View className="items-end mx-5 ">
-                        <TouchableOpacity className="flex-row items-center" onPress={() => removeImage(image)}>
-                            <Ionicons name="trash" size={20} color="black" />
-                            <Text className="text-xs">Hapus Gambar</Text>
+                    <View className="mt-5 flex-row items-center justify-center mb-3">
+                        <Ionicons name="chevron-back" size={24} color="black" onPress={() => navigation.goBack()} style={{ position: 'absolute', left: 20 }} />
+                        <Text className="text-xl">Lapor Penyelamatan</Text>
+                    </View>
+
+                    <ScrollView>
+                        <Text className='mt-5 mb-5 text-xs text-center text-[#8A8A8A]'>Isilah data Anda dengan baik dan benar</Text>
+
+                        {image && (
+                            <View className="items-end mx-5 ">
+                                <TouchableOpacity className="flex-row items-center p-2" onPress={() => removeImage(image)}>
+                                    <Ionicons name="trash" size={20} color="black" />
+                                    <Text className="text-xs">Hapus Gambar</Text>
+                                </TouchableOpacity>
+                            </View>
+                        )}
+                        <View className="items-center mb-5">
+                            <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: 350 }}>
+                                {image == null && (
+                                    <>
+                                        <TouchableOpacity
+                                            style={{ width: 350, height: 200, backgroundColor: '#2E3A59', borderRadius: 10, justifyContent: 'center', alignItems: 'center', marginLeft: 5 }}
+                                            onPress={handleImagePress}
+                                        >
+                                            <Ionicons name="camera" size={40} color="white" />
+                                        </TouchableOpacity>
+                                    </>
+                                )}
+                            </View>
+                            {image && (
+                                <Image source={{ uri: image }} style={{ width: 350, height: 200, borderRadius: 10 }} resizeMode="cover" />
+                            )}
+                        </View>
+
+                        <Text style={styles.textColor}>Kondisi Hewan<Text className='text-[#ff0000]'>*</Text></Text>
+                        <View style={styles.inputBox}>
+                            <Controller
+                                name="condition"
+                                control={control}
+                                render={() => (
+                                    <TextInput
+                                        placeholder="Masukkan kondisi hewan"
+                                        style={{ flex: 1 }}
+                                        onChangeText={(text: string) => setValue('condition', text)}
+                                    />
+                                )}
+                            />
+                        </View>
+                        <Text style={styles.errorMessage}>{errors.condition?.message}</Text>
+
+                        <Text style={styles.textColor}>Alamat<Text className='text-[#ff0000]'>*</Text></Text>
+                        <View style={styles.inputBox}>
+                            <Controller
+                                name="address"
+                                control={control}
+                                render={() => (
+                                    <TextInput
+                                        placeholder="Masukkan Alamat"
+                                        style={{ flex: 1 }}
+                                        onChangeText={(text: string) => setValue('address', text)}
+                                    />
+                                )}
+                            />
+                        </View>
+                        <Text style={styles.errorMessage}>{errors.address?.message}</Text>
+
+                        <TouchableOpacity style={styles.submitButton} onPress={handleSubmit(onSubmit)} className='mb-5'>
+                            <Text className="text-center font-bold text-white">Submit</Text>
                         </TouchableOpacity>
-                    </View>
-                )}
-                <View className="items-center mb-5">
-                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: 350 }}>
-                        {image == null && (
-                            <>
-                                <TouchableOpacity
-                                    style={{ width: 170, height: 200, backgroundColor: '#2E3A59', borderRadius: 10, justifyContent: 'center', alignItems: 'center', marginRight: 5 }}
-                                    onPress={() => selectImage(true)}
-                                >
-                                    <Ionicons name="images" size={40} color="white" />
-                                </TouchableOpacity>
+                    </ScrollView>
 
-                                <TouchableOpacity
-                                    style={{ width: 170, height: 200, backgroundColor: '#2E3A59', borderRadius: 10, justifyContent: 'center', alignItems: 'center', marginLeft: 5 }}
-                                    onPress={() => selectImage(false)}
-                                >
-                                    <Ionicons name="camera" size={40} color="white" />
-                                </TouchableOpacity>
-                            </>
-                        )}
-                    </View>
-                    {image && (
-                        <Image source={{ uri: image }} style={{ width: 350, height: 200, borderRadius: 10 }} resizeMode="cover" />
-                    )}
-                </View>
+                </BottomSheetModalProvider>
 
-                <Text style={styles.textColor}>Kondisi Hewan<Text className='text-[#ff0000]'>*</Text></Text>
-                <View style={styles.inputBox}>
-                    <Controller
-                        name="condition"
-                        control={control}
-                        render={() => (
-                            <TextInput
-                                placeholder="Masukkan kondisi hewan"
-                                style={{ flex: 1 }}
-                                onChangeText={(text: string) => setValue('condition', text)}
-                            />
-                        )}
-                    />
-                </View>
-                <Text style={styles.errorMessage}>{errors.condition?.message}</Text>
+            </GestureHandlerRootView>
 
-                <Text style={styles.textColor}>Alamat<Text className='text-[#ff0000]'>*</Text></Text>
-                <View style={styles.inputBox}>
-                    <Controller
-                        name="address"
-                        control={control}
-                        render={() => (
-                            <TextInput
-                                placeholder="Masukkan Alamat"
-                                style={{ flex: 1 }}
-                                onChangeText={(text: string) => setValue('address', text)}
-                            />
-                        )}
-                    />
-                </View>
-                <Text style={styles.errorMessage}>{errors.address?.message}</Text>
-
-                <TouchableOpacity style={styles.submitButton} onPress={handleSubmit(onSubmit)} className='mb-5'>
-                    <Text className="text-center font-bold text-white">Submit</Text>
-                </TouchableOpacity>
-            </ScrollView>
         </SafeAreaProvider>
     );
 }
