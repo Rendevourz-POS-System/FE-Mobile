@@ -4,7 +4,7 @@ import { Text, View, StyleSheet, Modal, TouchableOpacity, TextInput, ScrollView,
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { CreateShelter } from "../../../CreateShelter";
 import { get } from "../../../../functions/Fetch";
-import { BackendApiUri } from "../../../../functions/BackendApiUri";
+import { BackendApiUri, baseUrl } from "../../../../functions/BackendApiUri";
 import { ShelterUser } from "../../../../interface/IShelter";
 import { PetData } from "../../../../interface/IPetList";
 import { FlashList } from "@shopify/flash-list";
@@ -12,6 +12,7 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import { useFocusEffect } from "@react-navigation/native";
 import { ProfileNavigationStackScreenProps } from "../../../StackParams/StackScreenProps";
+import axios from "axios";
 
 export const ShelterScreen: FC<ProfileNavigationStackScreenProps<'ShelterScreen'>> = ({ navigation }) => {
     const [data, setData] = useState<ShelterUser | null>(null);
@@ -23,9 +24,12 @@ export const ShelterScreen: FC<ProfileNavigationStackScreenProps<'ShelterScreen'
 
     const fetchProfile = async () => {
         try {
-            const res = await get(BackendApiUri.getUserShelter);
+            const res = await axios.get(`${baseUrl + BackendApiUri.getUserShelter}`);
             if (res.data) {
                 setData(res.data)
+            }
+            if(res.data.Error) {
+                setData(null);
             }
         } catch (error) {
             console.log(error)
@@ -43,9 +47,7 @@ export const ShelterScreen: FC<ProfileNavigationStackScreenProps<'ShelterScreen'
                 }
                 setLoading(false)
             }
-
         } catch (e) {
-            throw Error;
         }
     };
 
