@@ -30,7 +30,7 @@ export const Header = () => {
 
     const getAvatarSize = () => {
         const { width } = Dimensions.get('window');
-        return width * 0.18;
+        return width * 0.16;
     };
 
     
@@ -47,7 +47,7 @@ export const Header = () => {
                     size={getAvatarSize()}
                 />
             </TouchableOpacity>
-            <Text style={{ marginLeft: 8, fontSize: 16, fontWeight: '600' }}>
+            <Text style={{ marginLeft: 8, fontSize: 14, fontWeight: '600' }}>
                 Welcome back, {'\n'}{userData?.Username}
             </Text>
         </View>
