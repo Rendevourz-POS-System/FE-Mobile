@@ -283,10 +283,15 @@ export const CreateShelter = () => {
                             keyboardType="numeric"
                             value={inputValue?.toString() ?? ''}
                             onChangeText={(text) => {
-                                const numericValue = parseFloat(text);
-                                if (!isNaN(numericValue)) {
-                                    setInputValue(numericValue);
-                                    setValue("ShelterCapacity", numericValue)
+                                if (text === '') {
+                                    setInputValue(0);
+                                    setValue("ShelterCapacity", 0); // or set to '' if you prefer
+                                } else {
+                                    const numericValue = parseFloat(text);
+                                    if (!isNaN(numericValue)) {
+                                        setInputValue(numericValue);
+                                        setValue("ShelterCapacity", numericValue);
+                                    }
                                 }
                             }}
                         />
