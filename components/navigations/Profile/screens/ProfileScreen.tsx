@@ -1,6 +1,6 @@
 import { FontAwesome, Ionicons, MaterialCommunityIcons, MaterialIcons, Octicons } from "@expo/vector-icons";
 import React, { FC, useCallback, useEffect, useState } from "react";
-import { ScrollView, Text, View, StyleSheet, TouchableOpacity } from "react-native";
+import { ScrollView, Text, View, StyleSheet, TouchableOpacity, ActivityIndicator } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { ProfileRootBottomTabCompositeScreenProps } from "../../CompositeNavigationProps";
 import { useAuth } from "../../../../app/context/AuthContext";
@@ -20,6 +20,7 @@ export const ProfileScreen: FC<ProfileNavigationStackScreenProps<'ProfileScreen'
     const { authState, onLogout } = useAuth();
     const [data, setData] = useState<IProfile | null>(null);
     const [dataShelter, setDataShelter] = useState<ShelterUser | null>(null);
+    const [loadingShelter, setLoaddingShelter] = useState<boolean>();
 
     const fetchProfileShelter = async () => {
         try {
@@ -46,8 +47,13 @@ export const ProfileScreen: FC<ProfileNavigationStackScreenProps<'ProfileScreen'
 
     useFocusEffect(
         useCallback(() => {
-            fetchProfileShelter();
-            fetchProfile();
+            const fetch = async () => {
+                setLoaddingShelter(true);
+                await fetchProfileShelter();
+                await fetchProfile();
+                setLoaddingShelter(false);
+            }
+            fetch();
         }, [navigation, route])
     );
     
@@ -85,14 +91,20 @@ export const ProfileScreen: FC<ProfileNavigationStackScreenProps<'ProfileScreen'
                             <MaterialIcons name="navigate-next" size={25} color="black" />
                         </View>
                     </TouchableOpacity>
-                    <TouchableOpacity style={styles.rowContainer} onPress={() => navigation.navigate("ShelterScreen")}>
+                    <TouchableOpacity style={styles.rowContainer} onPress={() => navigation.navigate("ShelterScreen")} disabled={loadingShelter}>
                         <View style={styles.iconContainer}>
-                            {dataShelter ? <Octicons name="arrow-switch" size={25} color="white" /> : <MaterialIcons name="create" size={25} color="white" />}
+                            {loadingShelter ? <ActivityIndicator size="small" color="white" /> :
+                                dataShelter ? <Octicons name="arrow-switch" size={25} color="white" /> : 
+                                <MaterialIcons name="create" size={25} color="white" 
+                            /> }
                         </View>
-                        <Text style={styles.text}>{dataShelter!= null ? "Switch to Shelter" : "Create Shelter"}</Text>
-                        <View style={styles.nextIconContainer}>
-                            <MaterialIcons name="navigate-next" size={25} color="black" />
-                        </View>
+                        <Text style={loadingShelter ? {color: 'gray', fontSize: 18, left: 20, marginRight: 'auto', fontWeight: '600'} : 
+                            {fontSize: 18,left: 20,marginRight: 'auto',fontWeight: '600'}}
+                        >
+                            {dataShelter!= null ? "Switch to Shelter" : "Create Shelter"}</Text>
+                            <View style={styles.nextIconContainer}>
+                                <MaterialIcons name="navigate-next" size={25} color="black" />
+                            </View>
                     </TouchableOpacity>
                 </View>
 
