@@ -37,26 +37,10 @@ const TopNavigation : FC = () => {
     );
 
     return (
-        <View className='mt-11 mx-3'>
-            <View className='flex-row justify-between items-center '>
-                <TouchableOpacity
-                    onPress={() => navigation.navigate("HomeScreen", {screen: "Profile"})}
-                >
-                    <Avatar
-                        rounded
-                        source={data?.ImageBase64 ? { uri : `data:image/*;base64,${data.ImageBase64}` } : require('../assets/Default_Acc.jpg')}
-                        size="medium"
-                    />
-                    <Badge
-                        status="success"
-                        containerStyle={{ position: 'absolute', top: -4, right: -4 }}
-                    />
-                </TouchableOpacity>
-                <Text className='text-sm font-bold mr-auto ml-3'>Welcome back, {'\n'}{data?.Username}</Text>
-                <TouchableOpacity>
-                    <MaterialCommunityIcons name="logout" size={25} color="black" style={{marginEnd : 10}} onPress={onLogout}/>
-                </TouchableOpacity>
-            </View>
+        <View className='mt-5 mx-3'>
+            <TouchableOpacity className="items-end py-2">
+                <MaterialCommunityIcons name="logout" size={25} color="black" style={{marginEnd : 10}} onPress={onLogout}/>
+            </TouchableOpacity>
         </View>
     );
 }
