@@ -1,4 +1,4 @@
-import { FontAwesome, FontAwesome6, Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
+
 import React, { FC, useCallback, useEffect, useState } from "react";
 import { Text, View, StyleSheet, Modal, TouchableOpacity, TextInput, ScrollView, Image, TouchableHighlight, Alert, ActivityIndicator } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
@@ -13,6 +13,7 @@ import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import { useFocusEffect } from "@react-navigation/native";
 import { ProfileNavigationStackScreenProps } from "../../../StackParams/StackScreenProps";
 import axios from "axios";
+import { FontAwesome6, Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 
 export const ShelterScreen: FC<ProfileNavigationStackScreenProps<'ShelterScreen'>> = ({ navigation, route }) => {
     const [data, setData] = useState<ShelterUser | null>(null);
@@ -165,10 +166,13 @@ export const ShelterScreen: FC<ProfileNavigationStackScreenProps<'ShelterScreen'
                                                                                     <FontAwesome6 name='mars' size={20} color='#4689FD' />
                                                                                 )}
                                                                             </View>
-                                                                            <View className="flex-row">
+                                                                            <View className="flex-row justify-between">
                                                                                 <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10 }}>
                                                                                     <FontAwesome6 name='location-dot' size={20} color='#4689FD' />
-                                                                                    <Text style={{ fontSize: 14, fontWeight: 'normal', marginLeft: 5 }}>Jakarta Barat</Text>
+                                                                                    <Text style={{ fontSize: 14, fontWeight: 'normal', marginLeft: 5 }}>{pet.ShelterLocation}</Text>
+                                                                                </View>
+                                                                                <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10 }}>
+                                                                                    <FontAwesome6 name={pet.PetType.toLowerCase()} size={20} color='#8A8A8A' style={{ marginLeft: 20 }} />
                                                                                 </View>
                                                                             </View>
                                                                         </View>
