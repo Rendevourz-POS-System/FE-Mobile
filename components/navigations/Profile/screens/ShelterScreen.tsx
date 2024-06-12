@@ -47,7 +47,6 @@ export const ShelterScreen: FC<ProfileNavigationStackScreenProps<'ShelterScreen'
                 if (responsePet && responsePet.status === 200) {
                     setPetData(responsePet.data);
                 }
-                console.log(petData.length)
                 setLoading(false)
             }
         } catch (e) {
