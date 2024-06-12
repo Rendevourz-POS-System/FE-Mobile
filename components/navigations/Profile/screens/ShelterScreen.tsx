@@ -14,7 +14,7 @@ import { useFocusEffect } from "@react-navigation/native";
 import { ProfileNavigationStackScreenProps } from "../../../StackParams/StackScreenProps";
 import axios from "axios";
 
-export const ShelterScreen: FC<ProfileNavigationStackScreenProps<'ShelterScreen'>> = ({ navigation }) => {
+export const ShelterScreen: FC<ProfileNavigationStackScreenProps<'ShelterScreen'>> = ({ navigation, route }) => {
     const [data, setData] = useState<ShelterUser | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [inputValue, setInputValue] = useState('');
@@ -62,8 +62,14 @@ export const ShelterScreen: FC<ProfileNavigationStackScreenProps<'ShelterScreen'
                 setFetchLoading(false);
             };
             fetchData();
-        }, [navigation])
+        }, [navigation, route])
     );
+
+    useEffect(() => {
+        if (data) {
+            fetchPetData();
+        }
+    }, [data]);
 
     const handleInputChange = (text: string) => {
         setInputValue(text);
@@ -73,8 +79,7 @@ export const ShelterScreen: FC<ProfileNavigationStackScreenProps<'ShelterScreen'
         if (inputValue == data?.Data.Pin) {
             setIsModalOpen(false);
             setInputValue("");
-            Alert.alert("Success", "Pin correct. Navigating to ManageShelterScreen.",
-                [{ text: "OK", onPress: () => navigation.navigate("ManageShelterScreen") }]);
+            navigation.navigate("ManageShelterScreen")
         } else {
             setErrorMessage("Pin Salah");
             setInputValue("");
@@ -88,7 +93,7 @@ export const ShelterScreen: FC<ProfileNavigationStackScreenProps<'ShelterScreen'
 
     return (
         <SafeAreaProvider style={styles.container}>
-            <SafeAreaView className="flex-1">
+            <SafeAreaView className="flex-1 bg-gray-100">
                 <GestureHandlerRootView>
                     <BottomSheetModalProvider>
                         {fetchLoading ? (
@@ -113,7 +118,7 @@ export const ShelterScreen: FC<ProfileNavigationStackScreenProps<'ShelterScreen'
                                             <Ionicons name="chevron-back" size={24} color="black" onPress={() => navigation.goBack()} style={{ position: 'absolute', left: 20 }} />
                                             <Text className="text-xl">Shelter Dashboard</Text>
                                         </View>
-                                        <ScrollView className="mt-5">
+                                        <ScrollView className="my-5">
                                             <View className="mt-5 flex-row justify-around">
                                                 <TouchableOpacity style={[styles.button]} onPress={() => setIsModalOpen(true)}>
                                                     <View style={styles.iconContainer}>
@@ -149,24 +154,6 @@ export const ShelterScreen: FC<ProfileNavigationStackScreenProps<'ShelterScreen'
                                                                         source={{ uri: `data:image/*;base64,${pet.ImageBase64}` }}
                                                                         className="w-full h-80 rounded-3xl"
                                                                     />
-                                                                    <TouchableHighlight
-                                                                        style={{
-                                                                            position: 'absolute',
-                                                                            top: 7,
-                                                                            right: 7,
-                                                                            backgroundColor: 'rgba(255, 255, 255, 0.65)',
-                                                                            padding: 8,
-                                                                            borderRadius: 999
-                                                                        }}
-                                                                        underlayColor="transparent"
-                                                                        onPress={() => {
-                                                                            // Add your onPress logic here
-                                                                        }}
-                                                                    >
-                                                                        <View className="rounded-full">
-                                                                            <FontAwesome name='heart' size={20} color="#FF0000" />
-                                                                        </View>
-                                                                    </TouchableHighlight>
 
                                                                     <View style={{ position: 'absolute', top: 230, left: 0, right: 0, bottom: 0 }}>
                                                                         <View style={{ marginTop: 5, backgroundColor: "#FFFDFF", paddingHorizontal: 20, paddingVertical: 15, borderRadius: 15 }}>
@@ -204,6 +191,7 @@ export const ShelterScreen: FC<ProfileNavigationStackScreenProps<'ShelterScreen'
                                                                 value={inputValue}
                                                                 onChangeText={handleInputChange}
                                                                 placeholder="Masukkan Pin"
+                                                                keyboardType="numeric"
                                                             />
                                                         </View>
                                                         {errorMessage != "" && <Text className="text-[#FF0000]">{errorMessage}</Text>}
