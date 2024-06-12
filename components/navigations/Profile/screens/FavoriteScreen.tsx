@@ -58,7 +58,6 @@ export const FavoriteScreen: FC<ProfileNavigationStackScreenProps<'FavoriteScree
         fetchPetData();
         fetchPetType();
     }, []);
-    console.log(shelterData)
 
     return (
         <SafeAreaProvider className='flex-1'>
