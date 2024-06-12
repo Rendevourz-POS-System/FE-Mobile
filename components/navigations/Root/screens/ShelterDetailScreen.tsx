@@ -190,15 +190,15 @@ export const ShelterDetailScreen: FC<NoHeaderNavigationStackScreenProps<'Shelter
                                 </View>
                                 <View className="flex-1 border-2 border-gray-300 px-4 py-[4] mx-1 text-center rounded-xl items-center justify-center" style={{ height: 75 }}>
                                     <Text className="text-gray-500 text-center">Menerima Hewan</Text>
-                                    <View className="flex flex-row justify-center items-center mt-1">
+                                    <View className="flex flex-row justify-center items-center">
                                         {data.Data.PetTypeAccepted.map((item) => {
                                             const matchingPet = petTypes.find((pet) => pet.Id === item);
                                             if (matchingPet) {
                                                 const iconName = getIconName(matchingPet.Type);
                                                 if (iconName === 'rabbit') {
-                                                    return <MaterialCommunityIcons key={matchingPet.Id} name={iconName} size={29} color='#8A8A8A' style={{ marginEnd: 5 }} />;
+                                                    return <MaterialCommunityIcons key={matchingPet.Id} name={iconName} size={29} color='#8A8A8A' style={{ }} />;
                                                 }
-                                                return <FontAwesome6 key={matchingPet.Id} name={iconName} size={24} color='#8A8A8A' style={{ marginEnd: 5 }} />;
+                                                return <FontAwesome6 key={matchingPet.Id} name={iconName} size={24} color='#8A8A8A' style={{ }} />;
                                             }
                                             return null;
                                         })}
