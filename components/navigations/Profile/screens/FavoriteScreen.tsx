@@ -72,106 +72,107 @@ export const FavoriteScreen: FC<ProfileNavigationStackScreenProps<'FavoriteScree
                     </View>
                 ) : (
                     <>
-                        {shelterData && shelterData.length > 0 || petDatas && petDatas.length > 0 ? (
-                            <>
-                                <FlashList
-                                    estimatedItemSize={50}
-                                    data={shelterData || []}
-                                    renderItem={({ item: shelter }) => (
-                                        <TouchableOpacity
-                                            style={{ overflow: 'hidden' }}
-                                            onPress={() => navigation.navigate("ShelterDetailScreen", { shelterId: shelter.Id })}
-                                            activeOpacity={1}>
-                                            {shelter.ImageBase64 === null ? (
-                                                <Image source={require('../../../../assets/animal-shelter.png')}
-                                                    resizeMode='stretch'
-                                                    style={{ width: '100%', height: 290, marginBottom: 15, marginTop: 5, borderTopLeftRadius: 20, borderTopRightRadius: 20 }}
-                                                />
-                                            ) : (
-                                                <Image source={{ uri: `data:image/*;base64,${shelter.ImageBase64}` }}
-                                                    resizeMode='contain'
-                                                    style={{ width: '100%', height: 290, marginBottom: 15, marginTop: 5, borderTopLeftRadius: 20, borderTopRightRadius: 20 }}
-                                                />
-                                            )}
-                                            <View style={{ position: 'absolute', top: 170, left: 0, right: 0, bottom: 0 }}>
-                                                <View style={{ marginTop: 10, backgroundColor: "#FFFDFF", paddingHorizontal: 20, paddingVertical: 15, borderTopLeftRadius: 15, borderTopRightRadius: 15 }}>
-                                                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-                                                        <Text style={{ fontSize: 20, fontWeight: 'bold' }}>{shelter.ShelterName}</Text>
-                                                        <FontAwesome name='heart' size={24} color="#FF0000" />
-                                                    </View>
-                                                    <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10 }}>
-                                                        <FontAwesome6 name='location-dot' size={20} color='#4689FD' />
-                                                        <Text style={{ fontSize: 14, fontWeight: 'normal', marginLeft: 5 }}>{shelter.ShelterLocationName}</Text>
-                                                    </View>
-                                                    <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10 }}>
-                                                        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', flex: 1 }}>
-                                                            {shelter.PetTypeAccepted.map((itemId) => {
-                                                                const matchingPet = petTypes.find((pet) => pet.Id === itemId.toString());
-                                                                if (matchingPet) {
-                                                                    const iconName = getIconName(matchingPet.Type);
-                                                                    if (iconName === 'rabbit') {
-                                                                        return <MaterialCommunityIcons key={matchingPet.Id} name={iconName} size={29} color='#8A8A8A' style={{ marginEnd: 5 }} />;
-                                                                    }
-                                                                    return <FontAwesome6 key={matchingPet.Id} name={iconName} size={24} color='#8A8A8A' style={{ marginEnd: 5 }} />;
+                        {shelterData && shelterData.length > 0 && (
+                            <FlashList
+                                estimatedItemSize={50}
+                                data={shelterData || []}
+                                renderItem={({ item: shelter }) => (
+                                    <TouchableOpacity
+                                        style={{ overflow: 'hidden' }}
+                                        onPress={() => navigation.navigate("ShelterDetailScreen", { shelterId: shelter.Id })}
+                                        activeOpacity={1}>
+                                        {shelter.ImageBase64 === null ? (
+                                            <Image source={require('../../../../assets/animal-shelter.png')}
+                                                resizeMode='stretch'
+                                                style={{ width: '100%', height: 290, marginBottom: 15, marginTop: 5, borderTopLeftRadius: 20, borderTopRightRadius: 20 }}
+                                            />
+                                        ) : (
+                                            <Image source={{ uri: `data:image/*;base64,${shelter.ImageBase64}` }}
+                                                resizeMode='contain'
+                                                style={{ width: '100%', height: 290, marginBottom: 15, marginTop: 5, borderTopLeftRadius: 20, borderTopRightRadius: 20 }}
+                                            />
+                                        )}
+                                        <View style={{ position: 'absolute', top: 170, left: 0, right: 0, bottom: 0 }}>
+                                            <View style={{ marginTop: 10, backgroundColor: "#FFFDFF", paddingHorizontal: 20, paddingVertical: 15, marginVertical: 10, borderRadius: 15 }}>
+                                                <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                                                    <Text style={{ fontSize: 20, fontWeight: 'bold' }}>{shelter.ShelterName}</Text>
+                                                    <FontAwesome name='heart' size={24} color="#FF0000" />
+                                                </View>
+                                                <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10 }}>
+                                                    <FontAwesome6 name='location-dot' size={20} color='#4689FD' />
+                                                    <Text style={{ fontSize: 14, fontWeight: 'normal', marginLeft: 5 }}>{shelter.ShelterLocationName}</Text>
+                                                </View>
+                                                <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10 }}>
+                                                    <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', flex: 1 }}>
+                                                        {shelter.PetTypeAccepted.map((itemId) => {
+                                                            const matchingPet = petTypes.find((pet) => pet.Id === itemId.toString());
+                                                            if (matchingPet) {
+                                                                const iconName = getIconName(matchingPet.Type);
+                                                                if (iconName === 'rabbit') {
+                                                                    return <MaterialCommunityIcons key={matchingPet.Id} name={iconName} size={29} color='#8A8A8A' style={{ marginEnd: 5 }} />;
                                                                 }
-                                                                return null;
-                                                            })}
+                                                                return <FontAwesome6 key={matchingPet.Id} name={iconName} size={24} color='#8A8A8A' style={{ marginEnd: 5 }} />;
+                                                            }
+                                                            return null;
+                                                        })}
+                                                    </View>
+                                                </View>
+                                            </View>
+                                        </View>
+                                    </TouchableOpacity>
+                                )}
+                            />
+                        )}
+                        {petDatas && petDatas.length > 0 && (
+                            <FlashList
+                                estimatedItemSize={50}
+                                data={petDatas || []}
+                                numColumns={1}
+                                keyExtractor={item => item.Id.toString()}
+                                renderItem={({ item: pet }) => (
+                                    <View style={{ flex: 1, marginBottom: 35 }}>
+                                        <TouchableOpacity className="mx-2 justify-center"
+                                            activeOpacity={1}
+                                            onPress={() => navigation.navigate("PetDetailScreen", { petId: pet.Id })}
+                                        >
+                                            <Image
+                                                source={pet.ImageBase64 == null ? require("../../../../assets/default_paw2.jpg") : { uri: `data:image/*;base64,${pet.ImageBase64}` }}
+                                                className="w-full h-80 rounded-3xl"
+                                                resizeMode="cover"
+                                            />
+                                            <View style={{ position: 'absolute', top: 7, right: 7, backgroundColor: 'rgba(255, 255, 255, 0.65)', padding: 8, borderRadius: 999 }}>
+                                                <FontAwesome name='heart' size={19} style={{ color: '#FF0000' }} />
+                                            </View>
+                                            <View style={{ position: 'absolute', top: 235, left: 0, right: 0, bottom: 0 }}>
+                                                <View style={{ marginTop: 5, backgroundColor: "#FFFDFF", paddingHorizontal: 20, paddingVertical: 15, borderRadius: 15 }}>
+                                                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                                                        <Text style={{ fontSize: 20, fontWeight: 'bold' }}>{pet.PetName}</Text>
+                                                        {pet.PetGender === "Male" ? (
+                                                            <FontAwesome6 name='mars' size={22} color='#4689FD' />
+                                                        ) : (
+                                                            <FontAwesome6 name='venus' size={22} color='#FF6EC7' />
+                                                        )}
+                                                    </View>
+                                                    <View className="flex-row">
+                                                        <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10 }}>
+                                                            <FontAwesome6 name='location-dot' size={20} color='#4689FD' />
+                                                            <Text style={{ fontSize: 14, fontWeight: 'normal', marginLeft: 5 }}>{pet.ShelterLocation}</Text>
                                                         </View>
                                                     </View>
                                                 </View>
                                             </View>
                                         </TouchableOpacity>
-                                    )}
-                                />
-
-                                <FlashList
-                                    estimatedItemSize={50}
-                                    data={petDatas || []}
-                                    numColumns={1}
-                                    keyExtractor={item => item.Id.toString()}
-                                    renderItem={({ item: pet }) => (
-                                        <View style={{ flex: 1, marginBottom: 35 }}>
-                                            <TouchableOpacity className="mx-2 justify-center"
-                                                activeOpacity={1}
-                                                onPress={() => navigation.navigate("PetDetailScreen", { petId: pet.Id })}
-                                            >
-                                                <Image
-                                                    source={pet.ImageBase64 == null ? require("../../../../assets/default_paw2.jpg") : { uri: `data:image/*;base64,${pet.ImageBase64}` }}
-                                                    className="w-full h-80 rounded-3xl"
-                                                    resizeMode="cover"
-                                                />
-                                                <View style={{ position: 'absolute', top: 7, right: 7, backgroundColor: 'rgba(255, 255, 255, 0.65)', padding: 8, borderRadius: 999 }}>
-                                                    <FontAwesome name='heart' size={19} style={{ color: '#FF0000' }} />
-                                                </View>
-                                                <View style={{ position: 'absolute', top: 235, left: 0, right: 0, bottom: 0 }}>
-                                                    <View style={{ marginTop: 5, backgroundColor: "#FFFDFF", paddingHorizontal: 20, paddingVertical: 15, borderRadius: 15 }}>
-                                                        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-                                                            <Text style={{ fontSize: 20, fontWeight: 'bold' }}>{pet.PetName}</Text>
-                                                            {pet.PetGender === "Male" ? (
-                                                                <FontAwesome6 name='mars' size={22} color='#4689FD' />
-                                                            ) : (
-                                                                <FontAwesome6 name='venus' size={22} color='#FF6EC7' />
-                                                            )}
-                                                        </View>
-                                                        <View className="flex-row">
-                                                            <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10 }}>
-                                                                <FontAwesome6 name='location-dot' size={20} color='#4689FD' />
-                                                                <Text style={{ fontSize: 14, fontWeight: 'normal', marginLeft: 5 }}>{pet.ShelterLocation}</Text>
-                                                            </View>
-                                                        </View>
-                                                    </View>
-                                                </View>
-                                            </TouchableOpacity>
-                                        </View>
-                                    )}
-                                />
-                            </>
-                        ) : (
-                            <View className='flex flex-1 justify-center items-center'>
-                                <Text className='text-center'>Sorry, data not found</Text>
-                            </View>
+                                    </View>
+                                )}
+                            />
                         )}
                     </>
+                )} 
+
+                {shelterData.length === 0 && petDatas.length === 0 && (
+                    <View className='flex flex-1 justify-center items-center'>
+                        <Text className='text-center'>Sorry, data not found</Text>
+                    </View>
                 )}
             </ScrollView>
         </SafeAreaProvider>

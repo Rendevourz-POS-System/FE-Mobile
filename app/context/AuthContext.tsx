@@ -4,7 +4,7 @@ import * as SecureStore from "expo-secure-store";
 import { BackendApiUri } from "../../functions/BackendApiUri";
 
 interface AuthProps {
-    authState?: {token: string | null; authenticated: boolean | null; username: string | null};
+    authState?: {token: string | null; authenticated: boolean | null; username: string | null; role: string | null};
     onRegister?: (email: string, password: string) => Promise<any>;
     onLogin?: (email: string, password: string) => Promise<any>;
     onLogout?: () => Promise<any>;
@@ -23,11 +23,13 @@ export const AuthProvider = ({children} : any) => {
         authenticated: boolean | null;
         userId: string | null;
         username: string | null;
+        role: string | null;
     }>({
         token: null,
         authenticated: null,
         userId: null,
-        username: null
+        username: null,
+        role : null
     });
 
     useEffect(() => {
@@ -46,7 +48,8 @@ export const AuthProvider = ({children} : any) => {
                             token,
                             authenticated: true,
                             userId: result.data.Id,
-                            username: result.data.Username
+                            username: result.data.Username,
+                            role: result.data.Role
                         });
                     }
                 }
@@ -57,7 +60,8 @@ export const AuthProvider = ({children} : any) => {
                     token: null,
                     authenticated: false,
                     userId: null,
-                    username: null
+                    username: null,
+                    role: null
                 });
             }
         };
@@ -76,12 +80,14 @@ export const AuthProvider = ({children} : any) => {
     const login = async (email: string, password: string) => {
         try{
             const result = await axios.post(`${BackendApiUri.loginUser}`, {email, password});
+            // console.log(result.data.Data)
             if(result.data.Data) {
                 setAuthState({
                     token: null,
                     authenticated: false,
                     userId : null,
                     username: null,
+                    role: null
                 });
                 return result;
             }
@@ -90,7 +96,8 @@ export const AuthProvider = ({children} : any) => {
                 token: result.data['Token'],
                 authenticated: true,
                 userId : result.data['Id'],
-                username: result.data['Username']
+                username: result.data['Username'],
+                role: result.data['Role']
             });
 
             axios.defaults.headers.common["Authorization"] = `Bearer ${result.data['Token']}`;
@@ -99,6 +106,7 @@ export const AuthProvider = ({children} : any) => {
             return result;
 
         } catch(e){
+            console.log("Asdasda")
             return {error: true, msg : (e as any).response.data.msg};
         }
     };
@@ -112,7 +120,8 @@ export const AuthProvider = ({children} : any) => {
             token: null,
             authenticated: false,
             userId: null,
-            username: null
+            username: null,
+            role: null
         });
     };
 

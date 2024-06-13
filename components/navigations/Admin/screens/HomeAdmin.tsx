@@ -37,6 +37,17 @@ export const HomeAdmin: FC<AdminNavigationStackScreenProps<'HomeAdmin'>> = ({ na
         fetchPet();
     }, [])
 
+    const refreshData = async () => {
+        setIsLoading(true);
+        try {
+            await fetchUser();
+            await fetchShelter();
+            await fetchPet();
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
     const fetchUser = async () => {
         try {
             const response = await get(`${BackendApiUri.getUser}`);
@@ -97,6 +108,7 @@ export const HomeAdmin: FC<AdminNavigationStackScreenProps<'HomeAdmin'>> = ({ na
                         const response = await deletes(`${BackendApiUri.deleteAdminUser}/${id}`);
                         if (response && response.status === 200) {
                             Alert.alert(`Anda berhasil menghapus ${name}`)
+                            refreshData();
                         }
                     } catch (e) {
                         Alert.alert(`Anda gagal menghapus ${name}`)
@@ -122,6 +134,7 @@ export const HomeAdmin: FC<AdminNavigationStackScreenProps<'HomeAdmin'>> = ({ na
                         const response = await deletes(`${BackendApiUri.deleteAdminShelter}/${id}`);
                         if (response && response.status === 200) {
                             Alert.alert(`Anda berhasil menghapus ${name}`)
+                            refreshData();
                         }
                     } catch (e) {
                         Alert.alert(`Anda gagal menghapus ${name}`)
@@ -147,6 +160,7 @@ export const HomeAdmin: FC<AdminNavigationStackScreenProps<'HomeAdmin'>> = ({ na
                         const response = await deletes(`${BackendApiUri.deleteAdminPet}/${id}`);
                         if (response && response.status === 200) {
                             Alert.alert(`Anda berhasil menghapus ${name}`)
+                            refreshData();
                         }
                     } catch (e) {
                         Alert.alert(`Anda gagal menghapus ${name}`)

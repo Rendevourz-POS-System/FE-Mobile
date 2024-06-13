@@ -185,7 +185,7 @@ export const ManageScreen: FC<ProfileNavigationStackScreenProps<'ManageScreen'>>
                             <View style={styles.rowContainer} className="justify-around">
                             <BottomSheetModal
                                 ref={bottomSheetModalRef}
-                                index={0}
+                                index={0}   
                                 snapPoints={['20%']}
                                 backdropComponent={(props) => (
                                     <BottomSheetBackdrop

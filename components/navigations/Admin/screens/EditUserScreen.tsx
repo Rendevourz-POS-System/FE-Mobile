@@ -66,7 +66,7 @@ export const EditUserScreen: FC<AdminNavigationStackScreenProps<'EditUserScreen'
 
     return (
         <SafeAreaProvider className='flex-1'>
-            <View className="mt-14 flex-row items-center justify-center mb-3">
+            <View className="mt-5 flex-row items-center justify-center mb-3">
                 <Ionicons name="chevron-back" size={24} color="black" onPress={() => navigation.goBack()} style={{ position: 'absolute', left: 20 }} />
                 <Text className="text-xl">Edit User</Text>
             </View>
@@ -237,7 +237,7 @@ export const EditUserScreen: FC<AdminNavigationStackScreenProps<'EditUserScreen'
                 <Text style={styles.errorMessage}>{errors.PostalCode?.message}</Text>
 
                 <TouchableOpacity style={styles.button} onPress={handleSubmit(onSubmit)}>
-                    <Text className="text-center font-bold text-white">Save</Text>
+                    <Text className="text-center font-bold text-white">Update</Text>
                 </TouchableOpacity>
             </ScrollView>
         </SafeAreaProvider>

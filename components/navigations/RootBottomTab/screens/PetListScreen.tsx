@@ -11,10 +11,11 @@ import { useDebounce } from "use-debounce";
 import { BackendApiUri } from "../../../../functions/BackendApiUri";
 import { get, post } from "../../../../functions/Fetch";
 import { Location } from "../../../../interface/ILocation";
-import { dataJenisHewan, dataProvinsi } from "../../../../constans/data";
+import { dataJenisHewan } from "../../../../constans/data";
 import { ProfileProps } from "../../../../interface/TProfileProps";
 import { NoHeaderProps } from "../../../../interface/TNoHeaderProps";
 import { PetFav } from "../../../../interface/IPetFav";
+import { myProvince } from "../../../../functions/getLocation";
 
 type PetImageMap = {
     [key: string]: any; // This allows indexing with strings
@@ -22,7 +23,10 @@ type PetImageMap = {
 
 export const PetListScreen : FC<NoHeaderProps> = ({navigation, route} : any) => {
     const favAttempt = route.params;
-    const [filterLocation, setFilterLocation] = useState<string>();
+    const [filterLocation, setFilterLocation] = useState<Location>({
+        label: "",
+        value: ""
+    });
     const [petData, setPetData] = useState<PetData[]>([]);
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [search, setSearch] = useState<string>('');
@@ -36,11 +40,7 @@ export const PetListScreen : FC<NoHeaderProps> = ({navigation, route} : any) => 
     const [shelterName, setShelterName] = useState<string>("");
     const [petFav, setPetFav] = useState<PetData[]>([]);
     const [mergedData, setMergedData] = useState<PetFav[]>([]);
-
-    const [page, setPage] = useState<number>(1);
-    const pageSize = 10;
-    const orderBy = "ascending";
-    const sort = "";
+    const [provinceData, setProvinceData] = useState<Location[]>([]);
 
     const onRefresh = () => {
         try { 
@@ -81,7 +81,7 @@ export const PetListScreen : FC<NoHeaderProps> = ({navigation, route} : any) => 
 
     const fetchPet = async () => {
         try{
-            const responsePet = await get(`${BackendApiUri.getPetList}/?search=${search}&page=1&page_size=200&order_by=${orderBy}&sort=${sort}&locatio=${filterLocation}&shelter_name=${shelterName}`)
+            const responsePet = await get(`${BackendApiUri.getPetList}/?search=${search}&location=${filterLocation.label}&shelter_name=${shelterName}`)
             if(responsePet && responsePet.status === 200) {
                 setPetData(responsePet.data);
             }
@@ -102,6 +102,10 @@ export const PetListScreen : FC<NoHeaderProps> = ({navigation, route} : any) => 
     }, [selectedItems]);
 
     useEffect(() => {
+        getMyProvince();
+    },[])
+
+    useEffect(() => {
         fetchData();
         setRefreshing(false);
     }, [petFav, petData]);
@@ -109,8 +113,25 @@ export const PetListScreen : FC<NoHeaderProps> = ({navigation, route} : any) => 
     useEffect(() => {
         fetchPet();
         fetchPetFav();
-
+        setApplyPressed(false);
     }, [debounceValue, refreshing, favAttempt, applyPressed]);
+
+    const getMyProvince = async () => {
+        try {
+            const res = await myProvince();
+            if (res?.data && res.status === 200) {
+                // Transform data to match Location interface
+                const transformedData: Location[] = res.data.map((item: { Id: string; LocationName: string }) => ({
+                    label: item.LocationName,
+                    value: item.Id
+                }));                
+                // Set provinceData state with transformed data
+                setProvinceData(transformedData);
+            }
+        } catch (e) {
+            console.error(e);
+        }
+    };
 
     const petImages : PetImageMap = {
         Dog: require('../../../../assets/icon_Dog.jpg'),
@@ -121,7 +142,7 @@ export const PetListScreen : FC<NoHeaderProps> = ({navigation, route} : any) => 
     const renderItem = (item : Location) => {
         return (
             <View className="p-4 flex-row justify-between items-center">
-                <Text className="flex-1 text-base">{item.value}</Text>
+                <Text className="flex-1 text-base">{item.label}</Text>
             </View>
         );
     };
@@ -244,7 +265,12 @@ export const PetListScreen : FC<NoHeaderProps> = ({navigation, route} : any) => 
                                             />
                                         </View>
                                         <View className="mx-2">
-                                            <Text className='text-xl font-bold mt-3'>Location</Text>
+                                            <View className="flex flex-row items-center justify-between my-2">
+                                                <Text className='text-xl font-bold my-2'>Location</Text>
+                                                <TouchableOpacity className='px-2 rounded-2xl my-2' onPress={() => setFilterLocation({label: "", value: ""})}>
+                                                    <Text className='text-[#4689FD] text-lg font-bold'>Reset</Text>
+                                                </TouchableOpacity>
+                                            </View>
                                             <Dropdown
                                                 style={{borderWidth: 1, paddingHorizontal: 8, paddingVertical: 5, borderRadius: 10}}
                                                 containerStyle={{borderWidth: 10}}
@@ -252,16 +278,16 @@ export const PetListScreen : FC<NoHeaderProps> = ({navigation, route} : any) => 
                                                 selectedTextStyle={styles.selectedTextStyle}
                                                 inputSearchStyle={styles.inputSearchStyle}
                                                 iconStyle={styles.iconStyle}
-                                                data={dataProvinsi.data.map(item => ({ label: item.key, value: item.value }))}
+                                                data={provinceData.map(item => ({ label: item.label, value: item.value }))}
                                                 search
                                                 maxHeight={300}
-                                                labelField="value"
+                                                labelField="label"
                                                 valueField="value"
                                                 placeholder="Select item"
                                                 searchPlaceholder="Search..."
-                                                value={filterLocation}
+                                                value={filterLocation?.value}
                                                 onChange={item => {
-                                                    setFilterLocation(item.value);
+                                                    setFilterLocation(item);
                                                 }}
                                                 renderItem={renderItem}
                                             />

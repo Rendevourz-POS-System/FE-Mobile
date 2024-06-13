@@ -4,7 +4,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { Text } from 'react-native-elements';
 import { FontAwesome, FontAwesome5, FontAwesome6, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { PetData } from '../../../../interface/IPetList';
-import { get } from '../../../../functions/Fetch';
+import { get, post } from '../../../../functions/Fetch';
 import { BackendApiUri } from '../../../../functions/BackendApiUri';
 import { FlashList } from '@shopify/flash-list';
 import { NoHeaderNavigationStackScreenProps } from '../../../StackParams/StackScreenProps';
@@ -26,10 +26,18 @@ export const HewanAdopsiScreen: FC<NoHeaderNavigationStackScreenProps<'HewanAdop
 
     useEffect(() => {
         fetchPetData();
-    }, [route.params.shelterId])
+    }, [route.params.shelterId, isFavorite])
 
-    const handlePressFavorite = () => {
-        setIsFavorite(!isFavorite);
+    const handlePressFavorite = async (petId : string) => {
+        try{
+            const body ={"PetId" : petId}   
+            const res = await post(`${BackendApiUri.postPetFav}`, body);
+            if(res.status === 200) {
+                setIsFavorite(!isFavorite);
+            }
+        } catch(e) {
+            console.error(e)
+        }
     };
 
     return (
@@ -51,7 +59,7 @@ export const HewanAdopsiScreen: FC<NoHeaderNavigationStackScreenProps<'HewanAdop
                             <View style={{ flex: 1, marginBottom: 35, marginTop: 20 }}>
                                 <TouchableOpacity className="mx-2 justify-center" activeOpacity={1} onPress={() => navigation.navigate("PetDetailScreen", {petId : pet.Id})}>
                                 <Image
-                                    source={{ uri: `data:image/*;base64,${pet.ImageBase64}` }}
+                                    source={pet.ImageBase64 ? { uri: `data:image/*;base64,${pet.ImageBase64}` } : require('../../../../assets/default_paw2.jpg')}
                                     className="w-full h-80 rounded-3xl"
                                     />
                                     <TouchableHighlight
@@ -64,9 +72,10 @@ export const HewanAdopsiScreen: FC<NoHeaderNavigationStackScreenProps<'HewanAdop
                                             borderRadius: 999
                                         }}
                                         underlayColor="transparent"
+                                        onPress={() => handlePressFavorite(pet.Id)}
                                     >
                                         <View className="rounded-full">
-                                            <FontAwesome name='heart' size={20} color="#FF0000" />
+                                        <FontAwesome name={isFavorite ? 'heart' : 'heart-o'} size={20} style={{ color: isFavorite ? '#FF0000' : '#4689FD' }}  />
                                         </View>
                                     </TouchableHighlight>
 
@@ -74,10 +83,10 @@ export const HewanAdopsiScreen: FC<NoHeaderNavigationStackScreenProps<'HewanAdop
                                         <View style={{ marginTop: 5, backgroundColor: "#FFFDFF", paddingHorizontal: 20, paddingVertical: 15, borderRadius: 15 }}>
                                             <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
                                                 <Text style={{ fontSize: 20, fontWeight: 'bold' }}>{pet.PetName}</Text>
-                                                {pet.PetType === "Male" ? (
-                                                        <FontAwesome6 name='venus' size={20} color='#FF6EC7' />
-                                                    ) : (
+                                                {pet.PetGender == "Male" ? (
                                                         <FontAwesome6 name='mars' size={20} color='#4689FD' />
+                                                    ) : (
+                                                        <FontAwesome6 name='venus' size={20} color='#FF6EC7' />
                                                 )}
                                             </View>
                                             <View className="flex-row">
