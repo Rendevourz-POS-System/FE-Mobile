@@ -41,7 +41,10 @@ export const HomeAdmin: FC<AdminNavigationStackScreenProps<'HomeAdmin'>> = ({ na
         try {
             const response = await get(`${BackendApiUri.getUser}`);
             if (response && response.status === 200) {
-                setUserData(response.data);
+                // Filter items with Email === 'administrator@gmail.com'
+                const filteredData = response.data.filter((item : any )=> item.Email !== 'administrator@gmail.com');
+
+                setUserData(filteredData);
             } else {
                 setUserData([]);
             }
