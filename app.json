@@ -1,7 +1,9 @@
 {
   "expo": {
-    "name": "FE-Mobile",
-    "slug": "FE-Mobile",
+    "name": "shelter-app",
+    "slug": "shelter-app",
+    "owner": "shelterapp",
+    "scheme": "accelist-kumpulyuk-mobile",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -23,8 +25,19 @@
         "backgroundColor": "#ffffff"
       }
     },
+    "extra": {
+      "eas": {
+        "projectId": "1fed64a4-e1fc-4682-9988-0852051615f4"
+      }
+    },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/1fed64a4-e1fc-4682-9988-0852051615f4"
     }
   }
 }
