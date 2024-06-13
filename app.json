@@ -1,7 +1,8 @@
 {
   "expo": {
-    "name": "FE-Mobile",
-    "slug": "FE-Mobile",
+    "name": "Pet Shelter App",
+    "entryPoint": "./App.tsx",
+    "slug": "ShelterApp",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/animal-shelter.png",
@@ -18,6 +19,8 @@
       "supportsTablet": true
     },
     "android": {
+      "package": "com.crislim21.ShelterApp",
+      "versionCode": 1,
       "adaptiveIcon": {
         "foregroundImage": "./assets/animal-icon.png",
         "backgroundColor": "#ffffff"
@@ -25,6 +28,17 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "8a22864b-18ff-4795-812e-0ec7cf2dabcf"
+      }
+    },
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/8a22864b-18ff-4795-812e-0ec7cf2dabcf"
     }
   }
 }
