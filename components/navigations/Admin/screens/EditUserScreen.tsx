@@ -237,7 +237,7 @@ export const EditUserScreen: FC<AdminNavigationStackScreenProps<'EditUserScreen'
                 <Text style={styles.errorMessage}>{errors.PostalCode?.message}</Text>
 
                 <TouchableOpacity style={styles.button} onPress={handleSubmit(onSubmit)}>
-                    <Text className="text-center font-bold text-white">Save</Text>
+                    <Text className="text-center font-bold text-white">Update</Text>
                 </TouchableOpacity>
             </ScrollView>
         </SafeAreaProvider>

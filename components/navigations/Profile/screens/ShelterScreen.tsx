@@ -80,7 +80,8 @@ export const ShelterScreen: FC<ProfileNavigationStackScreenProps<'ShelterScreen'
         if (inputValue == data?.Data.Pin) {
             setIsModalOpen(false);
             setInputValue("");
-            navigation.navigate("ManageShelterScreen")
+            Alert.alert("Success", "Pin correct. Navigating to ManageShelterScreen.",
+                [{ text: "OK", onPress: () => navigation.navigate("ManageShelterScreen") }]);
         } else {
             setErrorMessage("Pin Salah");
             setInputValue("");
@@ -141,7 +142,7 @@ export const ShelterScreen: FC<ProfileNavigationStackScreenProps<'ShelterScreen'
                                                 </TouchableOpacity>
                                             </View>
 
-                                            {petData.length > 0 &&
+                                            {petData&&
                                                 <View style={{ flex: 1, padding: 10 }}>
                                                     <FlashList
                                                         estimatedItemSize={25}

@@ -41,6 +41,17 @@ export const HomeAdmin: FC<AdminNavigationStackScreenProps<'HomeAdmin'>> = ({ na
         fetchPet();
     }, [])
 
+    const refreshData = async () => {
+        setIsLoading(true);
+        try {
+            await fetchUser();
+            await fetchShelter();
+            await fetchPet();
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
     const fetchUser = async () => {
         try {
             const response = await get(`${BackendApiUri.getUser}`);
