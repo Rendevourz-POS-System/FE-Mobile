@@ -1,27 +1,29 @@
 {
   "expo": {
-    "name": "shelter-app",
-    "slug": "shelter-app",
-    "owner": "shelterapp",
-    "scheme": "accelist-kumpulyuk-mobile",
+    "name": "Pet Shelter App",
+    "entryPoint": "./App.tsx",
+    "slug": "ShelterApp",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/animal-shelter.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/splash.png",
+      "image": "./assets/splashscreen.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#332424"
     },
     "assetBundlePatterns": [
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.crislim21.ShelterApp"
     },
     "android": {
+      "package": "com.crislim21.ShelterApp",
+      "versionCode": 1,
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./assets/animal-icon.png",
         "backgroundColor": "#ffffff"
       }
     },
@@ -37,7 +39,7 @@
       "policy": "appVersion"
     },
     "updates": {
-      "url": "https://u.expo.dev/1fed64a4-e1fc-4682-9988-0852051615f4"
+      "url": "https://u.expo.dev/8a22864b-18ff-4795-812e-0ec7cf2dabcf"
     }
   }
 }

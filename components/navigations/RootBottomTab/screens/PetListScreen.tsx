@@ -81,7 +81,7 @@ export const PetListScreen : FC<NoHeaderProps> = ({navigation, route} : any) => 
 
     const fetchPet = async () => {
         try{
-            const responsePet = await get(`${BackendApiUri.getPetList}/?search=${search}&location=${filterLocation.label}&shelter_name=${shelterName}`)
+            const responsePet = await get(`${BackendApiUri.getPetList}/?search=${search}&location=${filterLocation.label}&shelter_name=${shelterName}&type=${selectedItems}`);
             if(responsePet && responsePet.status === 200) {
                 setPetData(responsePet.data);
             }
