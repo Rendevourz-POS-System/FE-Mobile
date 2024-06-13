@@ -4,6 +4,10 @@
       "android": {
         "developmentClient": true,
         "buildType": "apk"
+      },
+      "ios": {
+        "developmentClient": true,
+        "distribution": "internal"
       }
     },
     "preview": {

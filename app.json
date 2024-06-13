@@ -16,7 +16,8 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.crislim21.ShelterApp"
     },
     "android": {
       "package": "com.crislim21.ShelterApp",
