@@ -34,22 +34,20 @@ export const AdoptionFormScreen: FC<NoHeaderNavigationStackScreenProps<'Adoption
             Type: "Adoption",
             Reason: data.Reason
         }
-
         try {
             const response = await post(BackendApiUri.postRequest, payload);
             if (response.status == 200) {
                 Alert.alert("Data Anda Berhasil Tersimpan", "", [
                     {
                         text: 'OK',
-                        onPress: () => navigation.navigate("Home"),
+                        onPress: () => navigation.goBack(),
                     },
                 ],
                     { cancelable: false })
             }
         } catch (e) {
-
+            console.log(e)
         }
-        console.log(payload)
     }
 
     return (
