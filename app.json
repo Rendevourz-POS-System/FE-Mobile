@@ -27,13 +27,13 @@
         "backgroundColor": "#ffffff"
       }
     },
-    "web": {
-      "favicon": "./assets/favicon.png"
-    },
     "extra": {
       "eas": {
-        "projectId": "8a22864b-18ff-4795-812e-0ec7cf2dabcf"
+        "projectId": "1fed64a4-e1fc-4682-9988-0852051615f4"
       }
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
     },
     "runtimeVersion": {
       "policy": "appVersion"

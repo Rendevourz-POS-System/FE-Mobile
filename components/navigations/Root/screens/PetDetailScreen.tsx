@@ -139,7 +139,7 @@ export const PetDetailScreen: FC<NoHeaderNavigationStackScreenProps<"PetDetailSc
                         </View>
                     </ScrollView>
                     <View className='mt-8 flex flex-row justify-evenly absolute bottom-0 left-0 right-0 pb-5 px-5'>
-                        <TouchableOpacity style={styles.adopsiButton} onPress={() => navigation.navigate("AdoptionFormScreen")} className='w-4/5'>
+                        <TouchableOpacity style={styles.adopsiButton} onPress={() => navigation.navigate("AdoptionFormScreen", {shelterId: data.Data.ShelterId, petId: data.Data.Id})} className='w-4/5'>
                             <Text style={styles.fontButton} className='text-xl text-center'>Adopsi Sekarang</Text>
                         </TouchableOpacity>
                     </View>
