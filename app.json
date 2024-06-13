@@ -2,7 +2,7 @@
   "expo": {
     "name": "Pet Shelter App",
     "entryPoint": "./App.tsx",
-    "slug": "ShelterApp",
+    "slug": "shelter-app",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/animal-shelter.png",
@@ -40,6 +40,7 @@
     },
     "updates": {
       "url": "https://u.expo.dev/8a22864b-18ff-4795-812e-0ec7cf2dabcf"
-    }
+    },
+    "owner": "shelterapp"
   }
 }
