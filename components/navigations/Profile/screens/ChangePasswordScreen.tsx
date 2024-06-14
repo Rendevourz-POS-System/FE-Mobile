@@ -33,7 +33,7 @@ export const ChangePasswordScreen: FC<ProfileNavigationStackScreenProps<'ChangeP
     const onSubmit = async (data: changePasswordFormType) => {
         try {
             await put(BackendApiUri.putUserUpdatePw, data);
-            Alert.alert('Password Berhasil Berubah', 'Password anda telah berhasil berubah.');
+            Alert.alert('Password Berhasil Berubah', 'Password anda telah berhasil berubah.', [ { text: "OK", onPress: () => navigation.goBack()}]);
         } catch (e) {
             Alert.alert('Password Masih Salah', 'Password anda masih tidak sesuai.');
         }

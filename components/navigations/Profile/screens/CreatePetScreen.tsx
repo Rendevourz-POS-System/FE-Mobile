@@ -133,7 +133,7 @@ export const CreatePetScreen: FC<ProfileNavigationStackScreenProps<'CreatePetScr
             if(image) {
                 removeImage(image!);
             }
-            Alert.alert("Pet Created", "Pet Berhasil dibuat", [ { text: "OK", onPress: () => navigation.goBack()}]);
+            Alert.alert("Pet Berhasil", "Pet Berhasil dibuat", [ { text: "OK", onPress: () => navigation.goBack()}]);
         }else{
             Alert.alert("Pet Gagal", "Pet gagal dibuat, mohon diisi dengan yang benar");
         }
