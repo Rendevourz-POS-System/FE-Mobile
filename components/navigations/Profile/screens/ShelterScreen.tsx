@@ -96,13 +96,13 @@ export const ShelterScreen: FC<ProfileNavigationStackScreenProps<'ShelterScreen'
     return (
         <SafeAreaProvider style={styles.container}>
             <SafeAreaView className="flex-1 bg-gray-100">
-                <GestureHandlerRootView>
+                <GestureHandlerRootView className="flex-1">
                     <BottomSheetModalProvider>
                         {fetchLoading ? (
                             <>
-                            <View className="flex-1 justify-center items-center">
-                                <ActivityIndicator size="large" color="#4689FD" />
-                            </View>
+                                <View className="flex-1 justify-center items-center">
+                                    <ActivityIndicator size="large" color="#4689FD"/>
+                                </View>
                             </>
                         ) : (
                             <>
