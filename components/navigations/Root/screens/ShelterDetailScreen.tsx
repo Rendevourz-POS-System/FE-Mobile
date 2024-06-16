@@ -67,7 +67,7 @@ export const ShelterDetailScreen: FC<NoHeaderNavigationStackScreenProps<'Shelter
                         Id: response.data.Data.Id,
                         UserId: response.data.Data.UserId,
                         ShelterName: response.data.Data.ShelterName,
-                        ShelterLocationName: response.data.Data.ShelterLocationNName,
+                        ShelterLocationName: response.data.Data.ShelterLocationName,
                         ShelterAddress: response.data.Data.ShelterAddress,
                         ShelterCapacity: response.data.Data.ShelterCapacity,
                         ShelterContactNumber: response.data.Data.ShelterContactNumber,
@@ -135,6 +135,7 @@ export const ShelterDetailScreen: FC<NoHeaderNavigationStackScreenProps<'Shelter
             setFavAttempt(prev => prev + 1);
         }
     };
+    // console.log(data.Data)
 
     const handleWhatsApp = (phoneNumber: string) => {
         const message = 'Halo saya ingin bertanya mengenai shelter anda.';
@@ -176,7 +177,7 @@ export const ShelterDetailScreen: FC<NoHeaderNavigationStackScreenProps<'Shelter
 
                             <View className='mt-2 flex flex-row items-center'>
                                 <FontAwesome6 name='location-dot' size={20} color='#4689FD' style={{ marginLeft: 2 }} />
-                                <Text className='text-base ml-2 text-[#8A8A8A]'>Jakarta Barat</Text>
+                            <Text className='text-base ml-2 text-[#8A8A8A]'>{data.Data.ShelterLocationName}</Text>
                             </View>
 
                             <View className="flex flex-row justify-between items-center mt-4">
