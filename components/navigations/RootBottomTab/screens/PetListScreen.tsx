@@ -2,7 +2,7 @@ import { FontAwesome, FontAwesome6, MaterialCommunityIcons } from "@expo/vector-
 import { BottomSheetBackdrop, BottomSheetModal, BottomSheetModalProvider, BottomSheetView } from "@gorhom/bottom-sheet"
 import { FlashList } from "@shopify/flash-list";
 import { FC, useCallback, useEffect, useRef, useState } from "react";
-import { ActivityIndicator, Image, RefreshControl, StyleSheet, Text, TouchableHighlight, TouchableOpacity, View } from "react-native"
+import { ActivityIndicator, Image, RefreshControl, ScrollView, StyleSheet, Text, TouchableHighlight, TouchableOpacity, View } from "react-native"
 import { Dropdown } from "react-native-element-dropdown";
 import { Button } from "react-native-elements";
 import { Searchbar, TextInput } from "react-native-paper";
@@ -389,8 +389,17 @@ export const PetListScreen : FC<NoHeaderProps> = ({navigation, route} : any) => 
                                     />
                                 </View>
                             ) : (
-                                <View className='flex flex-1 justify-center items-center'>
-                                    <Text className='text-center'>Sorry, data not found</Text>
+                                <View className=''>
+                                    <ScrollView
+                                        showsVerticalScrollIndicator={false}
+                                        refreshControl={
+                                            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+                                        }
+                                        className="w-full h-full"
+                                        contentContainerStyle={{flex: 1, justifyContent: 'center', alignItems: 'center'}}
+                                    >
+                                        <Text className=''>Sorry, data not found</Text>
+                                    </ScrollView>
                                 </View>
                             )}
                         </>
