@@ -65,7 +65,7 @@ export const FavoriteScreen: FC<ProfileNavigationStackScreenProps<'FavoriteScree
                 <Ionicons name="chevron-back" size={24} color="black" onPress={() => navigation.goBack()} style={{ position: 'absolute', left: 20 }} />
                 <Text className="text-xl">Favorite</Text>
             </View>
-            <ScrollView className='p-5'>
+            <ScrollView className='p-5' contentContainerStyle={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
                 {isLoading ? (
                     <View className='flex-1 justify-center items-center'>
                         <ActivityIndicator color="blue" size="large" />

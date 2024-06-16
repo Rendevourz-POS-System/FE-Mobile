@@ -341,7 +341,7 @@ export const ShelterListScreen : FC<NoHeaderProps> = ({navigation, route} : any)
                                                     />
                                                 )}
                                                 <View style={{ position: 'absolute', top: 170, left: 0, right: 0, bottom: 0}}>
-                                                    <View style={{ marginTop: 10, backgroundColor: "#FFFDFF", paddingHorizontal: 20, paddingVertical: 15, borderTopLeftRadius: 15, borderTopRightRadius: 15}}>
+                                                    <View style={{ marginTop: 10, backgroundColor: "#FFFDFF", paddingHorizontal: 20, paddingVertical: 15, borderRadius: 20 }}>
                                                         <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
                                                             <Text style={{ fontSize: 20, fontWeight: 'bold' }}>{shelter.ShelterName}</Text>
                                                             <TouchableOpacity onPress={() => onPressFav(shelter.Id)}>

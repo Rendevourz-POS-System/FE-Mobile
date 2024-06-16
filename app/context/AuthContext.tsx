@@ -1,16 +1,16 @@
 import axios from "axios";
 import { createContext, useContext, useEffect, useState } from "react";
 import * as SecureStore from "expo-secure-store";
-import { BackendApiUri } from "../../functions/BackendApiUri";
+import { BackendApiUri, baseUrl } from "../../functions/BackendApiUri";
 
 interface AuthProps {
-    authState?: {token: string | null; authenticated: boolean | null; username: string | null; role: string | null};
+    authState?: {token: string | null; authenticated: boolean | null; username: string | null; role: string | null; imageBase64: [] | null};
     onRegister?: (email: string, password: string) => Promise<any>;
     onLogin?: (email: string, password: string) => Promise<any>;
     onLogout?: () => Promise<any>;
 }
 
-const TOKEN_KEY = "token";
+export const TOKEN_KEY = "token";
 const AuthContext = createContext<AuthProps>({});
 
 export const useAuth = () => {
@@ -24,12 +24,14 @@ export const AuthProvider = ({children} : any) => {
         userId: string | null;
         username: string | null;
         role: string | null;
+        imageBase64: [] | null
     }>({
         token: null,
         authenticated: null,
         userId: null,
         username: null,
-        role : null
+        role : null,
+        imageBase64: null
     });
 
     useEffect(() => {
@@ -37,7 +39,7 @@ export const AuthProvider = ({children} : any) => {
             const token = await SecureStore.getItemAsync(TOKEN_KEY);
             if(token){
                 try{
-                    const result = await axios.get(`${BackendApiUri.getUserData}`, {
+                    const result = await axios.get(`${baseUrl+BackendApiUri.getUserData}`, {
                         headers: {
                             Authorization: `Bearer ${token}`
                         }
@@ -45,11 +47,12 @@ export const AuthProvider = ({children} : any) => {
                     if(result.status === 200)
                     {
                         setAuthState({
-                            token,
+                            token : token,
                             authenticated: true,
                             userId: result.data.Id,
                             username: result.data.Username,
-                            role: result.data.Role
+                            role: result.data.Role,
+                            imageBase64: result.data.ImageBase64
                         });
                     }
                 }
@@ -61,7 +64,8 @@ export const AuthProvider = ({children} : any) => {
                     authenticated: false,
                     userId: null,
                     username: null,
-                    role: null
+                    role: null,
+                    imageBase64: null
                 });
             }
         };
@@ -87,7 +91,8 @@ export const AuthProvider = ({children} : any) => {
                     authenticated: false,
                     userId : null,
                     username: null,
-                    role: null
+                    role: null,
+                    imageBase64: null
                 });
                 return result;
             }
@@ -95,9 +100,10 @@ export const AuthProvider = ({children} : any) => {
             setAuthState({
                 token: result.data['Token'],
                 authenticated: true,
-                userId : result.data['Id'],
+                userId : result.data.User['Id'],
                 username: result.data['Username'],
-                role: result.data['Role']
+                role: result.data.User['Role'],
+                imageBase64: result.data.User['ImageBase64']
             });
 
             axios.defaults.headers.common["Authorization"] = `Bearer ${result.data['Token']}`;
@@ -120,7 +126,8 @@ export const AuthProvider = ({children} : any) => {
             authenticated: false,
             userId: null,
             username: null,
-            role: null
+            role: null,
+            imageBase64: []
         });
     };
 

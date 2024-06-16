@@ -135,7 +135,6 @@ export const HomeAdmin: FC<AdminNavigationStackScreenProps<'HomeAdmin'>> = ({ na
         Alert.alert(`Apakah Anda Yakin ingin menghapus ${name}`, '', [
             {
                 text: 'Cancel',
-                onPress: () => navigation.navigate("HomeAdmin"),
                 style: 'cancel',
             },
             {
@@ -143,7 +142,7 @@ export const HomeAdmin: FC<AdminNavigationStackScreenProps<'HomeAdmin'>> = ({ na
                     setIsLoading(true);
                     try {
                         const response = await deletes(`${BackendApiUri.deleteAdminUser}/${id}`);
-                        if (response && response.status === 200) {
+                        if (response) {
                             Alert.alert(`Anda berhasil menghapus ${name}`);
                             fetchUser();
                         }
