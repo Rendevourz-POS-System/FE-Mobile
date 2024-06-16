@@ -20,25 +20,17 @@ export const FavoriteScreen: FC<ProfileNavigationStackScreenProps<'FavoriteScree
 
     const fetchData = async () => {
         try {
-            const response = await get(`${BackendApiUri.getShelterFav}`);
-            if (response && response.status === 200) {
-                setShelterData(response.data);
+            const shelterResponse = await get(`${BackendApiUri.getShelterFav}`);
+            if (shelterResponse && shelterResponse.status === 200) {
+                setShelterData(shelterResponse.data);
             }
-        } catch (e) {
-            console.error('Error fetching shelter data:', e);
-        } finally {
-            setIsLoading(false);
-        }
-    };
 
-    const fetchPetData = async () => {
-        try {
-            const response = await get(`${BackendApiUri.getPetFav}`);
-            if (response && response.status === 200) {
-                setPetDatas(response.data);
+            const petResponse = await get(`${BackendApiUri.getPetFav}`);
+            if (petResponse && petResponse.status === 200) {
+                setPetDatas(petResponse.data);
             }
         } catch (e) {
-            console.error('Error fetching pet data:', e);
+            console.error('Error fetching data:', e);
         } finally {
             setIsLoading(false);
         }
@@ -55,14 +47,83 @@ export const FavoriteScreen: FC<ProfileNavigationStackScreenProps<'FavoriteScree
 
     useEffect(() => {
         fetchData();
-        fetchPetData();
         fetchPetType();
     }, []);
 
-    const hasData = shelterData.length > 0 || petDatas.length > 0;
+    const combinedData = [...shelterData, ...petDatas]; // Combine shelter and pet data into a single array
+
+    const renderShelterItem = ({ item }: { item: ShelterData }) => (
+        <TouchableOpacity 
+            style={styles.shelterItem} 
+            onPress={() => navigation.navigate("ShelterDetailScreen", { shelterId: item.Id })}
+            activeOpacity={1}
+        >
+            <View style={styles.shelterImageContainer}>
+                <Image
+                    source={item.ImageBase64 ? { uri: `data:image/*;base64,${item.ImageBase64}` } : require('../../../../assets/animal-shelter.png')}
+                    resizeMode='stretch'
+                    style={styles.shelterImage}
+                />
+            </View>
+            <View style={styles.shelterInfoContainer}>
+                <View style={styles.shelterInfo}>
+                    <Text style={styles.shelterName}>{item.ShelterName}</Text>
+                    <FontAwesome name='heart' size={24} color="#FF0000" />
+                </View>
+                <View style={styles.shelterLocation}>
+                    <FontAwesome6 name='location-dot' size={20} color='#4689FD' />
+                    <Text style={styles.shelterLocationText}>{item.ShelterLocationName}</Text>
+                </View>
+                {item.PetTypeAccepted && item.PetTypeAccepted.length > 0 && (
+                    <View style={styles.petTypesContainer}>
+                        {item.PetTypeAccepted.map((itemId) => {
+                            const matchingPet = petTypes.find((pet) => pet.Id === itemId.toString());
+                            if (matchingPet) {
+                                const iconName = getIconName(matchingPet.Type);
+                                if (iconName === 'rabbit') {
+                                    return <MaterialCommunityIcons key={matchingPet.Id} name={iconName} size={29} color='#8A8A8A' style={styles.petIcon} />;
+                                }
+                                return <FontAwesome6 key={matchingPet.Id} name={iconName} size={24} color='#8A8A8A' style={styles.petIcon} />;
+                            }
+                            return null;
+                        })}
+                    </View>
+                )}
+            </View>
+        </TouchableOpacity>
+    );
+    
+    
+
+    const renderPetItem = ({ item }: { item: PetData }) => (
+        <TouchableOpacity
+            style={styles.petItem}
+            activeOpacity={1}
+            onPress={() => navigation.navigate("PetDetailScreen", { petId: item.Id })}
+        >
+            <Image
+                source={item.ImageBase64 ? { uri: `data:image/*;base64,${item.ImageBase64}` } : require("../../../../assets/default_paw2.jpg")}
+                style={styles.petImage}
+                resizeMode="cover"
+            />
+            <View style={styles.petHeartIcon}>
+                <FontAwesome name='heart' size={19} color='#FF0000' />
+            </View>
+            <View style={styles.petInfoContainer}>
+                <View style={styles.petInfo}>
+                    <Text style={styles.petName}>{item.PetName}</Text>
+                    <FontAwesome6 name={item.PetGender === "Male" ? 'mars' : 'venus'} size={22} color={item.PetGender === "Male" ? '#4689FD' : '#FF6EC7'} />
+                </View>
+                <View style={styles.petLocation}>
+                    <FontAwesome6 name='location-dot' size={20} color='#4689FD' />
+                    <Text style={styles.petLocationText}>{item.ShelterLocation}</Text>
+                </View>
+            </View>
+        </TouchableOpacity>
+    );
 
     return (
-        <SafeAreaProvider style={styles.container} className='mt-5'>
+        <SafeAreaProvider style={styles.container}>
             <View style={styles.header}>
                 <Ionicons name="chevron-back" size={24} color="black" onPress={() => navigation.goBack()} style={styles.backIcon} />
                 <Text style={styles.title}>Favorite</Text>
@@ -72,85 +133,14 @@ export const FavoriteScreen: FC<ProfileNavigationStackScreenProps<'FavoriteScree
                     <View style={styles.loadingContainer}>
                         <ActivityIndicator color="blue" size="large" />
                     </View>
-                ) : hasData ? (
-                    <View style={styles.contentContainer}>
-                        {shelterData.length > 0 && (
-                            <FlashList
-                                estimatedItemSize={50}
-                                data={shelterData}
-                                renderItem={({ item: shelter }) => (
-                                    <TouchableOpacity
-                                        style={styles.shelterItem}
-                                        onPress={() => navigation.navigate("ShelterDetailScreen", { shelterId: shelter.Id })}
-                                        activeOpacity={1}
-                                    >
-                                        <Image
-                                            source={shelter.ImageBase64 ? { uri: `data:image/*;base64,${shelter.ImageBase64}` } : require('../../../../assets/animal-shelter.png')}
-                                            resizeMode='contain'
-                                            style={styles.shelterImage}
-                                        />
-                                        <View style={styles.shelterInfoContainer}>
-                                            <View style={styles.shelterInfo}>
-                                                <Text style={styles.shelterName}>{shelter.ShelterName}</Text>
-                                                <FontAwesome name='heart' size={24} color="#FF0000" />
-                                            </View>
-                                            <View style={styles.shelterLocation}>
-                                                <FontAwesome6 name='location-dot' size={20} color='#4689FD' />
-                                                <Text style={styles.shelterLocationText}>{shelter.ShelterLocationName}</Text>
-                                            </View>
-                                            <View style={styles.petTypesContainer}>
-                                                {shelter.PetTypeAccepted.map((itemId) => {
-                                                    const matchingPet = petTypes.find((pet) => pet.Id === itemId.toString());
-                                                    if (matchingPet) {
-                                                        const iconName = getIconName(matchingPet.Type);
-                                                        return iconName === 'rabbit' ? (
-                                                            <MaterialCommunityIcons key={matchingPet.Id} name={iconName} size={29} color='#8A8A8A' style={styles.petIcon} />
-                                                        ) : (
-                                                            <FontAwesome6 key={matchingPet.Id} name={iconName} size={24} color='#8A8A8A' style={styles.petIcon} />
-                                                        );
-                                                    }
-                                                    return null;
-                                                })}
-                                            </View>
-                                        </View>
-                                    </TouchableOpacity>
-                                )}
-                            />
-                        )}
-                        {petDatas.length > 0 && (
-                            <FlashList
-                                estimatedItemSize={50}
-                                data={petDatas}
-                                keyExtractor={item => item.Id.toString()}
-                                renderItem={({ item: pet }) => (
-                                    <TouchableOpacity
-                                        style={styles.petItem}
-                                        activeOpacity={1}
-                                        onPress={() => navigation.navigate("PetDetailScreen", { petId: pet.Id })}
-                                    >
-                                        <Image
-                                            source={pet.ImageBase64 ? { uri: `data:image/*;base64,${pet.ImageBase64}` } : require("../../../../assets/default_paw2.jpg")}
-                                            style={styles.petImage}
-                                            resizeMode="cover"
-                                        />
-                                        <View style={styles.petHeartIcon}>
-                                            <FontAwesome name='heart' size={19} color='#FF0000' />
-                                        </View>
-                                        <View style={styles.petInfoContainer}>
-                                            <View style={styles.petInfo}>
-                                                <Text style={styles.petName}>{pet.PetName}</Text>
-                                                <FontAwesome6 name={pet.PetGender === "Male" ? 'mars' : 'venus'} size={22} color={pet.PetGender === "Male" ? '#4689FD' : '#FF6EC7'} />
-                                            </View>
-                                            <View style={styles.petLocation}>
-                                                <FontAwesome6 name='location-dot' size={20} color='#4689FD' />
-                                                <Text style={styles.petLocationText}>{pet.ShelterLocation}</Text>
-                                            </View>
-                                        </View>
-                                    </TouchableOpacity>
-                                )}
-                            />
-                        )}
-                    </View>
+                ) : combinedData.length > 0 ? (
+                    <FlashList
+                        estimatedItemSize={300} // Adjust the estimated item size based on your content
+                        data={combinedData}
+                        renderItem={({ item }) =>
+                            'ShelterName' in item ? renderShelterItem({ item }) : renderPetItem({ item })
+                        }
+                    />
                 ) : (
                     <View style={styles.noDataContainer}>
                         <Text style={styles.noDataText}>No favorite data found.</Text>
@@ -162,6 +152,55 @@ export const FavoriteScreen: FC<ProfileNavigationStackScreenProps<'FavoriteScree
 }
 
 const styles = StyleSheet.create({
+    shelterItem: {
+        marginVertical: 10,
+        backgroundColor: '#FFF', // Adjust background color as needed
+        borderRadius: 20, // Adjust border radius as needed
+    },
+    shelterImageContainer: {
+        width: '100%',
+        height: 290,
+        borderTopLeftRadius: 20,
+        borderTopRightRadius: 20,
+        overflow: 'hidden',
+    },
+    shelterImage: {
+        width: '100%',
+        height: '100%',
+    },
+    shelterInfoContainer: {
+        backgroundColor: "#FFFDFF",
+        paddingHorizontal: 20,
+        paddingVertical: 15,
+        borderRadius: 20,
+        marginTop: -20, // Adjust margin top as needed
+    },
+    shelterInfo: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: 10, // Adjust margin bottom as needed
+    },
+    shelterName: {
+        fontSize: 20,
+        fontWeight: 'bold',
+    },
+    shelterLocation: {
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    shelterLocationText: {
+        fontSize: 14,
+        marginLeft: 5,
+    },
+    petTypesContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginTop: 10,
+    },
+    petIcon: {
+        marginEnd: 5,
+    },
     container: {
         flex: 1,
     },
@@ -181,8 +220,7 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
     },
     scrollViewContent: {
-        width: '100%',
-        height: '100%',
+        flexGrow: 1,
         padding: 10,
     },
     loadingContainer: {
@@ -190,63 +228,8 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
     },
-    contentContainer: {
-        flex: 1,
-    },
-    shelterItem: {
-        overflow: 'hidden',
-    },
-    shelterImage: {
-        width: '100%',
-        height: 290,
-        marginBottom: 15,
-        marginTop: 5,
-        borderTopLeftRadius: 20,
-        borderTopRightRadius: 20,
-    },
-    shelterInfoContainer: {
-        position: 'absolute',
-        top: 170,
-        left: 0,
-        right: 0,
-        bottom: 0,
-    },
-    shelterInfo: {
-        marginTop: 10,
-        backgroundColor: "#FFFDFF",
-        paddingHorizontal: 20,
-        paddingVertical: 15,
-        marginVertical: 10,
-        borderRadius: 15,
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-    },
-    shelterName: {
-        fontSize: 20,
-        fontWeight: 'bold',
-    },
-    shelterLocation: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginTop: 10,
-    },
-    shelterLocationText: {
-        fontSize: 14,
-        marginLeft: 5,
-    },
-    petTypesContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'flex-end',
-        flex: 1,
-    },
-    petIcon: {
-        marginEnd: 5,
-    },
     petItem: {
-        flex: 1,
-        marginBottom: 35,
+        marginBottom: 20,
     },
     petImage: {
         width: '100%',
@@ -262,16 +245,13 @@ const styles = StyleSheet.create({
         borderRadius: 999,
     },
     petInfoContainer: {
-        position: 'absolute',
-        top: 235,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        marginTop: 5,
+        marginTop: 250, // Adjust this margin top based on your design
         backgroundColor: "#FFFDFF",
         paddingHorizontal: 20,
         paddingVertical: 15,
-        borderRadius: 15,
+        borderRadius: 20,
+        position: 'absolute',
+        width: '100%',
     },
     petInfo: {
         flexDirection: 'row',
@@ -279,7 +259,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     petName: {
-        fontSize: 20,
+        fontSize: 18,
         fontWeight: 'bold',
     },
     petLocation: {
@@ -298,6 +278,8 @@ const styles = StyleSheet.create({
     },
     noDataText: {
         fontSize: 16,
-        marginVertical: 20,
+        color: 'gray',
     },
-});
+    });
+    
+    export default FavoriteScreen;
