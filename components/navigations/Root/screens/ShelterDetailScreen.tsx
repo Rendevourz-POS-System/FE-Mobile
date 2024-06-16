@@ -163,9 +163,9 @@ export const ShelterDetailScreen: FC<NoHeaderNavigationStackScreenProps<'Shelter
                         )}
                         <View className='pt-8 px-6 bottom-6 bg-white rounded-t-3xl border border-slate-300 border-b-0'>
                             <View className='flex flex-row justify-between'>
-                                <Text className='text-3xl font-bold'>{data.Data.ShelterName}</Text>
-                                <View className='flex flex-row items-center'>
-                                    <FontAwesome name="whatsapp" size={28} color="green" style={{ marginRight: 15 }} onPress={() => handleWhatsApp(data.Data.ShelterContactNumber)} />
+                                <Text className='text-3xl font-bold w-10/12'>{data.Data.ShelterName}</Text>
+                                <View className='flex flex-row items-center gap-3'>
+                                    <FontAwesome name="whatsapp" size={28} color="green" onPress={() => handleWhatsApp(data.Data.ShelterContactNumber)} />
                                     <TouchableHighlight
                                         onPress={() => handlePressFavorite(data.Data.Id)}
                                         underlayColor="transparent"

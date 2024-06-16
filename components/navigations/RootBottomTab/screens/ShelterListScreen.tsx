@@ -80,7 +80,7 @@ export const ShelterListScreen : FC<NoHeaderProps> = ({navigation, route} : any)
     const fetchShelter = async () => {
         try{
             const response = await get(`${BackendApiUri.getShelterList}/?search=${search}&location_name=${filterLocation?.label}`);
-            if(response && response.status === 200) {
+            if(response.data && response.status === 200) {
                 const filterShelter = response.data.filter((shelter: ShelterData) => shelter.UserId != authState?.userId);
                 setShelterData(filterShelter);
             } else {
