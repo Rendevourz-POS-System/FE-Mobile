@@ -44,7 +44,6 @@ export const AuthProvider = ({children} : any) => {
                             Authorization: `Bearer ${token}`
                         }
                     });
-                    console.log(result.status)
                     if(result.status === 200)
                     {
                         setAuthState({

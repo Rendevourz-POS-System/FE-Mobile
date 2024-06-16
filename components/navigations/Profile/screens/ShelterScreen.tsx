@@ -27,7 +27,7 @@ export const ShelterScreen: FC<ProfileNavigationStackScreenProps<'ShelterScreen'
 
     const fetchProfile = async () => {
         try {
-            const res = await axios.get(`${baseUrl + BackendApiUri.getUserShelter}`);
+            const res = await get(`${BackendApiUri.getUserShelter}`);
             if (res.data) {
                 setData(res.data)
             }
@@ -120,7 +120,7 @@ export const ShelterScreen: FC<ProfileNavigationStackScreenProps<'ShelterScreen'
                                             <Ionicons name="chevron-back" size={24} color="black" onPress={() => navigation.goBack()} style={{ position: 'absolute', left: 20 }} />
                                             <Text className="text-xl">Shelter Dashboard</Text>
                                         </View>
-                                        <ScrollView className="my-5">
+                                        <ScrollView className="my-5" contentContainerStyle={{width: "100%", height: "100%"}}>
                                             <View className="mt-5 flex-row justify-around">
                                                 <TouchableOpacity style={[styles.button]} onPress={() => setIsModalOpen(true)}>
                                                     <View style={styles.iconContainer}>
