@@ -10,7 +10,7 @@ interface AuthProps {
     onLogout?: () => Promise<any>;
 }
 
-const TOKEN_KEY = "token";
+export const TOKEN_KEY = "token";
 const AuthContext = createContext<AuthProps>({});
 
 export const useAuth = () => {
