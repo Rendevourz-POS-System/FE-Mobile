@@ -81,9 +81,9 @@ export const FavoriteScreen: FC<ProfileNavigationStackScreenProps<'FavoriteScree
                             if (matchingPet) {
                                 const iconName = getIconName(matchingPet.Type);
                                 if (iconName === 'rabbit') {
-                                    return <MaterialCommunityIcons key={matchingPet.Id} name={iconName} size={29} color='#8A8A8A' style={styles.petIcon} />;
+                                    return <MaterialCommunityIcons key={matchingPet.Id} name={iconName} size={29} color='#8A8A8A' />;
                                 }
-                                return <FontAwesome6 key={matchingPet.Id} name={iconName} size={24} color='#8A8A8A' style={styles.petIcon} />;
+                                return <FontAwesome6 key={matchingPet.Id} name={iconName} size={24} color='#8A8A8A'/>;
                             }
                             return null;
                         })}
@@ -197,9 +197,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         marginTop: 10,
-    },
-    petIcon: {
-        marginEnd: 5,
+        justifyContent: 'flex-end'
     },
     container: {
         flex: 1,
