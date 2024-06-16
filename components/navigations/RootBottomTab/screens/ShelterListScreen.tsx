@@ -1,4 +1,4 @@
-import { ActivityIndicator, Image, RefreshControl, StyleSheet, Text, TouchableOpacity, View } from "react-native"
+import { ActivityIndicator, Image, RefreshControl, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native"
 import { useNavigation } from "@react-navigation/native";
 import { HomeUserNavigationStackScreenProps, NoHeaderNavigationStackScreenProps, UserBottomTabCompositeNavigationProps, UserNavigationStackScreenProps } from "../../../StackParams/StackScreenProps";
 import { FC, useCallback, useEffect, useRef, useState } from "react";
@@ -389,8 +389,17 @@ export const ShelterListScreen : FC<NoHeaderProps> = ({navigation, route} : any)
                                     )}
                                 />
                             ) : (
-                                <View className='flex flex-1 justify-center items-center'>
-                                    <Text className='text-center'>Sorry, data not found</Text>
+                                <View className=''>
+                                    <ScrollView
+                                        showsVerticalScrollIndicator={false}
+                                        refreshControl={
+                                            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+                                        }
+                                        className="w-full h-full"
+                                        contentContainerStyle={{flex: 1, justifyContent: 'center', alignItems: 'center'}}
+                                    >
+                                        <Text className=''>Sorry, data not found</Text>
+                                    </ScrollView>
                                 </View>
                             )}
                         </>
