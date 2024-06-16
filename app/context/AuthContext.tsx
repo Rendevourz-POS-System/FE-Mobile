@@ -4,7 +4,7 @@ import * as SecureStore from "expo-secure-store";
 import { BackendApiUri, baseUrl } from "../../functions/BackendApiUri";
 
 interface AuthProps {
-    authState?: {token: string | null; authenticated: boolean | null; username: string | null; role: string | null};
+    authState?: {token: string | null; authenticated: boolean | null; username: string | null; role: string | null; imageBase64: [] | null};
     onRegister?: (email: string, password: string) => Promise<any>;
     onLogin?: (email: string, password: string) => Promise<any>;
     onLogout?: () => Promise<any>;
@@ -44,6 +44,7 @@ export const AuthProvider = ({children} : any) => {
                             Authorization: `Bearer ${token}`
                         }
                     });
+                    console.log(result.status)
                     if(result.status === 200)
                     {
                         setAuthState({
