@@ -11,29 +11,12 @@ import { UserBottomTabCompositeNavigationProps, UserNavigationStackScreenProps }
 
 export const Header = () => {
     const { authState, onLogout } = useAuth();
-    const [userData, setUserData] = useState<IUser>();
     const navigation = useNavigation<UserBottomTabCompositeNavigationProps<'Profile'>>();
-
-    useEffect(() => {
-        if (authState?.authenticated) {
-            const fetchData = async () => {
-                try {
-                    const response = await get(`${BackendApiUri.getUserData}`);
-                    setUserData(response.data);
-                } catch (error) {
-                    console.error("Error fetching user data:", error);
-                }
-            };
-            fetchData();
-        }
-    }, [authState]);
 
     const getAvatarSize = () => {
         const { width } = Dimensions.get('window');
         return width * 0.16;
     };
-
-    
 
     return (
     <View className="flex-row items-center justify-between bg-white px-3 py-2">
@@ -42,13 +25,13 @@ export const Header = () => {
                 <Avatar
                     rounded
                     source={
-                        userData?.ImageBase64 ? { uri: `data:image/*;base64,${userData.ImageBase64}` } : require('../assets/Default_Acc.jpg')
+                        authState?.imageBase64 ? { uri: `data:image/*;base64,${authState.imageBase64}` } : require('../assets/Default_Acc.jpg')
                     }
                     size={getAvatarSize()}
                 />
             </TouchableOpacity>
             <Text style={{ marginLeft: 8, fontSize: 14, fontWeight: '600' }}>
-                Welcome back, {'\n'}{userData?.Username}
+                Welcome back, {'\n'}{authState?.username}
             </Text>
         </View>
         <TouchableOpacity onPress={onLogout} className="mr-2">
