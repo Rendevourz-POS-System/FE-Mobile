@@ -26,8 +26,10 @@ import { Dropdown } from 'react-native-element-dropdown';
 import { Button } from "react-native-elements";
 import { getIconName } from "../../../../functions/GetPetIconName";
 import { NoHeaderProps } from "../../../../interface/TNoHeaderProps";
+import { useAuth } from "../../../../app/context/AuthContext";
 
 export const ShelterListScreen : FC<NoHeaderProps> = ({navigation, route} : any) => {
+    const {authState} = useAuth();
     const favAttempt = route.params;
     const [provinceData, setProvinceData] = useState<Location[]>([]);
     const [shelterData, setShelterData] = useState<ShelterData[]>([]);
@@ -79,7 +81,8 @@ export const ShelterListScreen : FC<NoHeaderProps> = ({navigation, route} : any)
         try{
             const response = await get(`${BackendApiUri.getShelterList}/?search=${search}&location_name=${filterLocation?.label}`);
             if(response && response.status === 200) {
-                setShelterData(response.data);
+                const filterShelter = response.data.filter((shelter: ShelterData) => shelter.UserId != authState?.userId);
+                setShelterData(filterShelter);
             } else {
                 setShelterData([]);
             }

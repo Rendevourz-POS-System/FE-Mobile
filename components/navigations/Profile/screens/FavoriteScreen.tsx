@@ -65,13 +65,13 @@ export const FavoriteScreen: FC<ProfileNavigationStackScreenProps<'FavoriteScree
                 <Ionicons name="chevron-back" size={24} color="black" onPress={() => navigation.goBack()} style={{ position: 'absolute', left: 20 }} />
                 <Text className="text-xl">Favorite</Text>
             </View>
-            <ScrollView className='p-5' contentContainerStyle={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+            <ScrollView className='p-5' contentContainerStyle={{width: '100%', height: '100%'}}>
                 {isLoading ? (
                     <View className='flex-1 justify-center items-center'>
                         <ActivityIndicator color="blue" size="large" />
                     </View>
                 ) : (
-                    <>
+                    <View className='flex-1'>
                         {shelterData && shelterData.length > 0 && (
                             <FlashList
                                 estimatedItemSize={50}
@@ -166,10 +166,10 @@ export const FavoriteScreen: FC<ProfileNavigationStackScreenProps<'FavoriteScree
                                 )}
                             />
                         )}
-                    </>
+                    </View>
                 )} 
 
-                {shelterData.length === 0 && petDatas.length === 0 && (
+                {isLoading && (shelterData.length === 0 && petDatas.length === 0) && (
                     <View className='flex flex-1 justify-center items-center'>
                         <Text className='text-center'>Sorry, data not found</Text>
                     </View>

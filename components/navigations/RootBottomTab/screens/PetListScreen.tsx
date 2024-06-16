@@ -83,7 +83,13 @@ export const PetListScreen : FC<NoHeaderProps> = ({navigation, route} : any) => 
         try{
             const responsePet = await get(`${BackendApiUri.getPetList}/?search=${search}&location=${filterLocation.label}&shelter_name=${shelterName}&type=${selectedItems}`);
             if(responsePet && responsePet.status === 200) {
-                setPetData(responsePet.data);
+                const userShelter = await get(`${BackendApiUri.getUserShelter}`);
+                if(userShelter.data.Data) {
+                    const popUserPet = responsePet.data.filter((pet: PetData) => pet.ShelterId !== userShelter.data.Data.Id);
+                    setPetData(popUserPet);
+                } else {
+                    setPetData(responsePet.data);
+                }
             }
         } catch(e) {
             throw Error;
