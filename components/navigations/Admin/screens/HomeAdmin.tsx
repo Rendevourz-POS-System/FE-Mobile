@@ -15,7 +15,7 @@ export const HomeAdmin: FC<AdminNavigationStackScreenProps<'HomeAdmin'>> = ({ na
     const [userData, setUserData] = useState<IUser[]>();
     const [shelterData, setShelterData] = useState<IShelter[]>();
     const [petData, setPetData] = useState<PetData[]>();
-    const [isLoading, setIsLoading] = useState<boolean>(true);
+    const [isLoading, setIsLoading] = useState<boolean>(false);
 
     const data = [
         { id: 'user', name: 'User', icon: 'user' },

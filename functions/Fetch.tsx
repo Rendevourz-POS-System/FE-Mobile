@@ -22,6 +22,11 @@ export const deletes = async(url: string) => {
     return response.data;
 }
 
+export const deletesBody = async(url: string, body: any) => {
+    const response = await axios.delete(baseUrl + url, body);
+    return response.data;
+}
+
 export const putForm = async (url: string, body: FormData) => {
     const response = await axios.put(baseUrl + url, body, {
         headers: {

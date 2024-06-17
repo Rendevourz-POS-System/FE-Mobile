@@ -31,7 +31,7 @@ export const ShelterScreen: FC<ProfileNavigationStackScreenProps<'ShelterScreen'
             if (res.data) {
                 setData(res.data)
             }
-            if(res.data.Error) {
+            if (res.data.Error) {
                 setData(null);
             }
         } catch (error) {
@@ -79,8 +79,9 @@ export const ShelterScreen: FC<ProfileNavigationStackScreenProps<'ShelterScreen'
     const handleSubmitModal = () => {
         if (inputValue == data?.Data.Pin) {
             setIsModalOpen(false);
+            setErrorMessage("");
             setInputValue("");
-            Alert.alert("Success", "Pin correct. Navigating to ManageShelterScreen.",
+            Alert.alert("Success", "Pin Benar. Anda akan segera diakses menuju halaman Manage Shelter",
                 [{ text: "OK", onPress: () => navigation.navigate("ManageShelterScreen") }]);
         } else {
             setErrorMessage("Pin Salah");
@@ -100,9 +101,9 @@ export const ShelterScreen: FC<ProfileNavigationStackScreenProps<'ShelterScreen'
                     <BottomSheetModalProvider>
                         {fetchLoading ? (
                             <>
-                            <View className="flex-1 justify-center items-center">
-                                <ActivityIndicator size="large" color="#4689FD" />
-                            </View>
+                                <View className="flex-1 justify-center items-center">
+                                    <ActivityIndicator size="large" color="#4689FD" />
+                                </View>
                             </>
                         ) : (
                             <>
@@ -134,7 +135,7 @@ export const ShelterScreen: FC<ProfileNavigationStackScreenProps<'ShelterScreen'
                                                     </View>
                                                     <Text style={styles.text}>Tambah Hewan</Text>
                                                 </TouchableOpacity>
-                                                <TouchableOpacity style={styles.button}>
+                                                <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("ApprovalScreen")}>
                                                     <View style={styles.iconContainer}>
                                                         <Ionicons name="receipt-outline" size={25} color="white" />
                                                     </View>
@@ -142,7 +143,13 @@ export const ShelterScreen: FC<ProfileNavigationStackScreenProps<'ShelterScreen'
                                                 </TouchableOpacity>
                                             </View>
 
-                                            {petData&&
+                                            {petData == null &&
+                                                <View className='flex flex-1 justify-center items-center mt-20'>
+                                                    <Text className='text-center'>Anda tidak mempunyai data hewan</Text>
+                                                </View>
+                                            }
+
+                                            {petData &&
                                                 <View style={{ flex: 1, padding: 10 }}>
                                                     <FlashList
                                                         estimatedItemSize={25}
@@ -151,7 +158,7 @@ export const ShelterScreen: FC<ProfileNavigationStackScreenProps<'ShelterScreen'
                                                         keyExtractor={item => item.Id.toString()}
                                                         renderItem={({ item: pet }) => (
                                                             <View style={{ flex: 1, marginBottom: 35, marginTop: 20 }}>
-                                                                <TouchableOpacity className="mx-2 justify-center" activeOpacity={1}>
+                                                                <TouchableOpacity className="mx-2 justify-center" activeOpacity={1} onPress={() => navigation.navigate("ManagePetScreen", { petId: pet.Id })}>
                                                                     <Image
                                                                         source={{ uri: `data:image/*;base64,${pet.ImageBase64}` }}
                                                                         className="w-full h-80 rounded-3xl"

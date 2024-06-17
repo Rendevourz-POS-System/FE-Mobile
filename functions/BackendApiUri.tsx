@@ -1,4 +1,4 @@
-export const baseUrl = "http://192.168.18.3:8080"
+export const baseUrl = "http://192.168.18.253:8080"
 // export const baseUrl = "http://192.168.200.245:8080"
 // export const baseUrl = "http://172.20.10.4:8080"
 
@@ -29,6 +29,7 @@ export const BackendApiUri = {
     getUser: '/user',
     postRequest: '/request/create',
     putPetUpdate: '/pet/update',
+    deletePet: '/pet/delete',
 
     // Request
     postRequestDonation: '/request/donation',

@@ -41,6 +41,8 @@ import { HewanAdopsiScreen } from "../../navigations/Root/screens/HewanAdopsiScr
 import { SurrenderFormScreen } from "../../navigations/Root/screens/SurrenderFormScreen";
 import { DonateScreen } from "../../navigations/Root/screens/DonateScreen";
 import { RescueFormScreen } from "../../navigations/Root/screens/RescueFormScreen";
+import { ManagePetScreen } from "../../navigations/Profile/screens/ManagePetScreen";
+import { ApprovalScreen } from "../../navigations/Profile/screens/ApprovalScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -141,6 +143,8 @@ const AppNavigationStack: FC = () => {
             <ProfileUserStack.Screen name="ShelterScreen" component={ShelterScreen} options={{ presentation: "modal", headerShown: false }} />
             <ProfileUserStack.Screen name="ManageShelterScreen" component={ManageShelterScreen} options={{ presentation: "modal", headerShown: false }} />
             <ProfileUserStack.Screen name="CreatePetScreen" component={CreatePetScreen} options={{ presentation: "modal", headerShown: false }} />
+            <ProfileUserStack.Screen name="ManagePetScreen" component={ManagePetScreen} options={{ presentation: "modal", headerShown: false }} />
+            <ProfileUserStack.Screen name="ApprovalScreen" component={ApprovalScreen} options={{ presentation: "modal", headerShown: false }} />
         </ProfileUserStack.Navigator>
     )
 
