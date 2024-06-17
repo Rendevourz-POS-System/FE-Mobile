@@ -79,7 +79,7 @@ export const RescueFormScreen: FC<NoHeaderNavigationStackScreenProps<'RescueForm
     }, []);
 
     return (
-        <SafeAreaProvider className='flex-1'>
+        <SafeAreaProvider className='flex-1 bg-white'>
             <GestureHandlerRootView style={{ flex: 1 }}>
                 <BottomSheetModalProvider>
 

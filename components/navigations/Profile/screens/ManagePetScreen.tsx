@@ -218,7 +218,7 @@ export const ManagePetScreen: FC<ProfileNavigationStackScreenProps<"ManagePetScr
     }
 
     return (
-        <SafeAreaProvider>
+        <SafeAreaProvider className="bg-gray-100">
             <View className="mt-5 flex-row items-center justify-center mb-3">
                 <Ionicons name="chevron-back" size={24} color="black" onPress={() => navigation.goBack()} style={{ position: 'absolute', left: 20 }} />
                 <Text className="text-xl">Edit</Text>

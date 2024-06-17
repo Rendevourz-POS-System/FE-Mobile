@@ -81,7 +81,7 @@ export const ShelterScreen: FC<ProfileNavigationStackScreenProps<'ShelterScreen'
             setIsModalOpen(false);
             setErrorMessage("");
             setInputValue("");
-            Alert.alert("Success", "Pin Benar. Anda akan segera diakses menuju halaman Manage Shelter",
+            Alert.alert("", "Pin Benar. Anda akan segera diakses menuju halaman Manage Shelter",
                 [{ text: "OK", onPress: () => navigation.navigate("ManageShelterScreen") }]);
         } else {
             setErrorMessage("Pin Salah");
@@ -102,7 +102,7 @@ export const ShelterScreen: FC<ProfileNavigationStackScreenProps<'ShelterScreen'
                         {fetchLoading ? (
                             <>
                                 <View className="flex-1 justify-center items-center">
-                                    <ActivityIndicator size="large" color="#4689FD"/>
+                                    <ActivityIndicator size="large" color="#4689FD" />
                                 </View>
                             </>
                         ) : (
@@ -121,7 +121,7 @@ export const ShelterScreen: FC<ProfileNavigationStackScreenProps<'ShelterScreen'
                                             <Ionicons name="chevron-back" size={24} color="black" onPress={() => navigation.goBack()} style={{ position: 'absolute', left: 20 }} />
                                             <Text className="text-xl">Shelter Dashboard</Text>
                                         </View>
-                                        <ScrollView className="my-5" contentContainerStyle={{width: "100%", height: "100%"}}>
+                                        <ScrollView className="my-5" contentContainerStyle={{ width: "100%", height: "100%" }}>
                                             <View className="mt-5 flex-row justify-around">
                                                 <TouchableOpacity style={[styles.button]} onPress={() => setIsModalOpen(true)}>
                                                     <View style={styles.iconContainer}>
@@ -180,7 +180,10 @@ export const ShelterScreen: FC<ProfileNavigationStackScreenProps<'ShelterScreen'
                                                                                     <Text style={{ fontSize: 14, fontWeight: 'normal', marginLeft: 5 }}>{pet.ShelterLocation}</Text>
                                                                                 </View>
                                                                                 <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10 }}>
-                                                                                    <FontAwesome6 name={pet.PetType.toLowerCase()} size={20} color='#8A8A8A' style={{ marginLeft: 20 }} />
+                                                                                    {pet.PetType.toLocaleLowerCase() == "rabbit" ?
+                                                                                        <MaterialCommunityIcons name={"rabbit"} size={29} color='#8A8A8A' style={{ marginEnd: 5 }} /> :
+                                                                                        <FontAwesome6 name={pet.PetType.toLowerCase()} size={20} color='#8A8A8A' style={{ marginLeft: 20 }} />
+                                                                                    }
                                                                                 </View>
                                                                             </View>
                                                                         </View>
