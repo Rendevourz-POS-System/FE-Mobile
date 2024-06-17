@@ -60,7 +60,7 @@ export const FavoriteScreen: FC<ProfileNavigationStackScreenProps<'FavoriteScree
         >
             <View style={styles.shelterImageContainer}>
                 <Image
-                    source={item.ImageBase64 ? { uri: `data:image/*;base64,${item.ImageBase64}` } : require('../../../../assets/animal-shelter.png')}
+                    source={item.ImageBase64 && item.ImageBase64.length > 0 ? { uri: `data:image/*;base64,${item.ImageBase64}` } : require('../../../../assets/animal-shelter.png')}
                     resizeMode='stretch'
                     style={styles.shelterImage}
                 />
@@ -93,8 +93,6 @@ export const FavoriteScreen: FC<ProfileNavigationStackScreenProps<'FavoriteScree
         </TouchableOpacity>
     );
     
-    
-
     const renderPetItem = ({ item }: { item: PetData }) => (
         <TouchableOpacity
             style={styles.petItem}
@@ -102,7 +100,7 @@ export const FavoriteScreen: FC<ProfileNavigationStackScreenProps<'FavoriteScree
             onPress={() => navigation.navigate("PetDetailScreen", { petId: item.Id })}
         >
             <Image
-                source={item.ImageBase64 ? { uri: `data:image/*;base64,${item.ImageBase64}` } : require("../../../../assets/default_paw2.jpg")}
+                source={item.ImageBase64 && item.ImageBase64.length > 0 ? { uri: `data:image/*;base64,${item.ImageBase64}` } : require("../../../../assets/default_paw2.jpg")}
                 style={styles.petImage}
                 resizeMode="cover"
             />
@@ -122,6 +120,14 @@ export const FavoriteScreen: FC<ProfileNavigationStackScreenProps<'FavoriteScree
         </TouchableOpacity>
     );
 
+    const renderItem = ({ item }: { item: ShelterData | PetData }) => {
+        if ('ShelterName' in item) {
+            return renderShelterItem({ item });
+        } else {
+            return renderPetItem({ item });
+        }
+    };
+
     return (
         <SafeAreaProvider style={styles.container}>
             <View style={styles.header}>
@@ -137,9 +143,7 @@ export const FavoriteScreen: FC<ProfileNavigationStackScreenProps<'FavoriteScree
                     <FlashList
                         estimatedItemSize={300} // Adjust the estimated item size based on your content
                         data={combinedData}
-                        renderItem={({ item }) =>
-                            'ShelterName' in item ? renderShelterItem({ item }) : renderPetItem({ item })
-                        }
+                        renderItem={renderItem}
                     />
                 ) : (
                     <View style={styles.noDataContainer}>
@@ -278,6 +282,6 @@ const styles = StyleSheet.create({
         fontSize: 16,
         color: 'gray',
     },
-    });
-    
-    export default FavoriteScreen;
+});
+
+export default FavoriteScreen;
