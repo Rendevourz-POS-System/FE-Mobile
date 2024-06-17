@@ -10,6 +10,8 @@ import { ShelterScreen } from "../../navigations/Profile/screens/ShelterScreen";
 import { ManageShelterScreen } from "../../navigations/Profile/screens/ManageShelterScreen";
 import { CreatePetScreen } from "../../navigations/Profile/screens/CreatePetScreen";
 import { HistoryShelterScreen } from "../../navigations/Profile/screens/HistoryShelterScreen";
+import { ManagePetScreen } from "../../navigations/Profile/screens/ManagePetScreen";
+import { ApprovalScreen } from "../../navigations/Profile/screens/ApprovalScreen";
 
 const Stack = createNativeStackNavigator<ProfileNavigationStackParams>();
 
@@ -26,6 +28,8 @@ const ProfileNavigationStack: React.FC<{}> = () => {
             <Stack.Screen name="ManageShelterScreen" component={ManageShelterScreen} options={noHeader} />
             <Stack.Screen name="CreatePetScreen" component={CreatePetScreen} options={noHeader} />
             <Stack.Screen name="HistoryShelterScreen" component={HistoryShelterScreen} options={noHeader} />
+            <Stack.Screen name="ManagePetScreen" component={ManagePetScreen} options={noHeader} />
+            <Stack.Screen name="ApprovalScreen" component={ApprovalScreen} options={noHeader} />
         </Stack.Navigator>
     );
 }
