@@ -1,4 +1,4 @@
-export const baseUrl = "http://192.168.18.253:8080"
+export const baseUrl = "https://shelter-apps-v5z53glgzq-et.a.run.app"
 // export const baseUrl = "http://192.168.200.245:8080"
 // export const baseUrl = "http://172.20.10.4:8080"
 

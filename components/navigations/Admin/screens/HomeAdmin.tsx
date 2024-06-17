@@ -1,6 +1,6 @@
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import React, { useEffect, useState, FC } from 'react';
-import { TouchableOpacity, View, ScrollView, ActivityIndicator, Alert } from 'react-native';
+import { TouchableOpacity, View, ScrollView, ActivityIndicator, Alert, RefreshControl } from 'react-native';
 import { Text } from 'react-native-elements';
 import TopNavigation from '../../../TopNavigation';
 import { BackendApiUri } from '../../../../functions/BackendApiUri';
@@ -10,12 +10,16 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { IShelter } from '../../../../interface/IShelter';
 import { PetData } from '../../../../interface/IPetList';
 import { AdminNavigationStackScreenProps } from '../../../StackParams/StackScreenProps';
+import { FlashList } from '@shopify/flash-list';
 
 export const HomeAdmin: FC<AdminNavigationStackScreenProps<'HomeAdmin'>> = ({ navigation }: any) => {
     const [userData, setUserData] = useState<IUser[]>();
     const [shelterData, setShelterData] = useState<IShelter[]>();
     const [petData, setPetData] = useState<PetData[]>();
-    const [isLoading, setIsLoading] = useState<boolean>(false);
+    const [isLoading, setIsLoading] = useState<boolean>(true);
+    const [refreshUser, setrefreshUser] = useState<boolean>(false);
+    const [refreshShelter, setrefreshShelter] = useState<boolean>(false);
+    const [refreshPet, setrefreshPet] = useState<boolean>(false);
 
     const data = [
         { id: 'user', name: 'User', icon: 'user' },
@@ -37,27 +41,17 @@ export const HomeAdmin: FC<AdminNavigationStackScreenProps<'HomeAdmin'>> = ({ na
         fetchPet();
     }, [])
 
-    const refreshData = async () => {
-        setIsLoading(true);
-        try {
-            await fetchUser();
-            await fetchShelter();
-            await fetchPet();
-        } finally {
-            setIsLoading(false);
-        }
-    };
-
     const fetchUser = async () => {
         try {
             const response = await get(`${BackendApiUri.getUser}`);
             if (response && response.status === 200) {
-                setUserData(response.data);
+                const filteredData = response.data.filter((item: any) => item.Email !== 'administrator@gmail.com');
+                setUserData(filteredData);
             } else {
                 setUserData([]);
             }
         } catch (e) {
-            console.error(e)
+            console.error(e);
         } finally {
             setIsLoading(false);
         }
@@ -72,7 +66,7 @@ export const HomeAdmin: FC<AdminNavigationStackScreenProps<'HomeAdmin'>> = ({ na
                 setShelterData([]);
             }
         } catch (e) {
-            console.error(e)
+            console.error(e);
         } finally {
             setIsLoading(false);
         }
@@ -87,38 +81,69 @@ export const HomeAdmin: FC<AdminNavigationStackScreenProps<'HomeAdmin'>> = ({ na
                 setPetData([]);
             }
         } catch (e) {
-            console.error(e)
+            console.error(e);
         } finally {
             setIsLoading(false);
         }
     };
 
+    const onRefreshUser = () => {
+        try {
+            setrefreshUser(true);
+            fetchUser();
+        } catch (e) {
+            console.log(e);
+        } finally {
+            setrefreshUser(false);
+        }
+    };
+
+    const onRefreshShelter = () => {
+        try {
+            setrefreshShelter(true);
+            fetchShelter();
+        } catch (e) {
+            console.log(e);
+        } finally {
+            setrefreshShelter(false);
+        }
+    };
+
+    const onRefreshPet = () => {
+        try {
+            setrefreshPet(true);
+            fetchPet();
+        } catch (e) {
+            console.log(e);
+        } finally {
+            setrefreshPet(false);
+        }
+    };
 
     const handleDeleteUser = async (id: string, name: string) => {
         Alert.alert(`Apakah Anda Yakin ingin menghapus ${name}`, '', [
             {
                 text: 'Cancel',
-                onPress: () => navigation.navigate("HomeAdmin"),
                 style: 'cancel',
             },
             {
                 text: 'OK', onPress: async () => {
-                    setIsLoading(true)
+                    setIsLoading(true);
                     try {
                         const response = await deletes(`${BackendApiUri.deleteAdminUser}/${id}`);
-                        if (response && response.status === 200) {
-                            Alert.alert(`Anda berhasil menghapus ${name}`)
-                            refreshData();
+                        if (response) {
+                            Alert.alert(`Anda berhasil menghapus ${name}`);
+                            fetchUser();
                         }
                     } catch (e) {
-                        Alert.alert(`Anda gagal menghapus ${name}`)
+                        Alert.alert(`Anda gagal menghapus ${name}`);
                     } finally {
                         setIsLoading(false);
                     }
                 }
             },
         ]);
-    }
+    };
 
     const handleDeleteShelter = async (id: string, name: string) => {
         Alert.alert(`Apakah Anda Yakin ingin menghapus ${name}`, '', [
@@ -129,22 +154,22 @@ export const HomeAdmin: FC<AdminNavigationStackScreenProps<'HomeAdmin'>> = ({ na
             },
             {
                 text: 'OK', onPress: async () => {
-                    setIsLoading(true)
+                    setIsLoading(true);
                     try {
                         const response = await deletes(`${BackendApiUri.deleteAdminShelter}/${id}`);
                         if (response && response.status === 200) {
-                            Alert.alert(`Anda berhasil menghapus ${name}`)
-                            refreshData();
+                            Alert.alert(`Anda berhasil menghapus ${name}`);
+                            fetchShelter();
                         }
                     } catch (e) {
-                        Alert.alert(`Anda gagal menghapus ${name}`)
+                        Alert.alert(`Anda gagal menghapus ${name}`);
                     } finally {
                         setIsLoading(false);
                     }
                 }
             },
         ]);
-    }
+    };
 
     const handleDeletePet = async (id: string, name: string) => {
         Alert.alert(`Apakah Anda Yakin ingin menghapus ${name}`, '', [
@@ -155,103 +180,121 @@ export const HomeAdmin: FC<AdminNavigationStackScreenProps<'HomeAdmin'>> = ({ na
             },
             {
                 text: 'OK', onPress: async () => {
-                    setIsLoading(true)
+                    setIsLoading(true);
                     try {
                         const response = await deletes(`${BackendApiUri.deleteAdminPet}/${id}`);
                         if (response && response.status === 200) {
-                            Alert.alert(`Anda berhasil menghapus ${name}`)
-                            refreshData();
+                            Alert.alert(`Anda berhasil menghapus ${name}`);
+                            fetchPet();
                         }
                     } catch (e) {
-                        Alert.alert(`Anda gagal menghapus ${name}`)
+                        Alert.alert(`Anda gagal menghapus ${name}`);
                     } finally {
                         setIsLoading(false);
                     }
                 }
             },
         ]);
-    }
+    };
 
     const RenderUser = () => {
         return (
-            <View>
+            <View style={{ flex: 1 }}>
                 <View className='p-5 flex-row justify-around m-3 mt-2 mb-0 rounded-xl'>
                     <Text className='mr-5 font-bold'>No</Text>
                     <Text className='flex-1 font-bold'>Email</Text>
                     <Text className='flex-2 mr-3 font-bold'>Action</Text>
                 </View>
-                {userData && userData.map((item, index) => (
-                    <View key={index} className='p-5 flex-row justify-around bg-white m-3 mt-0 rounded-xl'>
-                        <Text className='ml-2 mr-5'>{index + 1}</Text>
-                        <Text className='flex-1 ml-2'>{item.Email}</Text>
-                        <Text className='flex-2'>
-                            <TouchableOpacity className='pr-3' onPress={() => navigation.navigate("EditUserScreen", {userId: item.Id})}>
-                                <MaterialIcons name="edit" size={24} color="black" />
-                            </TouchableOpacity>
-                            <TouchableOpacity onPress={() => handleDeleteUser(item.Id, item.Email)}>
-                                <MaterialIcons name="delete" size={24} color="#8A0B1E" />
-                            </TouchableOpacity>
-                        </Text>
-                    </View>
-                ))}
+                <FlashList
+                    refreshControl={<RefreshControl refreshing={refreshUser} onRefresh={onRefreshUser} />}
+                    data={userData || []}
+                    estimatedItemSize={76}
+                    keyExtractor={item => item.Id.toString()}
+                    renderItem={({ item, index }) => (
+                        <View key={index} className='p-5 flex-row justify-around bg-white m-3 mt-0 rounded-xl'>
+                            <Text className='ml-2 mr-5'>{index + 1}</Text>
+                            <Text className='flex-1 ml-2'>{item.Email}</Text>
+                            <Text className='flex-2'>
+                                <TouchableOpacity className='pr-3' onPress={() => navigation.navigate("EditUserScreen", { userId: item.Id })}>
+                                    <MaterialIcons name="edit" size={24} color="black" />
+                                </TouchableOpacity>
+                                <TouchableOpacity onPress={() => handleDeleteUser(item.Id, item.Email)}>
+                                    <MaterialIcons name="delete" size={24} color="#8A0B1E" />
+                                </TouchableOpacity>
+                            </Text>
+                        </View>
+                    )}
+                />
             </View>
-        )
-    }
+        );
+    };
 
     const RenderShelter = () => {
         return (
-            <View>
+            <View style={{ flex: 1 }}>
                 <View className='p-5 flex-row justify-around m-3 mt-2 mb-0 rounded-xl'>
                     <Text className='mr-5 font-bold'>No</Text>
                     <Text className='flex-1 font-bold'>Name</Text>
                     <Text className='flex-2 mr-3 font-bold'>Action</Text>
                 </View>
-                {shelterData && shelterData.map((item, index) => (
-                    <View key={index} className='p-5 flex-row justify-around bg-white m-3 mt-0 rounded-xl'>
-                        <Text className='ml-2 mr-5'>{index + 1}</Text>
-                        <Text className='flex-1 ml-2'>{item.ShelterName}</Text>
-                        <Text className='flex-2'>
-                            <TouchableOpacity className='pr-3' onPress={() => navigation.navigate("EditShelterScreen", { shelterId: item.Id })}>
-                                <MaterialIcons name="edit" size={24} color="black" />
-                            </TouchableOpacity>
-                            <TouchableOpacity onPress={() => handleDeleteShelter(item.Id, item.ShelterName)}>
-                                <MaterialIcons name="delete" size={24} color="#8A0B1E" />
-                            </TouchableOpacity>
-                        </Text>
-                    </View>
-                ))}
+                <FlashList
+                    refreshControl={<RefreshControl refreshing={refreshShelter} onRefresh={onRefreshShelter} />}
+                    data={shelterData || []}
+                    estimatedItemSize={76}
+                    keyExtractor={item => item.Id.toString()}
+                    renderItem={({ item, index }) => (
+                        <View key={index} className='p-5 flex-row justify-around bg-white m-3 mt-0 rounded-xl'>
+                            <Text className='ml-2 mr-5'>{index + 1}</Text>
+                            <Text className='flex-1 ml-2'>{item.ShelterName}</Text>
+                            <Text className='flex-2'>
+                                <TouchableOpacity className='pr-3' onPress={() => navigation.navigate("EditShelterScreen", { shelterId: item.Id })}>
+                                    <MaterialIcons name="edit" size={24} color="black" />
+                                </TouchableOpacity>
+                                <TouchableOpacity onPress={() => handleDeleteShelter(item.Id, item.ShelterName)}>
+                                    <MaterialIcons name="delete" size={24} color="#8A0B1E" />
+                                </TouchableOpacity>
+                            </Text>
+                        </View>
+                    )}
+                />
             </View>
-        )
-    }
+        );
+    };
 
     const RenderPet = () => {
         return (
-            <View>
+            <View style={{ flex: 1 }}>
                 <View className='p-5 flex-row justify-around m-3 mt-2 mb-0 rounded-xl'>
                     <Text className='mr-5 font-bold'>No</Text>
                     <Text className='flex-1 font-bold'>Name</Text>
                     <Text className='flex-2 mr-3 font-bold'>Action</Text>
                 </View>
-                {petData && petData.map((item, index) => (
-                    <View key={index} className='p-5 flex-row justify-around bg-white m-3 mt-0 rounded-xl'>
-                        <Text className='ml-2 mr-5'>{index + 1}</Text>
-                        <Text className='flex-1 ml-2'>{item.PetName}</Text>
-                        <Text className='flex-2'>
-                            <TouchableOpacity className='pr-3' onPress={() => navigation.navigate("EditPetScreen", { petId: item.Id })}>
-                                <MaterialIcons name="edit" size={24} color="black" />
-                            </TouchableOpacity>
-                            <TouchableOpacity onPress={() => handleDeletePet(item.Id, item.PetName)}>
-                                <MaterialIcons name="delete" size={24} color="#8A0B1E" />
-                            </TouchableOpacity>
-                        </Text>
-                    </View>
-                ))}
+                <FlashList
+                    refreshControl={<RefreshControl refreshing={refreshPet} onRefresh={onRefreshPet} />}
+                    data={petData || []}
+                    estimatedItemSize={76}
+                    keyExtractor={item => item.Id.toString()}
+                    renderItem={({ item, index }) => (
+                        <View key={index} className='p-5 flex-row justify-around bg-white m-3 mt-0 rounded-xl'>
+                            <Text className='ml-2 mr-5'>{index + 1}</Text>
+                            <Text className='flex-1 ml-2'>{item.PetName}</Text>
+                            <Text className='flex-2'>
+                                <TouchableOpacity className='pr-3' onPress={() => navigation.navigate("EditPetScreen", { petId: item.Id })}>
+                                    <MaterialIcons name="edit" size={24} color="black" />
+                                </TouchableOpacity>
+                                <TouchableOpacity onPress={() => handleDeletePet(item.Id, item.PetName)}>
+                                    <MaterialIcons name="delete" size={24} color="#8A0B1E" />
+                                </TouchableOpacity>
+                            </Text>
+                        </View>
+                    )}
+                />
             </View>
-        )
-    }
+        );
+    };
 
     return (
-        <View className='flex-1'>
+        <View style={{ flex: 1 }}>
             <TopNavigation />
             <BottomSheetModalProvider>
                 <View className='flex-row justify-around items-center'>
@@ -272,7 +315,7 @@ export const HomeAdmin: FC<AdminNavigationStackScreenProps<'HomeAdmin'>> = ({ na
                         <ActivityIndicator color="blue" size="large" />
                     </View>
                 ) : (
-                    <ScrollView>
+                    <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
                         {selectedTab === 'User' ? (RenderUser()) : (
                             <>
                                 {selectedTab === 'Shelter' ? (RenderShelter()) : (RenderPet())}
@@ -281,9 +324,8 @@ export const HomeAdmin: FC<AdminNavigationStackScreenProps<'HomeAdmin'>> = ({ na
                     </ScrollView>
                 )}
             </BottomSheetModalProvider>
-
         </View>
-    )
+    );
 };
 
 export default HomeAdmin;

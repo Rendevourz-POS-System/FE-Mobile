@@ -150,7 +150,7 @@ export const CreateShelter = () => {
                 removeImage(image!);
             }
             if(response.status === 200) {
-                Alert.alert("Pet Created", "Pet Berhasil dibuat", [ { text: "OK", onPress: () => navigate.goBack()}]);
+                Alert.alert("Shelter Berhasil Dibuat", "Shelter Berhasil dibuat", [ { text: "OK", onPress: () => navigate.goBack()}]);
             }
         }).catch(err => {
             console.log(err)

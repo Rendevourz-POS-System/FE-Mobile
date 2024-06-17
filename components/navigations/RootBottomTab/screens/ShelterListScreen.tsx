@@ -1,4 +1,4 @@
-import { ActivityIndicator, Image, RefreshControl, StyleSheet, Text, TouchableOpacity, View } from "react-native"
+import { ActivityIndicator, Image, RefreshControl, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native"
 import { useNavigation } from "@react-navigation/native";
 import { HomeUserNavigationStackScreenProps, NoHeaderNavigationStackScreenProps, UserBottomTabCompositeNavigationProps, UserNavigationStackScreenProps } from "../../../StackParams/StackScreenProps";
 import { FC, useCallback, useEffect, useRef, useState } from "react";
@@ -26,8 +26,10 @@ import { Dropdown } from 'react-native-element-dropdown';
 import { Button } from "react-native-elements";
 import { getIconName } from "../../../../functions/GetPetIconName";
 import { NoHeaderProps } from "../../../../interface/TNoHeaderProps";
+import { useAuth } from "../../../../app/context/AuthContext";
 
 export const ShelterListScreen : FC<NoHeaderProps> = ({navigation, route} : any) => {
+    const {authState} = useAuth();
     const favAttempt = route.params;
     const [provinceData, setProvinceData] = useState<Location[]>([]);
     const [shelterData, setShelterData] = useState<ShelterData[]>([]);
@@ -78,8 +80,9 @@ export const ShelterListScreen : FC<NoHeaderProps> = ({navigation, route} : any)
     const fetchShelter = async () => {
         try{
             const response = await get(`${BackendApiUri.getShelterList}/?search=${search}&location_name=${filterLocation?.label}`);
-            if(response && response.status === 200) {
-                setShelterData(response.data);
+            if(response.data && response.status === 200) {
+                const filterShelter = response.data.filter((shelter: ShelterData) => shelter.UserId != authState?.userId);
+                setShelterData(filterShelter);
             } else {
                 setShelterData([]);
             }
@@ -341,7 +344,7 @@ export const ShelterListScreen : FC<NoHeaderProps> = ({navigation, route} : any)
                                                     />
                                                 )}
                                                 <View style={{ position: 'absolute', top: 170, left: 0, right: 0, bottom: 0}}>
-                                                    <View style={{ marginTop: 10, backgroundColor: "#FFFDFF", paddingHorizontal: 20, paddingVertical: 15, borderTopLeftRadius: 15, borderTopRightRadius: 15}}>
+                                                    <View style={{ marginTop: 10, backgroundColor: "#FFFDFF", paddingHorizontal: 20, paddingVertical: 15, borderRadius: 20 }}>
                                                         <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
                                                             <Text style={{ fontSize: 20, fontWeight: 'bold' }}>{shelter.ShelterName}</Text>
                                                             <TouchableOpacity onPress={() => onPressFav(shelter.Id)}>
@@ -389,8 +392,17 @@ export const ShelterListScreen : FC<NoHeaderProps> = ({navigation, route} : any)
                                     )}
                                 />
                             ) : (
-                                <View className='flex flex-1 justify-center items-center'>
-                                    <Text className='text-center'>Sorry, data not found</Text>
+                                <View className=''>
+                                    <ScrollView
+                                        showsVerticalScrollIndicator={false}
+                                        refreshControl={
+                                            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+                                        }
+                                        className="w-full h-full"
+                                        contentContainerStyle={{flex: 1, justifyContent: 'center', alignItems: 'center'}}
+                                    >
+                                        <Text className=''>Sorry, data not found</Text>
+                                    </ScrollView>
                                 </View>
                             )}
                         </>

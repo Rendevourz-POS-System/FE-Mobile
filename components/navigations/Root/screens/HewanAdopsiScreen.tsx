@@ -47,7 +47,7 @@ export const HewanAdopsiScreen: FC<NoHeaderNavigationStackScreenProps<'HewanAdop
                 <Text className="text-xl">Hewan Adopsi</Text>
             </View>
 
-            <ScrollView>
+            <ScrollView contentContainerStyle={{width: '100%', height: '100%'}}>
                 {petData &&
                     <View style={{ flex: 1, padding: 10 }}>
                     <FlashList

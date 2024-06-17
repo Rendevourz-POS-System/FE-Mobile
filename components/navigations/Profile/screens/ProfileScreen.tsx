@@ -5,11 +5,12 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 import { ProfileRootBottomTabCompositeScreenProps } from "../../CompositeNavigationProps";
 import { useAuth } from "../../../../app/context/AuthContext";
 import { Avatar } from "react-native-elements";
-import { BackendApiUri } from "../../../../functions/BackendApiUri";
+import { BackendApiUri, baseUrl } from "../../../../functions/BackendApiUri";
 import { get } from "../../../../functions/Fetch";
 import { ShelterUser } from "../../../../interface/IShelter";
 import { useFocusEffect } from "@react-navigation/native";
 import { ProfileNavigationStackScreenProps } from "../../../StackParams/StackScreenProps";
+import axios from "axios";
 
 interface IProfile {
     Username : string
@@ -24,7 +25,11 @@ export const ProfileScreen: FC<ProfileNavigationStackScreenProps<'ProfileScreen'
 
     const fetchProfileShelter = async () => {
         try {
-            const res = await get(BackendApiUri.getUserShelter);
+            const res = await axios.get(`${baseUrl+BackendApiUri.getUserShelter}`,{
+                headers : {
+                    Authorization : `Bearer ${authState?.token}`
+                }
+            });
             if (res.data.Error) {
                 setDataShelter(null);
             }
@@ -36,7 +41,11 @@ export const ProfileScreen: FC<ProfileNavigationStackScreenProps<'ProfileScreen'
 
     const fetchProfile = async () => {
         try {
-            const res = await get(BackendApiUri.getUserData);
+            const res = await axios.get(`${baseUrl+BackendApiUri.getUserData}`, {
+                headers : {
+                    Authorization : `Bearer ${authState?.token}`
+                }
+            });
             if(res.data) {
                 setData(res.data);
             }
@@ -179,6 +188,6 @@ const styles = StyleSheet.create({
         padding: 15,
         marginHorizontal: 30,
         borderRadius: 10,
-        marginTop: 20
+        marginBottom: 20
     }
 });

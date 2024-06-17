@@ -86,7 +86,7 @@ export const DonateScreen: FC<NoHeaderNavigationStackScreenProps<'DonateScreen'>
 
     return (
         <SafeAreaProvider className='flex-1 bg-white'>
-            <View className="mt-14 flex-row items-center justify-center mb-3">
+            <View className="mt-5 flex-row items-center justify-center mb-3">
                 <Ionicons name="chevron-back" size={24} color="black" onPress={() => navigation.goBack()} style={{ position: 'absolute', left: 20 }} />
                 <Text className="text-xl">Donasi</Text>
             </View>
@@ -210,6 +210,9 @@ export const DonateScreen: FC<NoHeaderNavigationStackScreenProps<'DonateScreen'>
                             />
                         )}
                     />
+                    <Text className='text-center text-xs'>
+                        Note: ini hanya simulasi donasi menggunakan MidTrans
+                    </Text>
                 </View>
 
                 <TouchableOpacity style={styles.button} onPress={handleSubmit(onSubmit)}>
