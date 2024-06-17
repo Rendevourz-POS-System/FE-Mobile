@@ -334,7 +334,7 @@ export const ShelterListScreen : FC<NoHeaderProps> = ({navigation, route} : any)
                                             activeOpacity={1}>
                                                 {shelter.ImageBase64 === null ? (
                                                     <Image source={require('../../../../assets/animal-shelter.png')} 
-                                                        resizeMode='stretch'
+                                                        resizeMode='cover'
                                                         style={{ width: '100%', height: 290, marginBottom: 15, marginTop: 5, borderTopLeftRadius: 20, borderTopRightRadius: 20 }} 
                                                     />
                                                 ) : (

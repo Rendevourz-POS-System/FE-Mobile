@@ -66,7 +66,7 @@ export const FavoriteScreen: FC<ProfileNavigationStackScreenProps<'FavoriteScree
             <View style={styles.shelterImageContainer}>
                 <Image
                     source={item.ImageBase64 && item.ImageBase64.length > 0 ? { uri: `data:image/*;base64,${item.ImageBase64}` } : require('../../../../assets/animal-shelter.png')}
-                    resizeMode='stretch'
+                    resizeMode='cover'
                     style={styles.shelterImage}
                 />
             </View>
