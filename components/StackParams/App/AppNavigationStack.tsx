@@ -84,6 +84,13 @@ const AppNavigationStack: FC = () => {
 
     // Icon Botom Tab 
     const homeTabOptions: BottomTabNavigationOptions = {
+        tabBarStyle: {
+            backgroundColor: "#fff",
+            borderTopWidth: 0,
+            height: 55,
+            paddingTop: 10
+        },
+        tabBarLabel: "",
         headerTitle: "",
         headerStyle: {
             elevation: 0, // Remove shadow on Android
@@ -93,20 +100,27 @@ const AppNavigationStack: FC = () => {
         // header : () => <Header />,
         tabBarIcon: ({ size, focused }) => (
             <MaterialCommunityIcons
-                name="home"
+                name={focused ? "home" : "home-outline"}
                 color={focused ? "#4689FD" : "#A9A9A9"}
-                size={size}
+                size={30}
             />
         )
     }
 
     const profileTabOptions: BottomTabNavigationOptions = {
+        tabBarStyle: {
+            backgroundColor: "#fff",
+            borderTopWidth: 0,
+            height: 55,
+            paddingTop: 10
+        },
+        tabBarLabel: "",
         headerShown: false,
         tabBarIcon: ({ size, focused }) => (
             <MaterialCommunityIcons
-                name="account"
+                name={focused ? "account" : "account-outline"}
                 color={focused ? "#4689FD" : "#A9A9A9"}
-                size={size}
+                size={30}
             />
         )
     }
