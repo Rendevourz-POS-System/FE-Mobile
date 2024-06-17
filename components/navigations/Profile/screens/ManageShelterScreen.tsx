@@ -1,7 +1,7 @@
 import { FontAwesome, Ionicons } from "@expo/vector-icons";
-import React, { FC, useEffect, useState } from "react";
+import React, { FC, useCallback, useEffect, useRef, useState } from "react";
 import { ScrollView, Text, View, StyleSheet, TouchableOpacity, TextInput, Alert, Image } from "react-native";
-import { SafeAreaProvider } from "react-native-safe-area-context";
+import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from 'react-hook-form';
@@ -12,6 +12,9 @@ import { SelectList } from "react-native-dropdown-select-list";
 import { PetType, ShelterLocation } from "../../../../interface/IPetType";
 import { Checkbox } from "react-native-paper";
 import { ProfileNavigationStackScreenProps } from "../../../StackParams/StackScreenProps";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { BottomSheetBackdrop, BottomSheetModal, BottomSheetModalProvider, BottomSheetView } from "@gorhom/bottom-sheet";
+import * as FileSystem from 'expo-file-system';
 
 const editShelterFormSchema = z.object({
     ShelterName: z.string({ required_error: "Nama shelter tidak boleh kosong" }).min(1, { message: "Nama shelter tidak boleh kosong" }),
@@ -29,11 +32,12 @@ const editShelterFormSchema = z.object({
 type CreateShelterFormType = z.infer<typeof editShelterFormSchema>
 
 export const ManageShelterScreen: FC<ProfileNavigationStackScreenProps<'ManageShelterScreen'>> = ({ navigation }) => {
-    const [image, setImage] = useState('');
+    const [image, setImage] = useState<string | null>(null);
     const [selected, setSelected] = useState<string[]>();
     const [shelterLocation, setShelterLocation] = useState<ShelterLocation[]>([]);
     const [petTypes, setPetTypes] = useState<PetType[]>([]);
-
+    const bottomSheetModalRef = useRef<BottomSheetModal>(null);
+    const imgDir = FileSystem.documentDirectory + 'images/';
     const { control, setValue, handleSubmit, formState: { errors } } = useForm<CreateShelterFormType>({
         resolver: zodResolver(editShelterFormSchema),
     });
@@ -63,8 +67,20 @@ export const ManageShelterScreen: FC<ProfileNavigationStackScreenProps<'ManageSh
     const onSubmit = async (data: CreateShelterFormType) => {
         let payloadString = JSON.stringify(data);
         const formData = new FormData();
-        formData.append('file', image);
+        if(image) {
+            const fileInfo = await FileSystem.getInfoAsync(image);
+            console.log(fileInfo);
+            formData.append('files', {
+                uri: image,
+                name: fileInfo.uri.split('/').pop(),
+                type: 'image/jpeg'
+            } as any); // You can also check and set the type dynamically based on file extension
+        }
+
         formData.append('data', payloadString);
+        console.log(formData);
+        return;
+
         const res = await putForm(`${BackendApiUri.putShelterUpdate}`, formData);
         if (res.status == 200) {
             Alert.alert('Shelter Berhasil Terupdate', 'Data shelter anda telah berhasil terupdate.', [{ text: "OK", onPress: () => navigation.goBack() }]);
@@ -73,18 +89,50 @@ export const ManageShelterScreen: FC<ProfileNavigationStackScreenProps<'ManageSh
         }
     }
 
-    const pickImage = async () => {
-        let result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ImagePicker.MediaTypeOptions.All,
-            allowsEditing: true,
-            aspect: [1, 1],
-            quality: 1,
-        })
+    const ensureDirExists = async () => {
+        const dirInfo = await FileSystem.getInfoAsync(imgDir);
+        if (!dirInfo.exists) {
+            await FileSystem.makeDirectoryAsync(imgDir, { intermediates: true });
+        }
+    }
+
+    const saveImage = async (uri: string) => {
+        await ensureDirExists();
+        const fileName = uri.substring(uri.lastIndexOf('/') + 1);
+        const dest = imgDir + fileName;
+        await FileSystem.copyAsync({ from: uri, to: dest });
+        setImage(dest);
+    }
+    const selectImage = async (useLibrary : boolean) => {
+        let result;
+        const options : ImagePicker.ImagePickerOptions = {
+            mediaTypes: ImagePicker.MediaTypeOptions.Images,
+                allowsEditing: true,
+                aspect: [1, 1],
+                quality: 1,
+        }
+
+        if (useLibrary) {
+            result = await ImagePicker.launchImageLibraryAsync(options);
+        } else {
+            await ImagePicker.requestCameraPermissionsAsync();
+            result = await ImagePicker.launchCameraAsync(options);
+        }
 
         if (!result.canceled) {
-            setImage(result.assets[0].uri)
+            saveImage(result.assets[0].uri);
         }
+        bottomSheetModalRef.current?.close();
     };
+
+    const removeImage = async (imageUri: string) => {
+        await FileSystem.deleteAsync(imageUri);
+        setImage(null);
+    }
+
+    const handleImagePress = useCallback(() => {
+        bottomSheetModalRef.current?.present();
+    }, []);
 
     const fetchPetType = async () => {
         const res = await get(BackendApiUri.getPetTypes);
@@ -120,228 +168,259 @@ export const ManageShelterScreen: FC<ProfileNavigationStackScreenProps<'ManageSh
 
     return (
         <SafeAreaProvider style={styles.container}>
-            <View className="mt-5 flex-row items-center justify-center mb-3">
-                <Ionicons name="chevron-back" size={24} color="black" onPress={() => navigation.goBack()} style={{ position: 'absolute', left: 20 }} />
-                <Text className="text-xl">Manage Shelter Profile</Text>
-            </View>
-
-            <ScrollView>
-                <View style={styles.rowContainer} className="justify-around mt-5 mb-5">
-                    <TouchableOpacity
-                        style={{ width: 350, height: 200, backgroundColor: '#2E3A59', borderRadius: 10, justifyContent: 'center', alignItems: 'center' }}
-                        onPress={pickImage}
-                        disabled={image ? true : false}
-                    >
-
-                        {image ? (
-                            <Image source={{ uri: image }} style={{ width: 550, height: 200, borderRadius: 10 }} />)
-                            :
-                            (<Ionicons name="camera" size={40} color="white" />
+            <SafeAreaView className="flex-1">
+                <GestureHandlerRootView style={{ flex: 1 }}>
+                    <BottomSheetModalProvider>
+                        <BottomSheetModal
+                            ref={bottomSheetModalRef}
+                            index={0}
+                            snapPoints={['20%']}
+                            backdropComponent={(props) => (
+                                <BottomSheetBackdrop
+                                    {...props}
+                                    disappearsOnIndex={-1}
+                                    appearsOnIndex={0}
+                                    pressBehavior="close"
+                                />
                             )}
-                    </TouchableOpacity>
-                </View>
-
-                <Text style={styles.textColor}>Nama Shelter<Text className='text-[#ff0000]'>*</Text></Text>
-                <View style={styles.inputBox}>
-                    <Controller
-                        name="ShelterName"
-                        control={control}
-                        render={({ field: { value } }) => (
-                            <TextInput
-                                placeholder="Masukkan Nama Shelter"
-                                style={{ flex: 1 }}
-                                onChangeText={(text: string) => setValue('ShelterName', text)}
-                                value={value}
-                            />
-                        )}
-                    />
-                </View>
-                <Text style={styles.errorMessage}>{errors.ShelterName?.message}</Text>
-
-                <Text style={styles.textColor}>Lokasi Shelter<Text className='text-[#ff0000]'>*</Text></Text>
-                <Controller
-                    name="ShelterLocation"
-                    control={control}
-                    render={({ field: { value } }) => (
-                        <SelectList
-                            setSelected={(text: string) => setValue('ShelterLocation', text)}
-                            data={shelterLocationData}
-                            save="key"
-                            search={true}
-                            dropdownStyles={styles.inputBox}
-                            boxStyles={styles.selectBox}
-                            inputStyles={{ padding: 3 }}
-                            arrowicon={<FontAwesome name="chevron-down" size={12} color={'#808080'} style={{ padding: 3 }} />}
-                            placeholder="Masukkan Lokasi Shelter"
-                            defaultOption={shelterLocationData.find(item => item.key === value)}
-                        />
-                    )}
-                />
-                <Text style={styles.errorMessage}>{errors.ShelterLocation?.message}</Text>
-
-                <Text style={styles.textColor}>Alamat Shelter<Text className='text-[#ff0000]'>*</Text></Text>
-                <View style={styles.inputBox}>
-                    <Controller
-                        name="ShelterAddress"
-                        control={control}
-                        render={({ field: { value } }) => (
-                            <TextInput
-                                placeholder="Masukkan Alamat Shelter"
-                                style={{ flex: 1 }}
-                                onChangeText={(text: string) => setValue('ShelterAddress', text)}
-                                value={value}
-                            />
-                        )}
-                    />
-                </View>
-                <Text style={styles.errorMessage}>{errors.ShelterAddress?.message}</Text>
-
-                <Text style={styles.textColor}>Kapasitas Shelter<Text className='text-[#ff0000]'>*</Text></Text>
-                <View style={styles.inputBox}>
-                    <Controller
-                        name="ShelterCapacity"
-                        control={control}
-                        render={({ field: { value } }) => (
-                            <TextInput
-                                style={{ flex: 1 }}
-                                placeholder="Kapasitas Shelter"
-                                onChangeText={(text: string) => {
-                                    const numericValue = parseInt(text);
-                                    if (!isNaN(numericValue)) {
-                                        setValue('ShelterCapacity', numericValue);
-                                    }
-                                }}
-                                value={value?.toString()}
-                                keyboardType="numeric"
-                            />
-                        )}
-                    />
-                </View>
-                <Text style={styles.errorMessage}>{errors.ShelterCapacity?.message}</Text>
-
-                <Text style={styles.textColor}>Kontak Shelter<Text className='text-[#ff0000]'>*</Text></Text>
-                <View style={styles.inputBox}>
-                    <Controller
-                        name="ShelterContactNumber"
-                        control={control}
-                        render={({ field: { value } }) => (
-                            <TextInput
-                                placeholder="Masukkan Kontak Shelter"
-                                style={{ flex: 1 }}
-                                onChangeText={(text: string) => setValue('ShelterContactNumber', text)}
-                                value={value}
-                            />
-                        )}
-                    />
-                </View>
-                <Text style={styles.errorMessage}>{errors.ShelterContactNumber?.message}</Text>
-
-                <Text style={styles.textColor}>Total Hewan Shelter<Text className='text-[#ff0000]'>*</Text></Text>
-                <View style={styles.inputBox}>
-                    <Controller
-                        name="TotalPet"
-                        control={control}
-                        render={({ field: { value } }) => (
-                            <TextInput
-                                style={{ flex: 1 }}
-                                placeholder="Total hewan"
-                                onChangeText={(text: string) => {
-                                    const numericValue = parseInt(text);
-                                    if (!isNaN(numericValue)) {
-                                        setValue('TotalPet', numericValue);
-                                    }
-                                }}
-                                value={value?.toString()}
-                                keyboardType="numeric"
-                            />
-                        )}
-                    />
-                </View>
-                <Text style={styles.errorMessage}>{errors.TotalPet?.message}</Text>
-
-                <Text style={styles.textColor}>Nomor Rekening Shelter<Text className='text-[#ff0000]'>*</Text></Text>
-                <View style={styles.inputBox}>
-                    <Controller
-                        name="BankAccountNumber"
-                        control={control}
-                        render={({ field: { value } }) => (
-                            <TextInput
-                                placeholder="Masukkan Nomor Rekening"
-                                style={{ flex: 1 }}
-                                onChangeText={(text: string) => setValue('BankAccountNumber', text)}
-                                value={value}
-                            />
-                        )}
-                    />
-                </View>
-                <Text style={styles.errorMessage}>{errors.BankAccountNumber?.message}</Text>
-
-                <Text style={styles.textColor}>Deskripsi Shelter<Text className='text-[#ff0000]'>*</Text></Text>
-                <View style={styles.inputBox}>
-                    <Controller
-                        name="ShelterDescription"
-                        control={control}
-                        render={({ field: { value } }) => (
-                            <TextInput
-                                placeholder="Masukkan Deskripsi Shelter"
-                                style={{ flex: 1 }}
-                                onChangeText={(text: string) => setValue('ShelterDescription', text)}
-                                value={value}
-                            />
-                        )}
-                    />
-                </View>
-                <Text style={styles.errorMessage}>{errors.ShelterDescription?.message}</Text>
-
-                <Text style={styles.textColor}>Jenis Hewan Shelter<Text className='text-[#ff0000]'>*</Text></Text>
-                <Controller
-                    name="PetTypeAccepted"
-                    control={control}
-                    render={({ field: { value } }) => (
-                        <View style={{ marginHorizontal: 35 }}>
-                            {petTypeData.map((petType) => (
-                                <View key={petType.key} style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                    <Checkbox
-                                        status={selected?.includes(petType.key) ? 'checked' : 'unchecked'}
-                                        onPress={() => {
-                                            setSelected(prevSelected => {
-                                                if (prevSelected && prevSelected.includes(petType.key)) {
-                                                    return prevSelected.filter(item => item !== petType.key);
-                                                } else {
-                                                    return [...(prevSelected || []), petType.key];
-                                                }
-                                            });
-                                        }}
-                                    />
-                                    <Text>{petType.value}</Text>
+                        >
+                            <BottomSheetView className="flex items-center justify-center">
+                                <View className="flex flex-col items-center">
+                                    <TouchableOpacity className="py-4" onPress={() => selectImage(true)}>
+                                        <Text className="text-lg ">Choose Photo</Text>
+                                    </TouchableOpacity>
+                                    <TouchableOpacity className="py-4" onPress={() => selectImage(false)}>
+                                        <Text className="text-lg ">Take Photo</Text>
+                                    </TouchableOpacity>
                                 </View>
-                            ))}
+                            </BottomSheetView>
+                        </BottomSheetModal>
+                        <View className="mt-5 flex-row items-center justify-center mb-3">
+                            <Ionicons name="chevron-back" size={24} color="black" onPress={() => navigation.goBack()} style={{ position: 'absolute', left: 20 }} />
+                            <Text className="text-xl">Manage Shelter Profile</Text>
                         </View>
-                    )}
-                />
-                <Text style={styles.errorMessage}>{errors.PetTypeAccepted?.message}</Text>
 
-                <Text style={styles.textColor}>Pin Shelter<Text className='text-[#ff0000]'>*</Text></Text>
-                <View style={styles.inputBox}>
-                    <Controller
-                        name="Pin"
-                        control={control}
-                        render={({ field: { value } }) => (
-                            <TextInput
-                                placeholder="Masukkan Pin"
-                                style={{ flex: 1 }}
-                                onChangeText={(text: string) => setValue('Pin', text)}
-                                value={value}
+                        <ScrollView>
+                            <View style={styles.rowContainer} className="justify-around mt-5 mb-5">
+                                <TouchableOpacity
+                                    style={{ width: 350, height: 200, backgroundColor: '#2E3A59', borderRadius: 10, justifyContent: 'center', alignItems: 'center' }}
+                                    onPress={handleImagePress}
+                                    disabled={image ? true : false}
+                                >
+
+                                    {image ? (
+                                        <Image source={{ uri: image }} style={{ width: 550, height: 200, borderRadius: 10 }} />)
+                                        :
+                                        (<Ionicons name="camera" size={40} color="white" />
+                                        )}
+                                </TouchableOpacity>
+                            </View>
+
+                            <Text style={styles.textColor}>Nama Shelter<Text className='text-[#ff0000]'>*</Text></Text>
+                            <View style={styles.inputBox}>
+                                <Controller
+                                    name="ShelterName"
+                                    control={control}
+                                    render={({ field: { value } }) => (
+                                        <TextInput
+                                            placeholder="Masukkan Nama Shelter"
+                                            style={{ flex: 1 }}
+                                            onChangeText={(text: string) => setValue('ShelterName', text)}
+                                            value={value}
+                                        />
+                                    )}
+                                />
+                            </View>
+                            <Text style={styles.errorMessage}>{errors.ShelterName?.message}</Text>
+
+                            <Text style={styles.textColor}>Lokasi Shelter<Text className='text-[#ff0000]'>*</Text></Text>
+                            <Controller
+                                name="ShelterLocation"
+                                control={control}
+                                render={({ field: { value } }) => (
+                                    <SelectList
+                                        setSelected={(text: string) => setValue('ShelterLocation', text)}
+                                        data={shelterLocationData}
+                                        save="key"
+                                        search={true}
+                                        dropdownStyles={styles.inputBox}
+                                        boxStyles={styles.selectBox}
+                                        inputStyles={{ padding: 3 }}
+                                        arrowicon={<FontAwesome name="chevron-down" size={12} color={'#808080'} style={{ padding: 3 }} />}
+                                        placeholder="Masukkan Lokasi Shelter"
+                                        defaultOption={shelterLocationData.find(item => item.key === value)}
+                                    />
+                                )}
                             />
-                        )}
-                    />
-                </View>
-                <Text style={styles.errorMessage}>{errors.Pin?.message}</Text>
+                            <Text style={styles.errorMessage}>{errors.ShelterLocation?.message}</Text>
 
-                <TouchableOpacity style={styles.button} onPress={handleSubmit(onSubmit)}>
-                    <Text className="text-center font-bold text-white">Save</Text>
-                </TouchableOpacity>
-            </ScrollView>
+                            <Text style={styles.textColor}>Alamat Shelter<Text className='text-[#ff0000]'>*</Text></Text>
+                            <View style={styles.inputBox}>
+                                <Controller
+                                    name="ShelterAddress"
+                                    control={control}
+                                    render={({ field: { value } }) => (
+                                        <TextInput
+                                            placeholder="Masukkan Alamat Shelter"
+                                            style={{ flex: 1 }}
+                                            onChangeText={(text: string) => setValue('ShelterAddress', text)}
+                                            value={value}
+                                        />
+                                    )}
+                                />
+                            </View>
+                            <Text style={styles.errorMessage}>{errors.ShelterAddress?.message}</Text>
+
+                            <Text style={styles.textColor}>Kapasitas Shelter<Text className='text-[#ff0000]'>*</Text></Text>
+                            <View style={styles.inputBox}>
+                                <Controller
+                                    name="ShelterCapacity"
+                                    control={control}
+                                    render={({ field: { value } }) => (
+                                        <TextInput
+                                            style={{ flex: 1 }}
+                                            placeholder="Kapasitas Shelter"
+                                            onChangeText={(text: string) => {
+                                                const numericValue = parseInt(text);
+                                                if (!isNaN(numericValue)) {
+                                                    setValue('ShelterCapacity', numericValue);
+                                                }
+                                            }}
+                                            value={value?.toString()}
+                                            keyboardType="numeric"
+                                        />
+                                    )}
+                                />
+                            </View>
+                            <Text style={styles.errorMessage}>{errors.ShelterCapacity?.message}</Text>
+
+                            <Text style={styles.textColor}>Kontak Shelter<Text className='text-[#ff0000]'>*</Text></Text>
+                            <View style={styles.inputBox}>
+                                <Controller
+                                    name="ShelterContactNumber"
+                                    control={control}
+                                    render={({ field: { value } }) => (
+                                        <TextInput
+                                            placeholder="Masukkan Kontak Shelter"
+                                            style={{ flex: 1 }}
+                                            onChangeText={(text: string) => setValue('ShelterContactNumber', text)}
+                                            value={value}
+                                        />
+                                    )}
+                                />
+                            </View>
+                            <Text style={styles.errorMessage}>{errors.ShelterContactNumber?.message}</Text>
+
+                            <Text style={styles.textColor}>Total Hewan Shelter<Text className='text-[#ff0000]'>*</Text></Text>
+                            <View style={styles.inputBox}>
+                                <Controller
+                                    name="TotalPet"
+                                    control={control}
+                                    render={({ field: { value } }) => (
+                                        <TextInput
+                                            style={{ flex: 1 }}
+                                            placeholder="Total hewan"
+                                            onChangeText={(text: string) => {
+                                                const numericValue = parseInt(text);
+                                                if (!isNaN(numericValue)) {
+                                                    setValue('TotalPet', numericValue);
+                                                }
+                                            }}
+                                            value={value?.toString()}
+                                            keyboardType="numeric"
+                                        />
+                                    )}
+                                />
+                            </View>
+                            <Text style={styles.errorMessage}>{errors.TotalPet?.message}</Text>
+
+                            <Text style={styles.textColor}>Nomor Rekening Shelter<Text className='text-[#ff0000]'>*</Text></Text>
+                            <View style={styles.inputBox}>
+                                <Controller
+                                    name="BankAccountNumber"
+                                    control={control}
+                                    render={({ field: { value } }) => (
+                                        <TextInput
+                                            placeholder="Masukkan Nomor Rekening"
+                                            style={{ flex: 1 }}
+                                            onChangeText={(text: string) => setValue('BankAccountNumber', text)}
+                                            value={value}
+                                        />
+                                    )}
+                                />
+                            </View>
+                            <Text style={styles.errorMessage}>{errors.BankAccountNumber?.message}</Text>
+
+                            <Text style={styles.textColor}>Deskripsi Shelter<Text className='text-[#ff0000]'>*</Text></Text>
+                            <View style={styles.inputBox}>
+                                <Controller
+                                    name="ShelterDescription"
+                                    control={control}
+                                    render={({ field: { value } }) => (
+                                        <TextInput
+                                            placeholder="Masukkan Deskripsi Shelter"
+                                            style={{ flex: 1 }}
+                                            onChangeText={(text: string) => setValue('ShelterDescription', text)}
+                                            value={value}
+                                        />
+                                    )}
+                                />
+                            </View>
+                            <Text style={styles.errorMessage}>{errors.ShelterDescription?.message}</Text>
+
+                            <Text style={styles.textColor}>Jenis Hewan Shelter<Text className='text-[#ff0000]'>*</Text></Text>
+                            <Controller
+                                name="PetTypeAccepted"
+                                control={control}
+                                render={({ field: { value } }) => (
+                                    <View style={{ marginHorizontal: 35 }}>
+                                        {petTypeData.map((petType) => (
+                                            <View key={petType.key} style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                                <Checkbox
+                                                    status={selected?.includes(petType.key) ? 'checked' : 'unchecked'}
+                                                    onPress={() => {
+                                                        setSelected(prevSelected => {
+                                                            if (prevSelected && prevSelected.includes(petType.key)) {
+                                                                return prevSelected.filter(item => item !== petType.key);
+                                                            } else {
+                                                                return [...(prevSelected || []), petType.key];
+                                                            }
+                                                        });
+                                                    }}
+                                                />
+                                                <Text>{petType.value}</Text>
+                                            </View>
+                                        ))}
+                                    </View>
+                                )}
+                            />
+                            <Text style={styles.errorMessage}>{errors.PetTypeAccepted?.message}</Text>
+
+                            <Text style={styles.textColor}>Pin Shelter<Text className='text-[#ff0000]'>*</Text></Text>
+                            <View style={styles.inputBox}>
+                                <Controller
+                                    name="Pin"
+                                    control={control}
+                                    render={({ field: { value } }) => (
+                                        <TextInput
+                                            placeholder="Masukkan Pin"
+                                            style={{ flex: 1 }}
+                                            onChangeText={(text: string) => setValue('Pin', text)}
+                                            value={value}
+                                        />
+                                    )}
+                                />
+                            </View>
+                            <Text style={styles.errorMessage}>{errors.Pin?.message}</Text>
+
+                            <TouchableOpacity style={styles.button} onPress={handleSubmit(onSubmit)}>
+                                <Text className="text-center font-bold text-white">Save</Text>
+                            </TouchableOpacity>
+                        </ScrollView>
+                    </BottomSheetModalProvider>
+                </GestureHandlerRootView>
+
+            </SafeAreaView>
         </SafeAreaProvider>
     );
 }
