@@ -372,7 +372,7 @@ export const PetListScreen : FC<NoHeaderProps> = ({navigation, route} : any) => 
                                                     </TouchableHighlight>
 
                                                     <View style={{ position: 'absolute', top: 230, left: 0, right: 0, bottom: 0 }}>
-                                                        <View style={{ marginTop: 5, backgroundColor: "#FFFDFF", paddingHorizontal: 20, paddingVertical: 15, borderRadius: 15 }}>
+                                                        <View style={{ marginTop: 5, backgroundColor: "#FFFDFF", paddingHorizontal: 10, paddingVertical: 15, borderRadius: 15 }}>
                                                             <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
                                                                 <Text style={{ fontSize: 20, fontWeight: 'bold' }}>{pet.PetName}</Text>
                                                                 {pet.PetGender === "Male" ? (
