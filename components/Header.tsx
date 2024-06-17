@@ -1,17 +1,39 @@
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { FC, useEffect, useState } from "react";
+import { FC, useCallback, useEffect, useState } from "react";
 import { Dimensions, Text, TouchableOpacity, View } from "react-native";
 import { Avatar } from "react-native-elements";
 import { useAuth } from "../app/context/AuthContext";
 import { IUser } from "../interface/IUser";
 import { BackendApiUri } from "../functions/BackendApiUri";
 import { get } from "../functions/Fetch";
-import { useNavigation } from "@react-navigation/native";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { UserBottomTabCompositeNavigationProps, UserNavigationStackScreenProps } from "./StackParams/StackScreenProps";
 
 export const Header = () => {
     const { authState, onLogout } = useAuth();
     const navigation = useNavigation<UserBottomTabCompositeNavigationProps<'Profile'>>();
+    const [user, setUser] = useState<IUser | null>(null);
+
+    const fetchData = async () => {
+        try {
+            const response = await get(`${BackendApiUri.getUserData}`);
+            if (response && response.status === 200) {
+                setUser(response.data);
+            }
+        } catch (e) {
+            console.error('Error fetching user data:', e);
+        }
+    };
+
+    useFocusEffect(
+        useCallback(() => {
+            const fetch = async () => {
+                await fetchData();
+            };
+            fetch();
+        }, [])
+    );
+
 
     const getAvatarSize = () => {
         const { width } = Dimensions.get('window');
@@ -25,13 +47,13 @@ export const Header = () => {
                 <Avatar
                     rounded
                     source={
-                        authState?.imageBase64 ? { uri: `data:image/*;base64,${authState.imageBase64}` } : require('../assets/Default_Acc.jpg')
+                        user?.ImageBase64 ? { uri: `data:image/*;base64,${user.ImageBase64}` } : require('../assets/Default_Acc.jpg')
                     }
                     size={getAvatarSize()}
                 />
             </TouchableOpacity>
             <Text style={{ marginLeft: 8, fontSize: 14, fontWeight: '600' }}>
-                Welcome back, {'\n'}{authState?.username}
+                Welcome back, {'\n'}{user?.Username}
             </Text>
         </View>
         <TouchableOpacity onPress={onLogout} className="mr-2">
