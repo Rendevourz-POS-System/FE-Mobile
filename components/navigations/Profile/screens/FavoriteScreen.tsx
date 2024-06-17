@@ -21,13 +21,17 @@ export const FavoriteScreen: FC<ProfileNavigationStackScreenProps<'FavoriteScree
     const fetchData = async () => {
         try {
             const shelterResponse = await get(`${BackendApiUri.getShelterFav}`);
-            if (shelterResponse && shelterResponse.status === 200) {
+            if (shelterResponse.data != null && shelterResponse.status === 200) {
                 setShelterData(shelterResponse.data);
+            } else {
+                setShelterData([]);
             }
 
             const petResponse = await get(`${BackendApiUri.getPetFav}`);
-            if (petResponse && petResponse.status === 200) {
+            if (petResponse.data != null && petResponse.status === 200) {
                 setPetDatas(petResponse.data);
+            } else {
+                setPetDatas([]);
             }
         } catch (e) {
             console.error('Error fetching data:', e);
@@ -54,6 +58,7 @@ export const FavoriteScreen: FC<ProfileNavigationStackScreenProps<'FavoriteScree
 
     const renderShelterItem = ({ item }: { item: ShelterData }) => (
         <TouchableOpacity 
+            className='mb-10'
             style={styles.shelterItem} 
             onPress={() => navigation.navigate("ShelterDetailScreen", { shelterId: item.Id })}
             activeOpacity={1}
@@ -95,6 +100,7 @@ export const FavoriteScreen: FC<ProfileNavigationStackScreenProps<'FavoriteScree
     
     const renderPetItem = ({ item }: { item: PetData }) => (
         <TouchableOpacity
+            className='my-10'
             style={styles.petItem}
             activeOpacity={1}
             onPress={() => navigation.navigate("PetDetailScreen", { petId: item.Id })}
@@ -140,11 +146,19 @@ export const FavoriteScreen: FC<ProfileNavigationStackScreenProps<'FavoriteScree
                         <ActivityIndicator color="blue" size="large" />
                     </View>
                 ) : combinedData.length > 0 ? (
-                    <FlashList
-                        estimatedItemSize={300} // Adjust the estimated item size based on your content
-                        data={combinedData}
-                        renderItem={renderItem}
-                    />
+                    <View className='w-full h-full'>
+                        <FlashList
+                            estimatedItemSize={300} // Adjust the estimated item size based on your content
+                            data={shelterData}
+                            renderItem={renderShelterItem}
+                        />
+                        <FlashList
+                            estimatedItemSize={300} // Adjust the estimated item size based on your content
+                            data={petDatas}
+                            renderItem={renderPetItem}
+                        />
+                    </View>
+
                 ) : (
                     <View style={styles.noDataContainer}>
                         <Text style={styles.noDataText}>No favorite data found.</Text>
@@ -157,7 +171,6 @@ export const FavoriteScreen: FC<ProfileNavigationStackScreenProps<'FavoriteScree
 
 const styles = StyleSheet.create({
     shelterItem: {
-        marginVertical: 10,
         backgroundColor: '#FFF', // Adjust background color as needed
         borderRadius: 20, // Adjust border radius as needed
     },
