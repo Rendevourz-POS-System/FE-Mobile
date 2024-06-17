@@ -72,7 +72,7 @@ export const FavoriteScreen: FC<ProfileNavigationStackScreenProps<'FavoriteScree
             </View>
             <View style={styles.shelterInfoContainer}>
                 <View style={styles.shelterInfo}>
-                    <Text style={styles.shelterName}>{item.ShelterName}</Text>
+                    <Text style={styles.shelterName} className='w-10/12'>{item.ShelterName}</Text>
                     <FontAwesome name='heart' size={24} color="#FF0000" />
                 </View>
                 <View style={styles.shelterLocation}>
@@ -136,7 +136,7 @@ export const FavoriteScreen: FC<ProfileNavigationStackScreenProps<'FavoriteScree
 
     return (
         <SafeAreaProvider style={styles.container}>
-            <View style={styles.header}>
+            <View style={styles.header} className='my-5'>
                 <Ionicons name="chevron-back" size={24} color="black" onPress={() => navigation.goBack()} style={styles.backIcon} />
                 <Text style={styles.title}>Favorite</Text>
             </View>
@@ -220,8 +220,6 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     header: {
-        marginTop: 5,
-        marginBottom: 5,
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
