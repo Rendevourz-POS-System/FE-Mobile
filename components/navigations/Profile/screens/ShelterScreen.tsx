@@ -14,6 +14,7 @@ import { useFocusEffect } from "@react-navigation/native";
 import { ProfileNavigationStackScreenProps } from "../../../StackParams/StackScreenProps";
 import axios from "axios";
 import { FontAwesome6, Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
+import { getIconName } from "../../../../functions/GetPetIconName";
 
 export const ShelterScreen: FC<ProfileNavigationStackScreenProps<'ShelterScreen'>> = ({ navigation, route }) => {
     const [data, setData] = useState<ShelterUser | null>(null);
@@ -173,7 +174,11 @@ export const ShelterScreen: FC<ProfileNavigationStackScreenProps<'ShelterScreen'
                                                                                     <Text style={{ fontSize: 14, fontWeight: 'normal', marginLeft: 5 }}>{pet.ShelterLocation}</Text>
                                                                                 </View>
                                                                                 <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10 }}>
-                                                                                    <FontAwesome6 name={pet.PetType.toLowerCase()} size={20} color='#8A8A8A' style={{ marginLeft: 20 }} />
+                                                                                    { getIconName(pet.PetType) == 'rabbit' ? (
+                                                                                        <MaterialCommunityIcons name="rabbit" size={29} color='#8A8A8A' style={{ marginLeft: 20 }} />
+                                                                                    ) : (
+                                                                                        <FontAwesome6 name={getIconName(pet.PetType)} size={24} color='#8A8A8A' style={{ marginLeft: 20 }} />
+                                                                                    )}
                                                                                 </View>
                                                                             </View>
                                                                         </View>
