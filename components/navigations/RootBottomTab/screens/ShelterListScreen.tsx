@@ -335,15 +335,18 @@ export const ShelterListScreen : FC<NoHeaderProps> = ({navigation, route} : any)
                                                 {shelter.ImageBase64 === null ? (
                                                     <Image source={require('../../../../assets/animal-shelter.png')} 
                                                         resizeMode='cover'
+                                                        height={290}
                                                         style={{ width: '100%', height: 290, marginBottom: 15, marginTop: 5, borderRadius: 20 }} 
                                                     />
                                                 ) : (
                                                     <Image source={{ uri: `data:image/*;base64,${shelter.ImageBase64}` }} 
                                                         resizeMode='cover'
-                                                        style={{ width: '100%', height: 290, marginBottom: 15, marginTop: 5, borderRadius: 20 }} 
+                                                        height={290}
+                                                        style={{ width: '100%', marginBottom: 15, marginTop: 5, borderRadius: 20 }} 
+                                                        
                                                     />
                                                 )}
-                                                <View style={{ position: 'absolute', top: 144, left: 0, right: 0, bottom: 0}}>
+                                                <View style={{ position: 'absolute', top: 160, left: 0, right: 0, bottom: 0}}>
                                                     <View style={{ marginTop: 10, backgroundColor: "#FFFDFF", paddingHorizontal: 20, paddingVertical: 15, borderRadius: 20 }}>
                                                         <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
                                                             <Text style={{ fontSize: 20, fontWeight: 'bold' }}>{shelter.ShelterName}</Text>

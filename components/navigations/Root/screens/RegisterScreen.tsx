@@ -1,5 +1,5 @@
 import React, { FC, useEffect, useState } from "react";
-import { SafeAreaProvider } from "react-native-safe-area-context";
+import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { View, Text, Image, TextInput, StyleSheet, TouchableOpacity, ScrollView, Button, ActivityIndicator } from "react-native";
 import { Icon } from "react-native-elements";
 import { number, z, ZodNumber } from "zod";
@@ -161,243 +161,246 @@ export const RegisterScreen: FC<GuestNavigationStackScreenProps<'Register'>> = (
 
     return (
         <SafeAreaProvider className="flex-1 bg-white">
-            <ScrollView>
-                <View className="mb-8">
-                    <View className="items-center my-10">
-                        <View className="absolute left-7 top-1">
-                            <Ionicons name="chevron-back" size={24} style={{backgroundColor: "#ECECEC", borderRadius:999, padding: 2.5}} color="black" onPress={() => navigation.goBack()} />
+            <SafeAreaView>
+                <ScrollView>
+                    <View className="mb-8">
+                        <View className="items-center my-5">
+                            <View className="absolute left-7 top-1">
+                                <Ionicons name="chevron-back" size={24} style={{backgroundColor: "#ECECEC", borderRadius:999, padding: 2.5}} color="black" onPress={() => navigation.goBack()} />
+                            </View>
+                            <Text className="text-2xl mb-5">Sign Up</Text>
+                            <Image source={require('../../../../assets/logo-register.png')} />
                         </View>
-                        <Text className="text-2xl mb-5">Sign Up</Text>
-                        <Image source={require('../../../../assets/logo-register.png')} />
-                    </View>
 
-                    <View style={style.inputBox}>
-                        <Controller
-                            name="Nik"
-                            control={control}
-                            render={() => (
-                                <TextInput
-                                    placeholder="NIK"
-                                    style={{ flex: 1 }}
-                                    onChangeText={(text: string) => setValue('Nik', text)}
-                                    inputMode="numeric"
-                                />
-                            )}
+                        <View style={style.inputBox}>
+                            <Controller
+                                name="Nik"
+                                control={control}
+                                render={() => (
+                                    <TextInput
+                                        placeholder="NIK"
+                                        style={{ flex: 1 }}
+                                        onChangeText={(text: string) => setValue('Nik', text)}
+                                        inputMode="numeric"
+                                    />
+                                )}
 
-                        />
-                    </View>
-                    <Text style={style.errorMessage}>{errors.Nik?.message}</Text>
+                            />
+                        </View>
+                        <Text style={style.errorMessage}>{errors.Nik?.message}</Text>
 
-                    <View style={style.inputBox}>
-                        <Controller
-                            name="Username"
-                            control={control}
-                            render={() => (
-                                <TextInput
-                                    placeholder="Name"
-                                    style={{ flex: 1 }}
-                                    onChangeText={(text: string) => setValue('Username', text)}
-                                />
-                            )}
+                        <View style={style.inputBox}>
+                            <Controller
+                                name="Username"
+                                control={control}
+                                render={() => (
+                                    <TextInput
+                                        placeholder="Name"
+                                        style={{ flex: 1 }}
+                                        onChangeText={(text: string) => setValue('Username', text)}
+                                    />
+                                )}
 
-                        />
-                    </View>
-                    <Text style={style.errorMessage}>{errors.Username?.message}</Text>
+                            />
+                        </View>
+                        <Text style={style.errorMessage}>{errors.Username?.message}</Text>
 
-                    <View style={style.inputBox}>
-                        <Controller
-                            name="Email"
-                            control={control}
-                            render={() => (
-                                <TextInput
-                                    placeholder="Email"
-                                    style={{ flex: 1 }}
-                                    onChangeText={(text: string) => setValue('Email', text)}
-                                />
-                            )}
-                        />
-                    </View>
-                    <Text style={style.errorMessage}>{errors.Email?.message}</Text>
+                        <View style={style.inputBox}>
+                            <Controller
+                                name="Email"
+                                control={control}
+                                render={() => (
+                                    <TextInput
+                                        placeholder="Email"
+                                        style={{ flex: 1 }}
+                                        onChangeText={(text: string) => setValue('Email', text)}
+                                    />
+                                )}
+                            />
+                        </View>
+                        <Text style={style.errorMessage}>{errors.Email?.message}</Text>
 
-                    <View style={style.inputBox}>
-                        <Text style={style.phoneNumberPrefix}>+62</Text>
-                        <Controller
-                            name="PhoneNumber"
-                            control={control}
-                            render={() => (
-                                <TextInput
-                                    placeholder="Phone Number"
-                                    style={{ flex: 1 }}
-                                    onChangeText={(text: string) => setValue('PhoneNumber', text)}
-                                    inputMode="numeric"
-                                    maxLength={11}
-                                />
-                            )}
-                        />
-                    </View>
-                    <Text style={style.errorMessage}>{errors.PhoneNumber?.message}</Text>
+                        <View style={style.inputBox}>
+                            <Text style={style.phoneNumberPrefix}>+62</Text>
+                            <Controller
+                                name="PhoneNumber"
+                                control={control}
+                                render={() => (
+                                    <TextInput
+                                        placeholder="Phone Number"
+                                        style={{ flex: 1 }}
+                                        onChangeText={(text: string) => setValue('PhoneNumber', text)}
+                                        inputMode="numeric"
+                                        maxLength={11}
+                                    />
+                                )}
+                            />
+                        </View>
+                        <Text style={style.errorMessage}>{errors.PhoneNumber?.message}</Text>
 
-                    <View style={style.inputSelect}>
-                        <Controller
-                            name="Province"
-                            control={control}
-                            render={({ field }) => (
-                                <Picker
-                                    style={{ flex: 1 }}
-                                    selectedValue={field.value}
-                                    onValueChange={(value) => {
-                                        field.onChange(value);
-                                        onProvinceChange(value);
-                                    }}
-                                    mode="dropdown"
-                                >
-                                    <Picker.Item label="Select Province" value="" />
-                                    {Object.values(provinces).map((item: LocationAPI) => (
-                                        <Picker.Item label={item.name} value={item.id} key={item.id} />
-                                    ))}
-                                </Picker>
-                            )}
-                        />
-                    </View>
-                    <Text style={style.errorMessage}>{errors.Province?.message}</Text>
+                        <View style={style.inputSelect}>
+                            <Controller
+                                name="Province"
+                                control={control}
+                                render={({ field }) => (
+                                    <Picker
+                                        style={{ flex: 1 }}
+                                        selectedValue={field.value}
+                                        onValueChange={(value) => {
+                                            field.onChange(value);
+                                            onProvinceChange(value);
+                                        }}
+                                        mode="dropdown"
+                                    >
+                                        <Picker.Item label="Select Province" value="" />
+                                        {Object.values(provinces).map((item: LocationAPI) => (
+                                            <Picker.Item label={item.name} value={item.id} key={item.id} />
+                                        ))}
+                                    </Picker>
+                                )}
+                            />
+                        </View>
+                        <Text style={style.errorMessage}>{errors.Province?.message}</Text>
 
-                    <View style={style.inputSelect}>
-                        <Controller
-                            name="District"
-                            control={control}
-                            render={({ field }) => (
-                                <Picker
-                                    style={{ flex: 1 }}
-                                    selectedValue={field.value}
-                                    onValueChange={(value) => {
-                                        field.onChange(value);
-                                        onKabupatenChange(value);
-                                    }}
-                                    enabled={!!watch("Province")}
-                                    mode="dropdown"
-                                >
-                                    <Picker.Item label="Select Kabupaten" value=""/>
-                                    {kabupatens && Object.values(kabupatens).map((item: LocationAPI) => (
-                                        <Picker.Item label={item.name} value={item.id} key={item.id} />
-                                    ))}
-                                </Picker>
-                            )}
-                        />
-                    </View>
-                    <Text style={style.errorMessage}>{errors.District?.message}</Text>
+                        <View style={style.inputSelect}>
+                            <Controller
+                                name="District"
+                                control={control}
+                                render={({ field }) => (
+                                    <Picker
+                                        style={{ flex: 1 }}
+                                        selectedValue={field.value}
+                                        onValueChange={(value) => {
+                                            field.onChange(value);
+                                            onKabupatenChange(value);
+                                        }}
+                                        enabled={!!watch("Province")}
+                                        mode="dropdown"
+                                    >
+                                        <Picker.Item label="Select Kabupaten" value=""/>
+                                        {kabupatens && Object.values(kabupatens).map((item: LocationAPI) => (
+                                            <Picker.Item label={item.name} value={item.id} key={item.id} />
+                                        ))}
+                                    </Picker>
+                                )}
+                            />
+                        </View>
+                        <Text style={style.errorMessage}>{errors.District?.message}</Text>
 
-                    <View style={style.inputSelect}>
-                        <Controller
-                            name="City"
-                            control={control}
-                            render={({ field }) => (
-                                <Picker
-                                    style={{ flex: 1 }}
-                                    selectedValue={field.value}
-                                    onValueChange={field.onChange}
-                                    mode="dropdown"
-                                    enabled={!!watch("District")}
-                                >
-                                    <Picker.Item label="Select City" value=""/>
-                                    {cities && Object.values(cities).map((item: LocationAPI) => (
-                                        <Picker.Item label={item.name} value={item.id} key={item.id} />
-                                    ))}
-                                </Picker>
-                            )}
-                        />
-                    </View>
-                    <Text style={style.errorMessage}>{errors.City?.message}</Text>
+                        <View style={style.inputSelect}>
+                            <Controller
+                                name="City"
+                                control={control}
+                                render={({ field }) => (
+                                    <Picker
+                                        style={{ flex: 1 }}
+                                        selectedValue={field.value}
+                                        onValueChange={field.onChange}
+                                        mode="dropdown"
+                                        enabled={!!watch("District")}
+                                    >
+                                        <Picker.Item label="Select City" value=""/>
+                                        {cities && Object.values(cities).map((item: LocationAPI) => (
+                                            <Picker.Item label={item.name} value={item.id} key={item.id} />
+                                        ))}
+                                    </Picker>
+                                )}
+                            />
+                        </View>
+                        <Text style={style.errorMessage}>{errors.City?.message}</Text>
 
-                    <View style={style.inputBox}>
-                        <Controller
-                            name="PostalCode"
-                            control={control}
-                            render={() => (
-                                <TextInput
-                                    placeholder="PostalCode"
-                                    style={{ flex: 1 }}
-                                    onChangeText={(text: string) => setValue('PostalCode', text)}
-                                    inputMode="numeric"
-                                    maxLength={5}
-                                />
-                            )}
-                        />
-                    </View>
-                    <Text style={style.errorMessage}>{errors.PostalCode?.message}</Text>
+                        <View style={style.inputBox}>
+                            <Controller
+                                name="PostalCode"
+                                control={control}
+                                render={() => (
+                                    <TextInput
+                                        placeholder="PostalCode"
+                                        style={{ flex: 1 }}
+                                        onChangeText={(text: string) => setValue('PostalCode', text)}
+                                        inputMode="numeric"
+                                        maxLength={5}
+                                    />
+                                )}
+                            />
+                        </View>
+                        <Text style={style.errorMessage}>{errors.PostalCode?.message}</Text>
 
-                    <View style={style.inputBox}>
-                        <Controller
-                            name="Address"
-                            control={control}
-                            render={() => (
-                                <TextInput
-                                    placeholder="Address"
-                                    style={{ flex: 1, height: 40, textAlignVertical: 'top' }}
-                                    onChangeText={(text: string) => setValue('Address', text)}
-                                    multiline
-                                />
-                            )}
-                        />
-                    </View>
-                    <Text style={style.errorMessage}>{errors.Address?.message}</Text>
+                        <View style={style.inputBox}>
+                            <Controller
+                                name="Address"
+                                control={control}
+                                render={() => (
+                                    <TextInput
+                                        placeholder="Address"
+                                        style={{ flex: 1, height: 40, textAlignVertical: 'top' }}
+                                        onChangeText={(text: string) => setValue('Address', text)}
+                                        multiline
+                                    />
+                                )}
+                            />
+                        </View>
+                        <Text style={style.errorMessage}>{errors.Address?.message}</Text>
 
 
-                    <View style={style.inputBox}>
-                        <Controller
-                            name="Password"
-                            control={control}
-                            render={() => (
-                                <TextInput
-                                    placeholder="Password"
-                                    style={{ flex: 1 }}
-                                    onChangeText={(text: string) => setValue('Password', text)}
-                                    secureTextEntry={showPassword}
-                                />
-                            )}
-                        />
-                        <TouchableOpacity onPress={togglePasswordVisibility} style={style.passwordToggleIcon}>
-                            <Icon name={showPassword ? 'eye-slash' : 'eye'} type="font-awesome" size={18} color="#666" />
+                        <View style={style.inputBox}>
+                            <Controller
+                                name="Password"
+                                control={control}
+                                render={() => (
+                                    <TextInput
+                                        placeholder="Password"
+                                        style={{ flex: 1 }}
+                                        onChangeText={(text: string) => setValue('Password', text)}
+                                        secureTextEntry={showPassword}
+                                    />
+                                )}
+                            />
+                            <TouchableOpacity onPress={togglePasswordVisibility} style={style.passwordToggleIcon}>
+                                <Icon name={showPassword ? 'eye-slash' : 'eye'} type="font-awesome" size={18} color="#666" />
+                            </TouchableOpacity>
+                        </View>
+                        <Text style={style.errorMessage}>{errors.Password?.message}</Text>
+
+                        <View style={style.inputBox}>
+                            <Controller
+                                name="ConfirmPassword"
+                                control={control}
+                                render={() => (
+                                    <TextInput
+                                        placeholder="Confirm Password"
+                                        style={{ flex: 1 }}
+                                        onChangeText={(text: string) => setValue('ConfirmPassword', text)}
+                                        secureTextEntry={showConfirmPassword}
+                                    />
+                                )}
+                            />
+                            <TouchableOpacity onPress={toggleConfirmPasswordVisibility} style={style.passwordToggleIcon}>
+                                <Icon name={showConfirmPassword ? 'eye-slash' : 'eye'} type="font-awesome" size={18} color="#666" />
+                            </TouchableOpacity>
+                        </View>
+                        <Text style={style.errorMessage}>{errors.ConfirmPassword?.message}</Text>
+
+                        <TouchableOpacity 
+                            style={[style.button, isSubmitting ? { backgroundColor: 'gray' } : null]}
+                            onPress={handleSubmit(onSubmit)}
+                            disabled={isSubmitting}
+                            className="flex-row items-center justify-center"
+                        >
+                            {isSubmitting && <ActivityIndicator color="white" />}
+                            <Text className="text-center font-bold text-white">Sign Up</Text>
                         </TouchableOpacity>
-                    </View>
-                    <Text style={style.errorMessage}>{errors.Password?.message}</Text>
 
-                    <View style={style.inputBox}>
-                        <Controller
-                            name="ConfirmPassword"
-                            control={control}
-                            render={() => (
-                                <TextInput
-                                    placeholder="Confirm Password"
-                                    style={{ flex: 1 }}
-                                    onChangeText={(text: string) => setValue('ConfirmPassword', text)}
-                                    secureTextEntry={showConfirmPassword}
-                                />
-                            )}
-                        />
-                        <TouchableOpacity onPress={toggleConfirmPasswordVisibility} style={style.passwordToggleIcon}>
-                            <Icon name={showConfirmPassword ? 'eye-slash' : 'eye'} type="font-awesome" size={18} color="#666" />
-                        </TouchableOpacity>
+                        <View className="flex-row justify-center top-5">
+                            <Text>Already have an account?</Text>
+                            <TouchableOpacity onPress={() => navigation.navigate("Login")}>
+                                <Text className="underline underline-offset-4" style={style.fontColor}> Sign In</Text>
+                            </TouchableOpacity>
+                        </View>
                     </View>
-                    <Text style={style.errorMessage}>{errors.ConfirmPassword?.message}</Text>
+                </ScrollView>
 
-                    <TouchableOpacity 
-                        style={[style.button, isSubmitting ? { backgroundColor: 'gray' } : null]}
-                        onPress={handleSubmit(onSubmit)}
-                        disabled={isSubmitting}
-                        className="flex-row items-center justify-center"
-                    >
-                        {isSubmitting && <ActivityIndicator color="white" />}
-                        <Text className="text-center font-bold text-white">Sign Up</Text>
-                    </TouchableOpacity>
-
-                    <View className="flex-row justify-center top-5">
-                        <Text>Already have an account?</Text>
-                        <TouchableOpacity onPress={() => navigation.navigate("Login")}>
-                            <Text className="underline underline-offset-4" style={style.fontColor}> Sign In</Text>
-                        </TouchableOpacity>
-                    </View>
-                </View>
-            </ScrollView>
+            </SafeAreaView>
         </SafeAreaProvider>
     )
 }
