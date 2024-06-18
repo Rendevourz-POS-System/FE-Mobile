@@ -10,6 +10,7 @@ export interface PetData {
     ShelterLocation : string;
     IsVaccinated : boolean;
     IsAdopted: boolean;
+    ReadyToAdopt: boolean;
     Image : [];
     ImageBase64: [];
     CreatedAt : Date;
