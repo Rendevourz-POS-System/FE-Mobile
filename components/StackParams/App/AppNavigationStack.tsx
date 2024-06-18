@@ -88,7 +88,7 @@ const AppNavigationStack: FC = () => {
             height: 55,
             paddingTop: 10
         },
-        tabBarLabel: "",
+        tabBarLabel: "Home",
         headerTitle: "",
         headerStyle: {
             elevation: 0, // Remove shadow on Android
@@ -112,7 +112,7 @@ const AppNavigationStack: FC = () => {
             height: 55,
             paddingTop: 10
         },
-        tabBarLabel: "",
+        tabBarLabel: "Profile",
         headerShown: false,
         tabBarIcon: ({ size, focused }) => (
             <MaterialCommunityIcons
