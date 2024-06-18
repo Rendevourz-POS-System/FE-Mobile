@@ -7,4 +7,5 @@ export type NoHeaderStackParams = {
     SurrenderFormScreen : undefined
     DonateScreen : {bankNumber : string} 
     RescueFormScreen : undefined
+    Create : undefined
 }
