@@ -223,6 +223,7 @@ export const ManageScreen: FC<ProfileNavigationStackScreenProps<'ManageScreen'>>
                             </View>
                         </View>
 
+                        <Text style={styles.textColor}>Username<Text className='text-[#ff0000]'>*</Text></Text>
                         <View style={styles.inputBox}>
                             <Controller
                                 name="Username"
@@ -240,6 +241,7 @@ export const ManageScreen: FC<ProfileNavigationStackScreenProps<'ManageScreen'>>
                         </View>
                         <Text style={styles.errorMessage}>{errors.Username?.message}</Text>
 
+                        <Text style={styles.textColor}>Email<Text className='text-[#ff0000]'>*</Text></Text>
                         <View style={styles.inputBox}>
                             <Controller
                                 name="Email"
@@ -257,6 +259,7 @@ export const ManageScreen: FC<ProfileNavigationStackScreenProps<'ManageScreen'>>
                         </View>
                         <Text style={styles.errorMessage}>{errors.Email?.message}</Text>
 
+                        <Text style={styles.textColor}>NIK<Text className='text-[#ff0000]'>*</Text></Text>
                         <View style={styles.inputBox}>
                             <Controller
                                 name="Nik"
@@ -274,6 +277,7 @@ export const ManageScreen: FC<ProfileNavigationStackScreenProps<'ManageScreen'>>
                         </View>
                         <Text style={styles.errorMessage}>{errors.Nik?.message}</Text>
 
+                        <Text style={styles.textColor}>Nomor Telepon<Text className='text-[#ff0000]'>*</Text></Text>
                         <View style={styles.inputBox}>
                             <Controller
                                 name="PhoneNumber"
@@ -291,6 +295,7 @@ export const ManageScreen: FC<ProfileNavigationStackScreenProps<'ManageScreen'>>
                         </View>
                         <Text style={styles.errorMessage}>{errors.PhoneNumber?.message}</Text>
 
+                        <Text style={styles.textColor}>Alamat<Text className='text-[#ff0000]'>*</Text></Text>
                         <View style={styles.inputBox}>
                             <Controller
                                 name="Address"
@@ -299,6 +304,7 @@ export const ManageScreen: FC<ProfileNavigationStackScreenProps<'ManageScreen'>>
                                     <TextInput
                                         style={{ flex: 1 }}
                                         placeholder="Alamat"
+                                        multiline
                                         onChangeText={(text: string) => setValue('Address', text)}
                                         value={value}
                                     />
@@ -308,6 +314,7 @@ export const ManageScreen: FC<ProfileNavigationStackScreenProps<'ManageScreen'>>
                         </View>
                         <Text style={styles.errorMessage}>{errors.Address?.message}</Text>
 
+                        <Text style={styles.textColor}>Negara<Text className='text-[#ff0000]'>*</Text></Text>
                         <View style={styles.inputBox}>
                             <Controller
                                 name="State"
@@ -325,6 +332,7 @@ export const ManageScreen: FC<ProfileNavigationStackScreenProps<'ManageScreen'>>
                         </View>
                         <Text style={styles.errorMessage}>{errors.State?.message}</Text>
 
+                        <Text style={styles.textColor}>Provinsi<Text className='text-[#ff0000]'>*</Text></Text>
                         <View style={styles.inputBox}>
                             <Controller
                                 name="Province"
@@ -342,6 +350,7 @@ export const ManageScreen: FC<ProfileNavigationStackScreenProps<'ManageScreen'>>
                         </View>
                         <Text style={styles.errorMessage}>{errors.Province?.message}</Text>
 
+                        <Text style={styles.textColor}>Daerah<Text className='text-[#ff0000]'>*</Text></Text>
                         <View style={styles.inputBox}>
                             <Controller
                                 name="District"
@@ -359,6 +368,7 @@ export const ManageScreen: FC<ProfileNavigationStackScreenProps<'ManageScreen'>>
                         </View>
                         <Text style={styles.errorMessage}>{errors.District?.message}</Text>
 
+                        <Text style={styles.textColor}>Kode Pos<Text className='text-[#ff0000]'>*</Text></Text>
                         <View style={styles.inputBox}>
                             <Controller
                                 name="PostalCode"
@@ -461,8 +471,10 @@ const styles = StyleSheet.create({
         top: 30,
         marginBottom: 60
     },
-    passwordToggleIcon: {
-        flexDirection: 'row',
-        top: 5,
+    textColor: {
+        color: '#4689FD',
+        fontSize: 18,
+        marginHorizontal: 35,
+        marginBottom: 5
     },
 });
