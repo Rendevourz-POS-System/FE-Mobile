@@ -100,7 +100,6 @@ export const ManagePetScreen: FC<ProfileNavigationStackScreenProps<"ManagePetScr
             OldImage: petData?.Data.Image,
         }
         const formData = new FormData();
-        formData.append('data', JSON.stringify(payload));
 
         // Add image file
         if (image) {

@@ -90,7 +90,7 @@ export const ManageScreen: FC<ProfileNavigationStackScreenProps<'ManageScreen'>>
     const onSubmit = async (data: ProfileFormType) => {
         // data.OldImageName = userData?.Image ?? '';
         let payloadString = JSON.stringify(data);
-        
+
         const formData = new FormData();
         // Add image file
         if (image) {
@@ -111,7 +111,7 @@ export const ManageScreen: FC<ProfileNavigationStackScreenProps<'ManageScreen'>>
                 'Authorization': `Bearer ${authState?.token}`,
             }
         }).then(response => {
-            if(image) {
+            if (image) {
                 removeImage(image!);
             }
             if (response.status === 200) {
@@ -134,13 +134,13 @@ export const ManageScreen: FC<ProfileNavigationStackScreenProps<'ManageScreen'>>
     const handleImagePress = useCallback(() => {
         bottomSheetModalRef.current?.present();
     }, []);
-    const selectImage = async (useLibrary : boolean) => {
+    const selectImage = async (useLibrary: boolean) => {
         let result;
-        const options : ImagePicker.ImagePickerOptions = {
+        const options: ImagePicker.ImagePickerOptions = {
             mediaTypes: ImagePicker.MediaTypeOptions.Images,
-                allowsEditing: true,
-                aspect: [1, 1],
-                quality: 1,
+            allowsEditing: true,
+            aspect: [1, 1],
+            quality: 1,
         }
 
         if (useLibrary) {
@@ -170,7 +170,7 @@ export const ManageScreen: FC<ProfileNavigationStackScreenProps<'ManageScreen'>>
         await FileSystem.copyAsync({ from: uri, to: dest });
         setImage(dest);
     }
-    
+
     return (
         <SafeAreaProvider style={styles.container}>
             <GestureHandlerRootView style={{ flex: 1 }}>
@@ -183,30 +183,30 @@ export const ManageScreen: FC<ProfileNavigationStackScreenProps<'ManageScreen'>>
                     <ScrollView>
                         <View className="mb-10 mt-10">
                             <View style={styles.rowContainer} className="justify-around">
-                            <BottomSheetModal
-                                ref={bottomSheetModalRef}
-                                index={0}   
-                                snapPoints={['20%']}
-                                backdropComponent={(props) => (
-                                    <BottomSheetBackdrop
-                                        {...props}
-                                        disappearsOnIndex={-1}
-                                        appearsOnIndex={0}
-                                        pressBehavior="close"
-                                    />
-                                )}
-                            >
-                                <BottomSheetView className="flex items-center justify-center">
-                                    <View className="flex flex-col items-center">
-                                        <TouchableOpacity className="py-4" onPress={() => selectImage(true)}>
-                                            <Text className="text-lg ">Choose Photo</Text>
-                                        </TouchableOpacity>
-                                        <TouchableOpacity className="py-4" onPress={() => selectImage(false)}>
-                                            <Text className="text-lg ">Take Photo</Text>
-                                        </TouchableOpacity>
-                                    </View>
-                                </BottomSheetView>
-                            </BottomSheetModal>
+                                <BottomSheetModal
+                                    ref={bottomSheetModalRef}
+                                    index={0}
+                                    snapPoints={['20%']}
+                                    backdropComponent={(props) => (
+                                        <BottomSheetBackdrop
+                                            {...props}
+                                            disappearsOnIndex={-1}
+                                            appearsOnIndex={0}
+                                            pressBehavior="close"
+                                        />
+                                    )}
+                                >
+                                    <BottomSheetView className="flex items-center justify-center">
+                                        <View className="flex flex-col items-center">
+                                            <TouchableOpacity className="py-4" onPress={() => selectImage(true)}>
+                                                <Text className="text-lg ">Choose Photo</Text>
+                                            </TouchableOpacity>
+                                            <TouchableOpacity className="py-4" onPress={() => selectImage(false)}>
+                                                <Text className="text-lg ">Take Photo</Text>
+                                            </TouchableOpacity>
+                                        </View>
+                                    </BottomSheetView>
+                                </BottomSheetModal>
                                 <TouchableOpacity
                                     style={{ width: 100, height: 100, backgroundColor: '#2E3A59', borderRadius: 50, justifyContent: 'center', alignItems: 'center' }}
                                     onPress={handleImagePress}
@@ -350,7 +350,7 @@ export const ManageScreen: FC<ProfileNavigationStackScreenProps<'ManageScreen'>>
                         </View>
                         <Text style={styles.errorMessage}>{errors.Province?.message}</Text>
 
-                        <Text style={styles.textColor}>Daerah<Text className='text-[#ff0000]'>*</Text></Text>
+                        <Text style={styles.textColor}>Kabupaten<Text className='text-[#ff0000]'>*</Text></Text>
                         <View style={styles.inputBox}>
                             <Controller
                                 name="District"
@@ -358,7 +358,7 @@ export const ManageScreen: FC<ProfileNavigationStackScreenProps<'ManageScreen'>>
                                 render={({ field: { value } }) => (
                                     <TextInput
                                         style={{ flex: 1 }}
-                                        placeholder="Daerah"
+                                        placeholder="Kabupaten"
                                         onChangeText={(text: string) => setValue('District', text)}
                                         value={value}
                                     />
@@ -367,6 +367,23 @@ export const ManageScreen: FC<ProfileNavigationStackScreenProps<'ManageScreen'>>
                             <FontAwesome6 name="edit" size={24} color="black" />
                         </View>
                         <Text style={styles.errorMessage}>{errors.District?.message}</Text>
+
+                        <Text style={styles.textColor}>Kota<Text className='text-[#ff0000]'>*</Text></Text>
+                        <View style={styles.inputBox}>
+                            <Controller
+                                name="City"
+                                control={control}
+                                render={({ field: { value } }) => (
+                                    <TextInput
+                                        style={{ flex: 1 }}
+                                        placeholder="City"
+                                        onChangeText={(text: string) => setValue('City', text)}
+                                        value={value}
+                                    />
+                                )}
+                            />
+                        </View>
+                        <Text style={styles.errorMessage}>{errors.State?.message}</Text>
 
                         <Text style={styles.textColor}>Kode Pos<Text className='text-[#ff0000]'>*</Text></Text>
                         <View style={styles.inputBox}>

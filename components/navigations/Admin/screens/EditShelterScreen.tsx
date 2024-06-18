@@ -1,4 +1,3 @@
-import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import React, { FC, useEffect, useState } from 'react';
 import { StyleSheet, TouchableOpacity, View, ScrollView, TextInput, Alert, Image } from 'react-native';
 import { Text } from 'react-native-elements';
@@ -10,12 +9,9 @@ import { IShelter } from '../../../../interface/IShelter';
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from 'react-hook-form';
-import * as ImagePicker from 'expo-image-picker';
-import * as FileSystem from 'expo-file-system';
 import { SelectList } from 'react-native-dropdown-select-list';
 import { Checkbox } from 'react-native-paper';
 import { PetType, ShelterLocation } from '../../../../interface/IPetType';
-import { useAuth } from '../../../../app/context/AuthContext';
 import { AdminNavigationStackScreenProps } from '../../../StackParams/StackScreenProps';
 
 interface ShelterProps {
@@ -38,13 +34,9 @@ const editShelterFormSchema = z.object({
 type EditShelterFormType = z.infer<typeof editShelterFormSchema>
 
 export const EditShelterScreen: FC<AdminNavigationStackScreenProps<'EditShelterScreen'>> = ({ navigation, route }: any) => {
-    const { authState } = useAuth();
     const [shelterData, setShelterData] = useState<ShelterProps>();
-    const [shelterImage, setShelterImage] = useState<string | null>();
     const [shelterOldImage, setShelterOldImage] = useState<string[] | null>([]);
     const [isLoading, setIsLoading] = useState<boolean>(true);
-    const [image, setImage] = useState<string | null>(null);
-    const imgDir = FileSystem.documentDirectory + 'images/';
     const [selected, setSelected] = useState<string[]>();
     const [shelterLocation, setShelterLocation] = useState<ShelterLocation[]>([]);
     const [petTypes, setPetTypes] = useState<PetType[]>([]);
@@ -72,7 +64,6 @@ export const EditShelterScreen: FC<AdminNavigationStackScreenProps<'EditShelterS
                 setValue("TotalPet", response.data.Data.TotalPet);
                 setValue("BankAccountNumber", response.data.Data.BankAccountNumber);
                 setValue("Pin", response.data.Data.Pin);
-                setShelterImage(response.data.Data.ImageBase64);
                 setShelterOldImage(response.data.Data.ImagePath)
                 setSelected(response.data.Data.PetTypeAccepted)
                 setIsLoading(true)
@@ -91,16 +82,14 @@ export const EditShelterScreen: FC<AdminNavigationStackScreenProps<'EditShelterS
         }
 
         const formData = new FormData();
-        formData.append('data', JSON.stringify(payload));
-        try {
-            const response = await putForm(BackendApiUri.putAdminShelterUpdate, formData);
-            if(response.status == 200){
-                Alert.alert('Shelter Berhasil Terupdate', 'Data Shelter telah berhasil terupdate.', [{ text: "OK", onPress: () => navigation.goBack() }]);
-            }
-        } catch (e) {
-            console.log(e);
-        }
 
+        formData.append('data', JSON.stringify(payload));
+        const res = await putForm(`${BackendApiUri.putAdminShelterUpdate}/${shelterData?.Data.Id}`, formData);
+        if (res.status == 200) {
+            Alert.alert('Shelter Berhasil Terupdate', 'Data shelter telah berhasil terupdate.', [{ text: "OK", onPress: () => navigation.goBack() }]);
+        } else {
+            Alert.alert('Shelter Gagal Update', 'Data shelter gagal terupdate.');
+        }
     }
 
     const fetchPetType = async () => {
@@ -291,6 +280,7 @@ export const EditShelterScreen: FC<AdminNavigationStackScreenProps<'EditShelterS
                             <TextInput
                                 placeholder="Masukkan Deskripsi Shelter"
                                 style={{ flex: 1 }}
+                                multiline
                                 onChangeText={(text: string) => setValue('ShelterDescription', text)}
                                 value={value}
                             />

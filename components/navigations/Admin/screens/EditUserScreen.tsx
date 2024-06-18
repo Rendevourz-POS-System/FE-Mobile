@@ -1,8 +1,8 @@
-import React, { FC, useCallback, useEffect, useRef, useState } from 'react';
-import { ScrollView, TextInput, StyleSheet, TouchableOpacity, View, Text } from 'react-native';
+import React, { FC, useEffect, useState } from 'react';
+import { ScrollView, TextInput, StyleSheet, TouchableOpacity, View, Text, Alert } from 'react-native';
 import { BackendApiUri } from '../../../../functions/BackendApiUri';
 import { IUser } from '../../../../interface/IUser';
-import { get } from '../../../../functions/Fetch';
+import { get, putForm } from '../../../../functions/Fetch';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { z } from "zod";
@@ -18,7 +18,7 @@ const editUserFormSchema = z.object({
     PhoneNumber: z.string({ required_error: "Nomor telepon tidak boleh kosong" }).min(1, { message: "Nomor Telepon tidak boleh kosong" }).refine(value => /^\d+$/.test(value), { message: "Nomor telepon harus berupa angka (0-9)" }),
     Address: z.string({ required_error: "Alamat tidak boleh kosong" }).min(1, { message: "Alamat tidak boleh kosong" }),
     State: z.string({ required_error: "Negara tidak boleh kosong" }).min(1, { message: "Negara tidak boleh kosong" }),
-    City: z.string({ required_error: "Kabupaten/Kota tidak boleh kosong" }).min(1, { message: "Kabupaten/Kota tidak boleh kosong" }),
+    City: z.string({ required_error: "Kota tidak boleh kosong" }).min(1, { message: "Kota tidak boleh kosong" }),
     District: z.string({ required_error: "Daerah tidak boleh kosong" }).min(1, { message: "Daerah tidak boleh kosong" }),
     Province: z.string({ required_error: "Provinsi tidak boleh kosong" }).min(1, { message: "Provinsi tidak boleh kosong" }),
     PostalCode: z.number({ required_error: 'Kode pos tidak boleh kosong' }),
@@ -50,6 +50,7 @@ export const EditUserScreen: FC<AdminNavigationStackScreenProps<'EditUserScreen'
                 setValue("Address", response.data.Address);
                 setValue("State", response.data.State);
                 setValue("District", response.data.District);
+                setValue("City", response.data.City);
                 setValue("Province", response.data.Province);
                 setValue("PostalCode", response.data.PostalCode)
             }
@@ -60,8 +61,18 @@ export const EditUserScreen: FC<AdminNavigationStackScreenProps<'EditUserScreen'
         }
     };
 
+    console.log(errors)
+
     const onSubmit = async (data: EditUserFormType) => {
-        let payloadString = JSON.stringify(data);
+        const formData = new FormData();
+
+        formData.append('data', JSON.stringify(data));
+        const res = await putForm(`${BackendApiUri.putAdminUserUpdate}${userData?.Id}`, formData);
+        if (res.status == 200) {
+            Alert.alert('User Berhasil Terupdate', 'Data user telah berhasil terupdate.', [{ text: "OK", onPress: () => navigation.goBack() }]);
+        } else {
+            Alert.alert('User Gagal Update', 'Data user gagal terupdate.');
+        }
     }
 
     return (
@@ -81,6 +92,7 @@ export const EditUserScreen: FC<AdminNavigationStackScreenProps<'EditUserScreen'
                     </View>
                 </View>
 
+                <Text style={styles.textColor}>Username<Text className='text-[#ff0000]'>*</Text></Text>
                 <View style={styles.inputBox}>
                     <Controller
                         name="Username"
@@ -97,7 +109,8 @@ export const EditUserScreen: FC<AdminNavigationStackScreenProps<'EditUserScreen'
 
                 </View>
                 <Text style={styles.errorMessage}>{errors.Username?.message}</Text>
-
+                
+                <Text style={styles.textColor}>Email<Text className='text-[#ff0000]'>*</Text></Text>
                 <View style={styles.inputBox}>
                     <Controller
                         name="Email"
@@ -115,6 +128,7 @@ export const EditUserScreen: FC<AdminNavigationStackScreenProps<'EditUserScreen'
                 </View>
                 <Text style={styles.errorMessage}>{errors.Email?.message}</Text>
 
+                <Text style={styles.textColor}>NIK<Text className='text-[#ff0000]'>*</Text></Text>
                 <View style={styles.inputBox}>
                     <Controller
                         name="Nik"
@@ -132,6 +146,7 @@ export const EditUserScreen: FC<AdminNavigationStackScreenProps<'EditUserScreen'
                 </View>
                 <Text style={styles.errorMessage}>{errors.Nik?.message}</Text>
 
+                <Text style={styles.textColor}>Nomor Telepon<Text className='text-[#ff0000]'>*</Text></Text>
                 <View style={styles.inputBox}>
                     <Controller
                         name="PhoneNumber"
@@ -149,6 +164,7 @@ export const EditUserScreen: FC<AdminNavigationStackScreenProps<'EditUserScreen'
                 </View>
                 <Text style={styles.errorMessage}>{errors.PhoneNumber?.message}</Text>
 
+                <Text style={styles.textColor}>Alamat<Text className='text-[#ff0000]'>*</Text></Text>
                 <View style={styles.inputBox}>
                     <Controller
                         name="Address"
@@ -157,6 +173,7 @@ export const EditUserScreen: FC<AdminNavigationStackScreenProps<'EditUserScreen'
                             <TextInput
                                 style={{ flex: 1 }}
                                 placeholder="Alamat"
+                                multiline
                                 onChangeText={(text: string) => setValue('Address', text)}
                                 value={value}
                             />
@@ -166,6 +183,7 @@ export const EditUserScreen: FC<AdminNavigationStackScreenProps<'EditUserScreen'
                 </View>
                 <Text style={styles.errorMessage}>{errors.Address?.message}</Text>
 
+                <Text style={styles.textColor}>Negara<Text className='text-[#ff0000]'>*</Text></Text>
                 <View style={styles.inputBox}>
                     <Controller
                         name="State"
@@ -182,6 +200,7 @@ export const EditUserScreen: FC<AdminNavigationStackScreenProps<'EditUserScreen'
                 </View>
                 <Text style={styles.errorMessage}>{errors.State?.message}</Text>
 
+                <Text style={styles.textColor}>Provinsi<Text className='text-[#ff0000]'>*</Text></Text>
                 <View style={styles.inputBox}>
                     <Controller
                         name="Province"
@@ -198,6 +217,7 @@ export const EditUserScreen: FC<AdminNavigationStackScreenProps<'EditUserScreen'
                 </View>
                 <Text style={styles.errorMessage}>{errors.Province?.message}</Text>
 
+                <Text style={styles.textColor}>Kabupaten<Text className='text-[#ff0000]'>*</Text></Text>
                 <View style={styles.inputBox}>
                     <Controller
                         name="District"
@@ -205,7 +225,7 @@ export const EditUserScreen: FC<AdminNavigationStackScreenProps<'EditUserScreen'
                         render={({ field: { value } }) => (
                             <TextInput
                                 style={{ flex: 1 }}
-                                placeholder="Daerah"
+                                placeholder="Kabupaten"
                                 onChangeText={(text: string) => setValue('District', text)}
                                 value={value}
                             />
@@ -214,6 +234,24 @@ export const EditUserScreen: FC<AdminNavigationStackScreenProps<'EditUserScreen'
                 </View>
                 <Text style={styles.errorMessage}>{errors.District?.message}</Text>
 
+                <Text style={styles.textColor}>Kota<Text className='text-[#ff0000]'>*</Text></Text>
+                <View style={styles.inputBox}>
+                    <Controller
+                        name="City"
+                        control={control}
+                        render={({ field: { value } }) => (
+                            <TextInput
+                                style={{ flex: 1 }}
+                                placeholder="City"
+                                onChangeText={(text: string) => setValue('City', text)}
+                                value={value}
+                            />
+                        )}
+                    />
+                </View>
+                <Text style={styles.errorMessage}>{errors.State?.message}</Text>
+
+                <Text style={styles.textColor}>Kode Pos<Text className='text-[#ff0000]'>*</Text></Text>
                 <View style={styles.inputBox}>
                     <Controller
                         name="PostalCode"
@@ -316,5 +354,11 @@ const styles = StyleSheet.create({
     passwordToggleIcon: {
         flexDirection: 'row',
         top: 5,
+    },
+    textColor: {
+        color: '#4689FD',
+        fontSize: 18,
+        marginHorizontal: 35,
+        marginBottom: 5
     },
 });

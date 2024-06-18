@@ -12,9 +12,6 @@ import { BackendApiUri } from "../../../../functions/BackendApiUri";
 import { SelectList } from "react-native-dropdown-select-list";
 import { PetData } from "../../../../interface/IPetList";
 import { AdminNavigationStackScreenProps } from "../../../StackParams/StackScreenProps";
-import * as FileSystem from 'expo-file-system';
-import * as ImagePicker from 'expo-image-picker';
-import { useAuth } from "../../../../app/context/AuthContext";
 
 interface PetProps {
     Data: PetData
@@ -32,12 +29,8 @@ const editPetFormSchema = z.object({
 type EditPetFormType = z.infer<typeof editPetFormSchema>
 
 export const EditPetScreen: FC<AdminNavigationStackScreenProps<'EditPetScreen'>> = ({ navigation, route }: any) => {
-    const { authState } = useAuth();
     const [petData, setPetData] = useState<PetProps>();
     const [petTypes, setPetTypes] = useState<PetType[]>([]);
-    const [petImage, setPetImage] = useState<string | null>();
-    const [image, setImage] = useState<string | null>(null);
-    const imgDir = FileSystem.documentDirectory + 'images/';
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const { control, handleSubmit, setValue, formState: { errors } } = useForm<EditPetFormType>({
         resolver: zodResolver(editPetFormSchema),
@@ -63,7 +56,6 @@ export const EditPetScreen: FC<AdminNavigationStackScreenProps<'EditPetScreen'>>
                     setValue("IsVaccinated", "false")
                 }
                 setValue("PetDescription", response.data.Data.PetDescription);
-                setPetImage(response.data.Data.ImageBase64);
                 setIsLoading(true)
             }
         } catch (e) {
@@ -89,6 +81,7 @@ export const EditPetScreen: FC<AdminNavigationStackScreenProps<'EditPetScreen'>>
 
     const onSubmit = async (data: EditPetFormType) => {
         const payload = {
+            Id: petData?.Data.Id,
             ShelterId: petData?.Data.ShelterId,
             PetName: data.PetName,
             PetAge: data.PetAge,
@@ -99,92 +92,14 @@ export const EditPetScreen: FC<AdminNavigationStackScreenProps<'EditPetScreen'>>
             OldImage: petData?.Data.Image,
         }
         const formData = new FormData();
-        formData.append('data', JSON.stringify(payload));
-
-        // Add image file
-        if (image) {
-            const fileInfo = await FileSystem.getInfoAsync(image);
-            formData.append('files', {
-                uri: image,
-                name: fileInfo.uri.split('/').pop(),
-                type: 'image/jpeg'
-            } as any); // You can also check and set the type dynamically based on file extension
-        }
 
         formData.append('data', JSON.stringify(payload));
-        console.log(formData)
-        const res = await fetch('http://192.168.200.87:8080/shelter/update', {
-            method: 'PUT',
-            body: formData,
-            headers: {
-                'Content-Type': 'multipart/form-data',
-                'Authorization': `Bearer ${authState?.token}`,
-            }
-        }).then(res => {
-            removeImage(image!);
-            Alert.alert('Pet Berhasil Terupdate', 'Data Pet telah berhasil terupdate.', [{ text: "OK", onPress: () => navigation.goBack() }]);
-        }).catch(err => {
-            Alert.alert('Pet Gagal Update', 'Data pet gagal terupdate.');
-            console.log(err)
-        });
-    }
-
-    const selectImage = async (useLibrary: boolean) => {
-        let result;
-        const options: ImagePicker.ImagePickerOptions = {
-            mediaTypes: ImagePicker.MediaTypeOptions.Images,
-            allowsEditing: true,
-            aspect: [1, 1],
-            quality: 1,
-        }
-
-        if (useLibrary) {
-            result = await ImagePicker.launchImageLibraryAsync(options);
+        const res = await putForm(`${BackendApiUri.putPetUpdate}`, formData);
+        if (res.status == 200) {
+            Alert.alert('Shelter Berhasil Terupdate', 'Data shelter telah berhasil terupdate.', [{ text: "OK", onPress: () => navigation.goBack() }]);
         } else {
-            await ImagePicker.requestCameraPermissionsAsync();
-            result = await ImagePicker.launchCameraAsync(options);
-        }
-
-        if (!result.canceled) {
-            saveImage(result.assets[0].uri);
-        }
-    };
-
-    const ensureDirExists = async () => {
-        const dirInfo = await FileSystem.getInfoAsync(imgDir);
-        if (!dirInfo.exists) {
-            await FileSystem.makeDirectoryAsync(imgDir, { intermediates: true });
-        }
-    }
-
-    const saveImage = async (uri: string) => {
-        await ensureDirExists();
-        const fileName = uri.substring(uri.lastIndexOf('/') + 1);
-        const dest = imgDir + fileName;
-        await FileSystem.copyAsync({ from: uri, to: dest });
-        setImage(dest);
-    }
-
-    useEffect(() => {
-        loadImages();
-    }, []);
-
-    const loadImages = async () => {
-        await ensureDirExists();
-        const files = await FileSystem.readDirectoryAsync(imgDir);
-        if (files.length > 0) {
-            setImage(imgDir + files[0]);
-        }
-    }
-
-    const removeImage = async (imageUri: string) => {
-        await FileSystem.deleteAsync(imageUri);
-        setImage(null);
-        setPetImage(null);
-    }
-
-    const removeShelterImage = async (imageUri: string) => {
-        setPetImage(null);
+            Alert.alert('Shelter Gagal Update', 'Data shelter gagal terupdate.');
+        } 
     }
 
     return (
@@ -195,48 +110,8 @@ export const EditPetScreen: FC<AdminNavigationStackScreenProps<'EditPetScreen'>>
             </View>
 
             <ScrollView className="mt-5">
-                {petImage && (
-                    <View className="items-end mx-10">
-                        <TouchableOpacity className="flex-row items-center" onPress={() => removeShelterImage(petImage)}>
-                            <Ionicons name="trash" size={20} color="black" />
-                            <Text className="text-xs">Hapus Gambar</Text>
-                        </TouchableOpacity>
-                    </View>
-                )}
-                {image && (
-                    <View className="items-end mx-10">
-                        <TouchableOpacity className="flex-row items-center" onPress={() => removeImage(image)}>
-                            <Ionicons name="trash" size={20} color="black" />
-                            <Text className="text-xs">Hapus Gambar</Text>
-                        </TouchableOpacity>
-                    </View>
-                )}
-                <View className="items-center mb-5">
-                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: 350 }}>
-                        {petImage == null && image == null && (
-                            <>
-                                <TouchableOpacity
-                                    style={{ width: 170, height: 200, backgroundColor: '#2E3A59', borderRadius: 10, justifyContent: 'center', alignItems: 'center', marginRight: 5 }}
-                                    onPress={() => selectImage(true)}
-                                >
-                                    <Ionicons name="images" size={40} color="white" />
-                                </TouchableOpacity>
-
-                                <TouchableOpacity
-                                    style={{ width: 170, height: 200, backgroundColor: '#2E3A59', borderRadius: 10, justifyContent: 'center', alignItems: 'center', marginLeft: 5 }}
-                                    onPress={() => selectImage(false)}
-                                >
-                                    <Ionicons name="camera" size={40} color="white" />
-                                </TouchableOpacity>
-                            </>
-                        )}
-                    </View>
-                    {image && (
-                        <Image source={{ uri: image }} style={{ width: 350, height: 200, borderRadius: 10 }} resizeMode="cover" />
-                    )}
-                    {petImage && (
-                        <Image source={{ uri: `data:image/*;base64,${petImage}` }} style={{ width: 350, height: 200, borderRadius: 10 }} resizeMode="cover" />
-                    )}
+                <View className="mb-10 items-center">
+                    <Image source={{ uri: `data:image/*;base64,${petData?.Data.ImageBase64}` }} style={{ width: 350, height: 200, backgroundColor: '#2E3A59', borderRadius: 10, justifyContent: 'center', alignItems: 'center' }} />
                 </View>
 
                 <Text style={styles.textColor}>Nama Hewan<Text className='text-[#ff0000]'>*</Text></Text>
@@ -389,13 +264,14 @@ const styles = StyleSheet.create({
         marginBottom: 5
     },
     inputBox: {
-        marginTop: 5,
+        backgroundColor: "#F7F7F9",
         padding: 20,
         marginHorizontal: 30,
-        borderColor: "#CECECE",
-        borderWidth: 2,
-        borderRadius: 25,
-        flexDirection: 'row'
+        borderBottomColor: "#488DF4",
+        borderBottomWidth: 2,
+        borderRadius: 10,
+        flexDirection: 'row',
+        justifyContent: 'space-between'
     },
     errorMessage: {
         color: 'red',
