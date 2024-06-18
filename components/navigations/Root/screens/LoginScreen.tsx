@@ -110,6 +110,21 @@ export const LoginScreen: FC<GuestNavigationStackScreenProps<'Login'>> = ({navig
                     </View>
                     <Text style={style.errorMessage}>{errors.Password?.message}</Text>
 
+                    {/* <View className="flex-row justify-between mx-9 top-0">
+                        <CheckBox
+                            checked={rememberMe}
+                            onPress={handleRememberMeChange}
+                            checkedColor="#488DF4"
+                            containerStyle={style.checkboxContent}
+                            title={"Remember Me"}
+                            className=""
+                            textStyle={style.fontColor}
+                        ></CheckBox>
+                        <TouchableOpacity>
+                            <Text style={style.fontColor} className="mt-1">Forgot Password?</Text>
+                        </TouchableOpacity>
+                    </View> */}
+
                     <TouchableOpacity style={style.button} onPress={login} disabled={isLogin} className={`flex-row items-center justify-center ${!isLogin ? 'bg-blue-500' : 'bg-slate-500'}`}>
                         {isLogin ? 
                             (

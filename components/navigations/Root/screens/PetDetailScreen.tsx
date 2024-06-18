@@ -95,9 +95,9 @@ export const PetDetailScreen: FC<NoHeaderNavigationStackScreenProps<"PetDetailSc
                     <View style={[styles.nextIcon, { position: 'absolute', left: 20, top: 17, zIndex: 1 }]}>
                         <Ionicons name="chevron-back" size={24} color="black" onPress={() => navigation.navigate('PetListScreen', {route: favAttempt})} />
                     </View>
-                    <ScrollView>
+                    <ScrollView contentContainerStyle={{flexGrow: 1, justifyContent: 'space-between', alignContent: 'center'}}>
                         <ImageBackground source={data?.Data.ImageBase64 == null ? require('../../../../assets/default_paw2.jpg') : { uri: `data:image/*;base64,${data?.Data.ImageBase64}` }} style={{ width: '100%', height: 350 }} />
-                        <View className='pt-8 px-6 bottom-6 bg-white rounded-t-3xl border border-slate-300 border-b-0'>
+                        <View className='pt-8 px-6 bottom-16 bg-white rounded-t-3xl border border-slate-300 border-b-0'>
                             <View className='flex flex-row justify-between'>
                                 <View className='flex-row items-center'>
                                     <Text className='text-3xl font-bold mr-2'>{data?.Data.PetName}</Text>
@@ -137,7 +137,7 @@ export const PetDetailScreen: FC<NoHeaderNavigationStackScreenProps<"PetDetailSc
                             <Text className='mt-8 text-xl font-bold'>Deskripsi Hewan</Text>
                             <Text className='mt-2 text-base text-[#8A8A8A]'>{data?.Data.PetDescription}</Text>
                         </View>
-                        <View className='mt-5 flex flex-row justify-evenly pb-5 px-5'>
+                        <View className='mt-5 items-center pb-7 px-5'>
                             <TouchableOpacity style={styles.adopsiButton} onPress={() => navigation.navigate("AdoptionFormScreen", {shelterId: data.Data.ShelterId, petId: data.Data.Id})} className='w-4/5'>
                                 <Text style={styles.fontButton} className='text-xl text-center'>Adopsi Sekarang</Text>
                             </TouchableOpacity>
