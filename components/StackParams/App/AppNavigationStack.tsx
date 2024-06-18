@@ -43,6 +43,8 @@ import { DonateScreen } from "../../navigations/Root/screens/DonateScreen";
 import { RescueFormScreen } from "../../navigations/Root/screens/RescueFormScreen";
 import { ManagePetScreen } from "../../navigations/Profile/screens/ManagePetScreen";
 import { ApprovalScreen } from "../../navigations/Profile/screens/ApprovalScreen";
+import { CreateNavigationStackParams } from "../Create/CreateNavigationStackParams";
+import { CreateScreen } from "../../navigations/Create/screens/CreateScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -75,6 +77,11 @@ const AppNavigationStack: FC = () => {
                 options={homeTabOptions}
             />
             <UserTab.Screen
+                name="Create"
+                component={CreateUserStackGroup}
+                options={createTabOptions}
+            />
+            <UserTab.Screen
                 name="Profile"
                 component={ProfileStackGroup}
                 options={profileTabOptions}
@@ -100,6 +107,30 @@ const AppNavigationStack: FC = () => {
         tabBarIcon: ({ size, focused }) => (
             <MaterialCommunityIcons
                 name={focused ? "home" : "home-outline"}
+                color={focused ? "#4689FD" : "#A9A9A9"}
+                size={30}
+            />
+        )
+    }
+
+    const createTabOptions: BottomTabNavigationOptions = {
+        tabBarStyle: {
+            backgroundColor: "#fff",
+            borderTopWidth: 0,
+            height: 55,
+            paddingTop: 10
+        },
+        tabBarLabel: "Create",
+        headerTitle: "",
+        headerStyle: {
+            elevation: 0, // Remove shadow on Android
+            shadowOpacity: 0, // Remove shadow on iOS
+        },
+        headerShown: false,
+        // header : () => <Header />,
+        tabBarIcon: ({ size, focused }) => (
+            <MaterialCommunityIcons
+                name={focused ? "plus" : "plus"}
                 color={focused ? "#4689FD" : "#A9A9A9"}
                 size={30}
             />
@@ -141,6 +172,17 @@ const AppNavigationStack: FC = () => {
             <HomeUserStack.Screen name="RescueFormScreen" component={RescueFormScreen} options={{ presentation: "modal" }}/>
         </HomeUserStack.Navigator>
     );
+
+    const CreateUserStack = createNativeStackNavigator<CreateNavigationStackParams>();
+    const CreateUserStackGroup = () => (
+        <CreateUserStack.Navigator screenOptions={{ headerShown: false }}>
+            <CreateUserStack.Screen
+                name="CreateScreen"
+                component={CreateScreen}
+                options={noHeader}
+            />
+        </CreateUserStack.Navigator>
+    )
 
     const ProfileUserStack = createNativeStackNavigator<ProfileNavigationStackParams>();
     const ProfileStackGroup = () => (
