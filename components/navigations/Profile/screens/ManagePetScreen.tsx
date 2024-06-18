@@ -190,7 +190,8 @@ export const ManagePetScreen: FC<ProfileNavigationStackScreenProps<"ManagePetScr
     const handleDelete = async() => {
         const payload = {
             ShelterId: petData?.Data.ShelterId,
-            PetsId: [`${route.params.petId}`],
+            PetId: [`${route.params.petId}`],
+            UserId: authState?.userId
         }
         console.log(payload)
         Alert.alert(`Apakah Anda Yakin ingin menghapus ${petData?.Data.PetName}`, '', [
@@ -204,8 +205,8 @@ export const ManagePetScreen: FC<ProfileNavigationStackScreenProps<"ManagePetScr
                     setIsLoading(true)
                     try {
                         const response = await deletesBody(BackendApiUri.deletePet, payload);
-                        if (response && response.status === 200) {
-                            Alert.alert(`Anda berhasil menghapus ${petData?.Data.PetName}`)
+                        if (response) {
+                            Alert.alert(`Anda berhasil menghapus ${petData?.Data.PetName}`, "", [ { text: "OK", onPress: () => navigation.goBack()}])
                         }
                     } catch (e) {
                         Alert.alert(`Anda gagal menghapus ${petData?.Data.PetName}`)
@@ -218,7 +219,7 @@ export const ManagePetScreen: FC<ProfileNavigationStackScreenProps<"ManagePetScr
     }
 
     return (
-        <SafeAreaProvider>
+        <SafeAreaProvider className="bg-gray-100">
             <View className="mt-5 flex-row items-center justify-center mb-3">
                 <Ionicons name="chevron-back" size={24} color="black" onPress={() => navigation.goBack()} style={{ position: 'absolute', left: 20 }} />
                 <Text className="text-xl">Edit</Text>

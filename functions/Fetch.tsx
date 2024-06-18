@@ -44,7 +44,13 @@ export const deletes = async(url: string) => {
 }
 
 export const deletesBody = async(url: string, body: any) => {
-    const response = await axios.delete(baseUrl + url, body);
+    const token = await readAccessToken();
+    const response = await axios.delete(baseUrl + url, {
+        headers: {
+            'Authorization': `Bearer ${token}`,
+        },
+        data: body
+    });
     return response.data;
 }
 

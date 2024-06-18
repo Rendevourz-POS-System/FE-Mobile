@@ -220,6 +220,8 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     header: {
+        marginTop: 25,
+        marginBottom: 5,
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',

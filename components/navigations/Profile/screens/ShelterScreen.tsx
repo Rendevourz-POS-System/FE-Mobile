@@ -82,7 +82,7 @@ export const ShelterScreen: FC<ProfileNavigationStackScreenProps<'ShelterScreen'
             setIsModalOpen(false);
             setErrorMessage("");
             setInputValue("");
-            Alert.alert("Success", "Pin Benar. Anda akan segera diakses menuju halaman Manage Shelter",
+            Alert.alert("", "Pin Benar. Anda akan segera diakses menuju halaman Manage Shelter",
                 [{ text: "OK", onPress: () => navigation.navigate("ManageShelterScreen") }]);
         } else {
             setErrorMessage("Pin Salah");
@@ -103,7 +103,7 @@ export const ShelterScreen: FC<ProfileNavigationStackScreenProps<'ShelterScreen'
                         {fetchLoading ? (
                             <>
                                 <View className="flex-1 justify-center items-center">
-                                    <ActivityIndicator size="large" color="#4689FD"/>
+                                    <ActivityIndicator size="large" color="#4689FD" />
                                 </View>
                             </>
                         ) : (
@@ -122,7 +122,7 @@ export const ShelterScreen: FC<ProfileNavigationStackScreenProps<'ShelterScreen'
                                             <Ionicons name="chevron-back" size={24} color="black" onPress={() => navigation.goBack()} style={{ position: 'absolute', left: 20 }} />
                                             <Text className="text-xl">Shelter Dashboard</Text>
                                         </View>
-                                        <ScrollView className="my-5" contentContainerStyle={{width: "100%", height: "100%"}}>
+                                        <ScrollView className="my-5" contentContainerStyle={{ width: "100%", height: "100%" }}>
                                             <View className="mt-5 flex-row justify-around">
                                                 <TouchableOpacity style={[styles.button]} onPress={() => setIsModalOpen(true)}>
                                                     <View style={styles.iconContainer}>
@@ -161,9 +161,15 @@ export const ShelterScreen: FC<ProfileNavigationStackScreenProps<'ShelterScreen'
                                                             <View style={{ flex: 1, marginBottom: 35, marginTop: 20 }}>
                                                                 <TouchableOpacity className="mx-2 justify-center" activeOpacity={1} onPress={() => navigation.navigate("ManagePetScreen", { petId: pet.Id })}>
                                                                     <Image
-                                                                        source={{ uri: `data:image/*;base64,${pet.ImageBase64}` }}
+                                                                        source={pet.ImageBase64 ? { uri: `data:image/*;base64,${pet.ImageBase64}` } : require('../../../../assets/default_paw2.jpg')}
                                                                         className="w-full h-80 rounded-3xl"
                                                                     />
+                                                                    <TouchableHighlight
+                                                                        style={{ position: 'absolute', top: 15, right: 20, backgroundColor: 'rgba(255, 255, 255, 0.65)', padding: 8, borderRadius: 10 }}
+                                                                        underlayColor="transparent"
+                                                                    >
+                                                                        <Text className={`${pet.IsAdopted == true ? 'text-green-500' : 'text-red-500'}`} >{pet.IsAdopted == true ? "Adopted" : "Not Adopted"}</Text>
+                                                                    </TouchableHighlight>
 
                                                                     <View style={{ position: 'absolute', top: 230, left: 0, right: 0, bottom: 0 }}>
                                                                         <View style={{ marginTop: 5, backgroundColor: "#FFFDFF", paddingHorizontal: 20, paddingVertical: 15, borderRadius: 15 }}>

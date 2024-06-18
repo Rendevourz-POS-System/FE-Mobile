@@ -189,9 +189,9 @@ export const EditPetScreen: FC<AdminNavigationStackScreenProps<'EditPetScreen'>>
 
     return (
         <SafeAreaProvider>
-            <View className="mt-5 flex-row items-center justify-center mb-3">
+            <View className="mt-5 flex-row items-center justify-center">
                 <Ionicons name="chevron-back" size={24} color="black" onPress={() => navigation.goBack()} style={{ position: 'absolute', left: 20 }} />
-                <Text className="text-xl">Edit</Text>
+                <Text className="text-xl">Edit {petData ? petData.Data.PetName : ""}</Text>
             </View>
 
             <ScrollView className="mt-5">
