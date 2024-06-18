@@ -129,7 +129,7 @@ export const ManageShelterScreen: FC<ProfileNavigationStackScreenProps<'ManageSh
         await FileSystem.deleteAsync(imageUri);
         setImage(null);
     }
-
+    
     const handleImagePress = useCallback(() => {
         bottomSheetModalRef.current?.present();
     }, []);
@@ -209,7 +209,7 @@ export const ManageShelterScreen: FC<ProfileNavigationStackScreenProps<'ManageSh
                                 >
 
                                     {image ? (
-                                        <Image source={{ uri: image }} style={{ width: 550, height: 200, borderRadius: 10 }} />)
+                                        <Image source={{ uri: image }} style={{ width: 350, height: 200, borderRadius: 10 }} />)
                                         :
                                         (<Ionicons name="camera" size={40} color="white" />
                                         )}
@@ -263,6 +263,7 @@ export const ManageShelterScreen: FC<ProfileNavigationStackScreenProps<'ManageSh
                                         <TextInput
                                             placeholder="Masukkan Alamat Shelter"
                                             style={{ flex: 1 }}
+                                            multiline
                                             onChangeText={(text: string) => setValue('ShelterAddress', text)}
                                             value={value}
                                         />
@@ -360,6 +361,7 @@ export const ManageShelterScreen: FC<ProfileNavigationStackScreenProps<'ManageSh
                                         <TextInput
                                             placeholder="Masukkan Deskripsi Shelter"
                                             style={{ flex: 1 }}
+                                            multiline
                                             onChangeText={(text: string) => setValue('ShelterDescription', text)}
                                             value={value}
                                         />

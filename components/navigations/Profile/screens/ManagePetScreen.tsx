@@ -89,6 +89,7 @@ export const ManagePetScreen: FC<ProfileNavigationStackScreenProps<"ManagePetScr
 
     const onSubmit = async (data: EditPetFormType) => {
         const payload = {
+            Id: route.params.petId,
             ShelterId: petData?.Data.ShelterId,
             PetName: data.PetName,
             PetAge: data.PetAge,
@@ -112,21 +113,12 @@ export const ManagePetScreen: FC<ProfileNavigationStackScreenProps<"ManagePetScr
         }
 
         formData.append('data', JSON.stringify(payload));
-        console.log(formData)
-        const res = await fetch('http://192.168.200.87:8080/shelter/update', {
-            method: 'PUT',
-            body: formData,
-            headers: {
-                'Content-Type': 'multipart/form-data',
-                'Authorization': `Bearer ${authState?.token}`,
-            }
-        }).then(res => {
-            removeImage(image!);
-            Alert.alert('Pet Berhasil Terupdate', 'Data Pet telah berhasil terupdate.', [{ text: "OK", onPress: () => navigation.goBack() }]);
-        }).catch(err => {
-            Alert.alert('Pet Gagal Update', 'Data pet gagal terupdate.');
-            console.log(err)
-        });
+        const res = await putForm(`${BackendApiUri.putPetUpdate}`, formData);
+        if (res.status == 200) {
+            Alert.alert('Pet Berhasil Terupdate', 'Data pet anda telah berhasil terupdate.', [{ text: "OK", onPress: () => navigation.goBack() }]);
+        } else {
+            Alert.alert('Pet Gagal Update', 'Data pet anda gagal terupdate.');
+        }
     }
 
     const selectImage = async (useLibrary: boolean) => {
