@@ -196,6 +196,9 @@ export const DonateScreen: FC<NoHeaderNavigationStackScreenProps<'DonateScreen'>
                 </>}
 
                 <Text style={styles.textColor}>Alasan Donasi</Text>
+                <Text className='mx-10 text-xs'>
+                    Note: ini hanya simulasi donasi menggunakan MidTrans
+                </Text>
                 <View style={styles.inputBox}>
                     <Controller
                         name="Reason"
@@ -210,9 +213,6 @@ export const DonateScreen: FC<NoHeaderNavigationStackScreenProps<'DonateScreen'>
                             />
                         )}
                     />
-                    <Text className='text-center text-xs'>
-                        Note: ini hanya simulasi donasi menggunakan MidTrans
-                    </Text>
                 </View>
 
                 <TouchableOpacity style={styles.button} onPress={handleSubmit(onSubmit)}>
