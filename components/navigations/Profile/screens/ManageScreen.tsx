@@ -249,7 +249,7 @@ export const ManageScreen: FC<ProfileNavigationStackScreenProps<'ManageScreen'>>
                                     />
                                 )}
                             />
-                            <FontAwesome6 name="edit" size={24} color="black" />
+                            <FontAwesome6 name="edit" size={20} color="black" />
                         </View>
                         <Text style={styles.errorMessage}>{errors.Username?.message}</Text>
 
@@ -267,7 +267,7 @@ export const ManageScreen: FC<ProfileNavigationStackScreenProps<'ManageScreen'>>
                                     />
                                 )}
                             />
-                            <FontAwesome6 name="edit" size={24} color="black" />
+                            <FontAwesome6 name="edit" size={20} color="black" />
                         </View>
                         <Text style={styles.errorMessage}>{errors.Email?.message}</Text>
 
@@ -285,7 +285,7 @@ export const ManageScreen: FC<ProfileNavigationStackScreenProps<'ManageScreen'>>
                                     />
                                 )}
                             />
-                            <FontAwesome6 name="edit" size={24} color="black" />
+                            <FontAwesome6 name="edit" size={20} color="black" />
                         </View>
                         <Text style={styles.errorMessage}>{errors.Nik?.message}</Text>
 
@@ -303,7 +303,7 @@ export const ManageScreen: FC<ProfileNavigationStackScreenProps<'ManageScreen'>>
                                     />
                                 )}
                             />
-                            <FontAwesome6 name="edit" size={24} color="black" />
+                            <FontAwesome6 name="edit" size={20} color="black" />
                         </View>
                         <Text style={styles.errorMessage}>{errors.PhoneNumber?.message}</Text>
 
@@ -322,7 +322,7 @@ export const ManageScreen: FC<ProfileNavigationStackScreenProps<'ManageScreen'>>
                                     />
                                 )}
                             />
-                            <FontAwesome6 name="edit" size={24} color="black" />
+                            <FontAwesome6 name="edit" size={20} color="black" />
                         </View>
                         <Text style={styles.errorMessage}>{errors.Address?.message}</Text>
 
@@ -340,7 +340,7 @@ export const ManageScreen: FC<ProfileNavigationStackScreenProps<'ManageScreen'>>
                                     />
                                 )}
                             />
-                            <FontAwesome6 name="edit" size={24} color="black" />
+                            <FontAwesome6 name="edit" size={20} color="black" />
                         </View>
                         <Text style={styles.errorMessage}>{errors.State?.message}</Text>
 
@@ -358,7 +358,7 @@ export const ManageScreen: FC<ProfileNavigationStackScreenProps<'ManageScreen'>>
                                     />
                                 )}
                             />
-                            <FontAwesome6 name="edit" size={24} color="black" />
+                            <FontAwesome6 name="edit" size={20} color="black" />
                         </View>
                         <Text style={styles.errorMessage}>{errors.Province?.message}</Text>
 
@@ -376,7 +376,7 @@ export const ManageScreen: FC<ProfileNavigationStackScreenProps<'ManageScreen'>>
                                     />
                                 )}
                             />
-                            <FontAwesome6 name="edit" size={24} color="black" />
+                            <FontAwesome6 name="edit" size={20} color="black" />
                         </View>
                         <Text style={styles.errorMessage}>{errors.District?.message}</Text>
 
@@ -394,6 +394,7 @@ export const ManageScreen: FC<ProfileNavigationStackScreenProps<'ManageScreen'>>
                                     />
                                 )}
                             />
+                            <FontAwesome6 name="edit" size={20} color="black" />
                         </View>
                         <Text style={styles.errorMessage}>{errors.State?.message}</Text>
 
@@ -417,7 +418,7 @@ export const ManageScreen: FC<ProfileNavigationStackScreenProps<'ManageScreen'>>
                                     />
                                 )}
                             />
-                            <FontAwesome6 name="edit" size={24} color="black" />
+                            <FontAwesome6 name="edit" size={20} color="black" />
                         </View>
                         <Text style={styles.errorMessage}>{errors.PostalCode?.message}</Text>
 
