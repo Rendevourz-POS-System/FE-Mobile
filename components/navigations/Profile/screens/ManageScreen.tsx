@@ -152,7 +152,7 @@ export const ManageScreen: FC<ProfileNavigationStackScreenProps<'ManageScreen'>>
         }
 
         if (!result.canceled) {
-            if(previousImage) {
+            if (previousImage) {
                 removeImage(previousImage)
             }
             saveImage(result.assets[0].uri);
@@ -177,18 +177,18 @@ export const ManageScreen: FC<ProfileNavigationStackScreenProps<'ManageScreen'>>
     }
 
     return (
-        <SafeAreaProvider style={styles.container}>
+        <SafeAreaProvider style={styles.container} className='bg-gray-100'>
             <GestureHandlerRootView style={{ flex: 1 }}>
                 <BottomSheetModalProvider>
                     <View className="mt-5 flex-row items-center justify-center mb-3">
-                        <Ionicons name="chevron-back" size={24} color="black" 
-                        onPress={() => {
-                            if(image){
-                                removeImage(image!);
-                            }
-                            navigation.goBack()
-                        }} 
-                        style={{ position: 'absolute', left: 20 }} />
+                        <Ionicons name="chevron-back" size={24} color="black"
+                            onPress={() => {
+                                if (image) {
+                                    removeImage(image!);
+                                }
+                                navigation.goBack()
+                            }}
+                            style={{ position: 'absolute', left: 20 }} />
                         <Text className="text-xl">Manage Profile</Text>
                     </View>
 
