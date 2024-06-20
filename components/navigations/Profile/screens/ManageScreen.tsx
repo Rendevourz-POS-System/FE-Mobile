@@ -52,6 +52,7 @@ type ProfileFormType = z.infer<typeof profileFormSchema>
 
 export const ManageScreen: FC<ProfileNavigationStackScreenProps<'ManageScreen'>> = ({ navigation }) => {
     const [userData, setUserData] = useState<User>();
+    const [previousImage, setPreviousImage] = useState<string | null>('');
     const [image, setImage] = useState<string | null>(null);
     const bottomSheetModalRef = useRef<BottomSheetModal>(null);
     const { control, setValue, handleSubmit, formState: { errors } } = useForm<ProfileFormType>({
@@ -151,6 +152,9 @@ export const ManageScreen: FC<ProfileNavigationStackScreenProps<'ManageScreen'>>
         }
 
         if (!result.canceled) {
+            if(previousImage) {
+                removeImage(previousImage)
+            }
             saveImage(result.assets[0].uri);
         }
         bottomSheetModalRef.current?.close();
@@ -168,6 +172,7 @@ export const ManageScreen: FC<ProfileNavigationStackScreenProps<'ManageScreen'>>
         const fileName = uri.substring(uri.lastIndexOf('/') + 1);
         const dest = imgDir + fileName;
         await FileSystem.copyAsync({ from: uri, to: dest });
+        setPreviousImage(dest);
         setImage(dest);
     }
 
@@ -176,7 +181,14 @@ export const ManageScreen: FC<ProfileNavigationStackScreenProps<'ManageScreen'>>
             <GestureHandlerRootView style={{ flex: 1 }}>
                 <BottomSheetModalProvider>
                     <View className="mt-5 flex-row items-center justify-center mb-3">
-                        <Ionicons name="chevron-back" size={20} color="black" onPress={() => navigation.goBack()} style={{ position: 'absolute', left: 20 }} />
+                        <Ionicons name="chevron-back" size={24} color="black" 
+                        onPress={() => {
+                            if(image){
+                                removeImage(image!);
+                            }
+                            navigation.goBack()
+                        }} 
+                        style={{ position: 'absolute', left: 20 }} />
                         <Text className="text-xl">Manage Profile</Text>
                     </View>
 

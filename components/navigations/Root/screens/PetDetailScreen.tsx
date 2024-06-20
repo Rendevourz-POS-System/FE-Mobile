@@ -26,6 +26,8 @@ export const PetDetailScreen: FC<NoHeaderNavigationStackScreenProps<"PetDetailSc
             PetAge : 0,
             PetGender : "",
             PetStatus : false,
+            IsAdopted : false,
+            ReadyToAdopt : false,
             PetDescription : "",
             ShelterLocation : "",
             IsVaccinated : false,
@@ -96,8 +98,8 @@ export const PetDetailScreen: FC<NoHeaderNavigationStackScreenProps<"PetDetailSc
                         <Ionicons name="chevron-back" size={24} color="black" onPress={() => navigation.navigate('PetListScreen', {route: favAttempt})} />
                     </View>
                     <ScrollView contentContainerStyle={{flexGrow: 1, justifyContent: 'space-between', alignContent: 'center'}}>
-                        <ImageBackground source={data?.Data.ImageBase64 == null ? require('../../../../assets/default_paw2.jpg') : { uri: `data:image/*;base64,${data?.Data.ImageBase64}` }} style={{ width: '100%', height: 350 }} />
-                        <View className='pt-8 px-6 bottom-16 bg-white rounded-t-3xl border border-slate-300 border-b-0'>
+                        <ImageBackground source={data?.Data.ImageBase64 == null ? require('../../../../assets/default_paw2.jpg') : { uri: `data:image/*;base64,${data?.Data.ImageBase64}` }} style={{ width: '100%', height: 400 }} />
+                        <View className='pt-8 px-6 bottom-28 bg-white rounded-t-3xl border border-slate-300 border-b-0'>
                             <View className='flex flex-row justify-between'>
                                 <View className='flex-row items-center'>
                                     <Text className='text-3xl font-bold mr-2'>{data?.Data.PetName}</Text>

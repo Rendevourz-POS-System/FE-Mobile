@@ -8,6 +8,7 @@ import { HomeUserNavigationStackParams } from "./User/HomeUserNavigationStackPar
 import { CompositeNavigationProp } from "@react-navigation/native";
 import { BottomTabNavigationProp } from "@react-navigation/bottom-tabs";
 import { NoHeaderStackParams } from "./NoHeader/NoHeaderStackParams";
+import { CreateNavigationStackParams } from "./Create/CreateNavigationStackParams";
 
 
 
@@ -24,6 +25,7 @@ export type UserBottomTabCompositeNavigationProps<T extends keyof UserBottomTabP
 // Navigate Screens that doesnt have a Header Welcome back
 export type NoHeaderNavigationStackScreenProps<T extends keyof NoHeaderStackParams> = NativeStackScreenProps<NoHeaderStackParams, T>;
 
+export type CreateNavigationStackScreenProps<T extends keyof CreateNavigationStackParams> = NativeStackScreenProps<CreateNavigationStackParams, T>;
 
 // Navigate to UserBottomTab
 export type UserNavigationStackScreenProps<T extends keyof UserBottomTabParams> = NativeStackScreenProps<UserBottomTabParams, T>;
