@@ -211,7 +211,7 @@ export const ManagePetScreen: FC<ProfileNavigationStackScreenProps<"ManagePetScr
     }
 
     return (
-        <SafeAreaProvider className="bg-gray-100">
+        <SafeAreaProvider className="bg-white">
             <View className="mt-5 flex-row items-center justify-center mb-3">
                 <Ionicons name="chevron-back" size={24} color="black" 
                 onPress={() => {
@@ -393,7 +393,7 @@ export const ManagePetScreen: FC<ProfileNavigationStackScreenProps<"ManagePetScr
                     />
                 </View>
                 <Text style={styles.errorMessage}>{errors.PetName?.message}</Text>
-
+                
                 <View className='mt-3 flex-row justify-around mb-10'>
                     <TouchableOpacity style={styles.button} className="justify-center" onPress={handleSubmit(onSubmit)}>
                         <Text className="font-bold text-white">Update</Text>
@@ -424,13 +424,14 @@ const styles = StyleSheet.create({
         marginBottom: 5
     },
     inputBox: {
-        marginTop: 5,
+        backgroundColor: "#F7F7F9",
         padding: 20,
         marginHorizontal: 30,
-        borderColor: "#CECECE",
-        borderWidth: 2,
-        borderRadius: 25,
-        flexDirection: 'row'
+        borderBottomColor: "#488DF4",
+        borderBottomWidth: 2,
+        borderRadius: 10,
+        flexDirection: 'row',
+        justifyContent: 'space-between'
     },
     errorMessage: {
         color: 'red',

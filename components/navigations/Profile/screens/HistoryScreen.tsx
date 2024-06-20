@@ -1,45 +1,104 @@
 import { Ionicons } from "@expo/vector-icons";
-import React, { FC, useState } from "react";
+import React, { FC, useEffect, useState } from "react";
 import { ScrollView, Text, View, StyleSheet } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { ProfileNavigationStackScreenProps } from "../../../StackParams/StackScreenProps";
+import { get } from "../../../../functions/Fetch";
+import { BackendApiUri } from "../../../../functions/BackendApiUri";
+import { useAuth } from "../../../../app/context/AuthContext";
+
+interface History {
+    Data: {
+        Id: string,
+        UserId: string,
+        PetId: string,
+        ShelterId: string,
+        Type: string,
+        Status: string,
+        Reason: string,
+        RequestedAt: string,
+    }[]
+}
+
+interface ShelterProps {
+    Data: {
+        ShelterName: string
+    }
+}
 
 export const HistoryScreen: FC<ProfileNavigationStackScreenProps<'HistoryScreen'>> = ({ navigation }) => {
-    const [historyData, setHistoryData] = useState([
-        {
-            date: 'March 2023', events: [
-                { description: 'Donate to Shelter A', date: '20 March 2023' },
-                { description: 'Donate to Shelter B', date: '22 March 2023' },
-                { description: 'Adopted Pet A', date: '25 March 2023' },
-                { description: 'Adopted Pet B', date: '28 March 2023' },
-            ]
-        },
-        {
-            date: 'February 2023', events: [
-                { description: 'Donate Shelter C', date: '10 February 2023' },
-                { description: 'Donate Shelter C', date: '20 February 2023' },
-            ]
-        },
-    ]);
+    const { authState } = useAuth();
+    const [data, setData] = useState<History>();
+    const [shelterData, setShelterData] = useState<ShelterProps>();
+    const [shelterNames, setShelterNames] = useState<{ [key: string]: string }>({});
+
+    const fetchData = async () => {
+        try {
+            const response = await get(`${BackendApiUri.findRequest}?user_id=${authState?.userId}`)
+            if (response.status === 200) {
+                setData(response.data)
+            }
+        } catch (e) {
+            console.log(e)
+        }
+    }
+
+    const fetchShelterName = async (shelterId: string) => {
+        if (!shelterNames[shelterId]) {
+            const response = await get(`${BackendApiUri.getShelterDetail}/${shelterId}`);
+            if (response.status === 200) {
+                setShelterNames(prev => ({ ...prev, [shelterId]: response.data.Data.ShelterName }));
+            }
+        }
+    };
+
+    useEffect(() => {
+        if (authState?.userId) {
+            fetchData();
+        }
+    }, [authState]);
+
+    useEffect(() => {
+        if (data) {
+            data.Data.forEach(item => {
+                fetchShelterName(item.ShelterId);
+            });
+        }
+    }, [data]);
+
+    const formatDate = (dateString: string): string => {
+        const options: Intl.DateTimeFormatOptions = { day: '2-digit', month: 'long', year: 'numeric' };
+        return new Date(dateString).toLocaleDateString('id-ID', options);
+    };
+
+    const formatTime = (dateString: string): string => {
+        const date = new Date(dateString);
+        const timeOptions: Intl.DateTimeFormatOptions = { hour: '2-digit', minute: '2-digit' };
+        return date.toLocaleTimeString('id-ID', timeOptions);
+    };
+
+    const sortDataByDate = (data: History) => {
+        return data.Data.sort((a, b) => new Date(b.RequestedAt).getTime() - new Date(a.RequestedAt).getTime());
+    };
 
     return (
-        <SafeAreaProvider style={styles.container}>
+        <SafeAreaProvider style={styles.container} className='bg-gray-100'>
             <View className="mt-5 flex-row items-center justify-center">
                 <Ionicons name="chevron-back" size={24} color="black" onPress={() => navigation.goBack()} style={{ position: 'absolute', left: 20 }} />
                 <Text className="text-xl">History</Text>
             </View>
 
             <ScrollView>
-                <View className="top-5">
-                    {historyData.map((historyItem, index) => (
+                <View className="top-5" style={{ marginHorizontal: 30 }}>
+                    {data && sortDataByDate(data).map((item, index) => (
                         <View key={index}>
-                            <Text style={styles.heading}>{historyItem.date}</Text>
-                            {historyItem.events.map((event, eventIndex) => (
-                                <View key={eventIndex} style={styles.historyContainer}>
-                                    <Text style={styles.historyText}>{event.date}</Text>
-                                    <Text style={styles.historyText}>{event.description}</Text>
-                                </View>
-                            ))}
+                            <View className="flex-row justify-between">
+                                <Text style={styles.heading}>{formatDate(item.RequestedAt)}</Text>
+                                <Text style={styles.heading}>{formatTime(item.RequestedAt)}</Text>
+                            </View>
+                            <View style={styles.historyContainer}>
+                                <Text style={styles.historyText}>{item.Status} {item.Type} to {shelterNames[item.ShelterId] || '...'}</Text>
+                            </View>
                         </View>
                     ))}
                 </View>
@@ -51,7 +110,6 @@ export const HistoryScreen: FC<ProfileNavigationStackScreenProps<'HistoryScreen'
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: 'white',
     },
     header: {
         position: 'absolute',
@@ -66,7 +124,6 @@ const styles = StyleSheet.create({
     },
     heading: {
         top: 20,
-        left: 30,
         marginBottom: 25
     },
     historyText: {
@@ -77,8 +134,7 @@ const styles = StyleSheet.create({
     historyContainer: {
         backgroundColor: '#378CE74D',
         padding: 20,
-        marginHorizontal: 30,
-        borderRadius: 15,
+        borderRadius: 10,
         flexDirection: 'row',
         justifyContent: 'space-between',
         marginBottom: 5
