@@ -125,14 +125,15 @@ export const HistoryScreen: FC<ProfileNavigationStackScreenProps<'HistoryScreen'
         <SafeAreaProvider style={styles.container}>
             <SafeAreaView style={{ flex: 1 }}>
                 <View style={styles.header}>
-                    <Ionicons name="chevron-back" size={24} color="black" onPress={() => navigation.goBack()} style={{ position: 'absolute', left: 20 }} />
-                    <Text style={styles.title}>History</Text>
+                    <Ionicons name="chevron-back" size={24} color="black" onPress={() => navigation.goBack()} style={{ position: 'absolute', left: 25, top: 12 }} />
+                    <Text style={styles.title} className="mt-2">History</Text>
                 </View>
                 <SectionList
                     sections={groupedData}
                     keyExtractor={(item) => item.Id}
                     renderItem={renderHistoryItem}
                     renderSectionHeader={renderSectionHeader}
+                    className="mt-5"
                 />
             </SafeAreaView>
         </SafeAreaProvider>

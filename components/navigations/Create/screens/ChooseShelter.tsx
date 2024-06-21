@@ -19,7 +19,8 @@ import { RefreshControl } from "react-native"
 import { getIconName } from "../../../../functions/GetPetIconName"
 import { truncateText } from "../../../../functions/TruncateText"
 
-export const ChooseShelter: FC<CreateNavigationStackScreenProps<'ChooseShelter'>> = ({navigation, route}) => {
+export const ChooseShelter: FC<CreateNavigationStackScreenProps<'ChooseShelter'>> = ({navigation, route}: any) => {
+    const createType = route.params.type
     const {authState} = useAuth();
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [provinceData, setProvinceData] = useState<Location[]>([]);
@@ -154,7 +155,7 @@ export const ChooseShelter: FC<CreateNavigationStackScreenProps<'ChooseShelter'>
                             value={search}
                             loading={isLoading}
                         />
-                        <Text className="text-md">Pilih shelter yang di-inginkan untuk rescue/surrender pet</Text>
+                        <Text className="text-md">Pilih shelter yang di-inginkan untuk <Text className="underline font-bold">{createType} Pet</Text></Text>
                     </View>
                 </View>
 
@@ -176,7 +177,13 @@ export const ChooseShelter: FC<CreateNavigationStackScreenProps<'ChooseShelter'>
                                     renderItem={({item: shelter}) => (
                                         <TouchableOpacity 
                                             style={{ overflow: 'hidden', marginHorizontal: 15 }} 
-                                            // onPress={}
+                                            onPress={() => {
+                                                if(createType == 'Rescue'){
+                                                    navigation.navigate('CreateRescueScreen', {shelterId: shelter.Id, type: 'Rescue'} )
+                                                } else {
+                                                    navigation.navigate('CreateSurrenderScreen', {shelterId: shelter.Id, type: 'Surrender'})
+                                                }
+                                            }}
                                             activeOpacity={1}
                                         >
                                                 {shelter.ImageBase64 === null ? (

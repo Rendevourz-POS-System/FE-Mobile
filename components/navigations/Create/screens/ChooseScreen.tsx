@@ -6,7 +6,7 @@ import { CreateNavigationStackScreenProps } from "../../../StackParams/StackScre
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context"
 import { FontAwesome6 } from "@expo/vector-icons"
 
-export const CreateScreen : FC<CreateNavigationStackScreenProps<'ChooseScreen'>> = ({navigation}) => {
+export const CreateScreen : FC<CreateNavigationStackScreenProps<'ChooseScreen'>> = ({navigation, route} : any) => {
     return (
         <SafeAreaProvider style={{flex: 1}}>
             <SafeAreaView style={{flex: 1}}>
@@ -16,7 +16,7 @@ export const CreateScreen : FC<CreateNavigationStackScreenProps<'ChooseScreen'>>
                 <View className="w-full h-full flex flex-row justify-center items-center">
                     <TouchableOpacity 
                         className="px-10 py-24 bg-blue-600 w-40 rounded-xl items-center"
-                        onPress={() => navigation.navigate("CreateSurrenderScreen")}
+                        onPress={() => navigation.navigate("ChooseShelter", {type: 'Surrender'})}
                     >
                         <View className="p-3 bg-white rounded-full mb-3">
                             <FontAwesome6 name="kit-medical" size={36} color="blue"  />
@@ -25,7 +25,7 @@ export const CreateScreen : FC<CreateNavigationStackScreenProps<'ChooseScreen'>>
                     </TouchableOpacity>
                     <TouchableOpacity 
                         className="px-10 py-24 bg-blue-600 w-40 rounded-xl items-center ml-8"
-                        onPress={() => navigation.navigate("ChooseShelter")}
+                        onPress={() => navigation.navigate("ChooseShelter", {type: 'Rescue'})}
                     >
                         <View className="mb-3">
                             <FontAwesome6 name="circle-plus" size={60} color="white"  />

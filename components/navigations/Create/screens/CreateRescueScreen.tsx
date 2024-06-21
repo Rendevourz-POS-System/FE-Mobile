@@ -32,7 +32,8 @@ const createPetFormSchema = z.object({
 
 type CreatePetFormType = z.infer<typeof createPetFormSchema>
 
-export const CreateRescueScreen : FC<CreateNavigationStackScreenProps<'CreateRescueScreen'>> = ({navigation}) => {
+export const CreateRescueScreen : FC<CreateNavigationStackScreenProps<'CreateRescueScreen'>> = ({navigation, route}) => {
+    const routeParam = route.params
     const { authState } = useAuth();
     const bottomSheetModalRef = useRef<BottomSheetModal>(null);
     const [petTypes, setPetTypes] = useState<PetType[]>([]);
@@ -186,7 +187,7 @@ export const CreateRescueScreen : FC<CreateNavigationStackScreenProps<'CreateRes
                                     navigation.goBack()
                                 }}
                                 style={{ position: 'absolute', left: 20 }} />
-                            <Text className="text-xl">Create Pet Rescue</Text>
+                            <Text className="text-xl">Create Pet Surrender</Text>
                         </View>
                         <ScrollView className="mt-5">
                             {image && (
