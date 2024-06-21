@@ -1,3 +1,3 @@
 export type CreateNavigationStackParams = {
-    CreateScreen : undefined
+    ChooseScreen : undefined
 }

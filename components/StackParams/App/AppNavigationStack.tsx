@@ -44,7 +44,7 @@ import { RescueFormScreen } from "../../navigations/Root/screens/RescueFormScree
 import { ManagePetScreen } from "../../navigations/Profile/screens/ManagePetScreen";
 import { ApprovalScreen } from "../../navigations/Profile/screens/ApprovalScreen";
 import { CreateNavigationStackParams } from "../Create/CreateNavigationStackParams";
-import { CreateScreen } from "../../navigations/Create/screens/CreateScreen";
+import { CreateScreen } from "../../navigations/Create/screens/ChooseScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -176,7 +176,7 @@ const AppNavigationStack: FC = () => {
     const CreateUserStackGroup = () => (
         <CreateUserStack.Navigator screenOptions={{ headerShown: false }}>
             <CreateUserStack.Screen
-                name="CreateScreen"
+                name="ChooseScreen"
                 component={CreateScreen}
                 options={noHeader}
             />
