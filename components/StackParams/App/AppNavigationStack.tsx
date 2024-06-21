@@ -45,6 +45,9 @@ import { ManagePetScreen } from "../../navigations/Profile/screens/ManagePetScre
 import { ApprovalScreen } from "../../navigations/Profile/screens/ApprovalScreen";
 import { CreateNavigationStackParams } from "../Create/CreateNavigationStackParams";
 import { CreateScreen } from "../../navigations/Create/screens/ChooseScreen";
+import { CreateRescueScreen } from "../../navigations/Create/screens/CreateRescueScreen";
+import { CreateSurrenderScreen } from "../../navigations/Create/screens/CreateSurrenderScreen";
+import { ChooseShelter } from "../../navigations/Create/screens/ChooseShelter";
 
 const Stack = createNativeStackNavigator();
 
@@ -178,6 +181,21 @@ const AppNavigationStack: FC = () => {
             <CreateUserStack.Screen
                 name="ChooseScreen"
                 component={CreateScreen}
+                options={noHeader}
+            />
+            <CreateUserStack.Screen
+                name="CreateRescueScreen"
+                component={CreateRescueScreen}
+                options={noHeader}
+            />
+            <CreateUserStack.Screen
+                name="CreateSurrenderScreen"
+                component={CreateSurrenderScreen}
+                options={noHeader}
+            />
+            <CreateUserStack.Screen
+                name="ChooseShelter"
+                component={ChooseShelter}
                 options={noHeader}
             />
         </CreateUserStack.Navigator>

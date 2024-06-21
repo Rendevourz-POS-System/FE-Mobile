@@ -1,37 +1,27 @@
-import { ActivityIndicator, Image, RefreshControl, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native"
-import { useNavigation } from "@react-navigation/native";
-import { HomeUserNavigationStackScreenProps, NoHeaderNavigationStackScreenProps, UserBottomTabCompositeNavigationProps, UserNavigationStackScreenProps } from "../../../StackParams/StackScreenProps";
-import { FC, useCallback, useEffect, useRef, useState } from "react";
-import { ShelterData } from "../../../../interface/IShelterList";
-import { useDebounce } from "use-debounce";
-import {
-    BottomSheetModal,
-    BottomSheetView,
-    BottomSheetBackdrop,
-} from '@gorhom/bottom-sheet';
-import {
-    BottomSheetModalProvider,
-} from '@gorhom/bottom-sheet';
+import { FC, useEffect, useState } from "react"
+import { Image, ScrollView, Text, TouchableOpacity, View } from "react-native"
+import { CreateNavigationStackScreenProps } from "../../../StackParams/StackScreenProps"
+import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context"
+import { FontAwesome, FontAwesome6, Ionicons, MaterialCommunityIcons } from "@expo/vector-icons"
+import { ShelterData } from "../../../../interface/IShelterList"
+import { Location } from "../../../../interface/ILocation"
+import { useDebounce } from "use-debounce"
+import { get } from "../../../../functions/Fetch"
+import { BackendApiUri } from "../../../../functions/BackendApiUri"
+import { useAuth } from "../../../../app/context/AuthContext"
+import { ShelterFav } from "../../../../interface/IShelterFav"
+import { PetType } from "../../../../interface/IPetType"
+import { myProvince } from "../../../../functions/getLocation"
+import { Searchbar } from "react-native-paper"
+import { ActivityIndicator } from "react-native"
+import { FlashList } from "@shopify/flash-list"
+import { RefreshControl } from "react-native"
+import { getIconName } from "../../../../functions/GetPetIconName"
+import { truncateText } from "../../../../functions/TruncateText"
 
-import { myProvince } from "../../../../functions/getLocation";
-import { get, post } from "../../../../functions/Fetch";
-import { BackendApiUri } from "../../../../functions/BackendApiUri";
-import { ShelterFav } from "../../../../interface/IShelterFav";
-import { PetType } from "../../../../interface/IPetType";
-import { Location } from "../../../../interface/ILocation";
-import { FontAwesome, FontAwesome6, MaterialCommunityIcons } from "@expo/vector-icons";
-import { FlashList } from '@shopify/flash-list';
-import { Searchbar } from 'react-native-paper';
-import { Dropdown } from 'react-native-element-dropdown';
-import { Button } from "react-native-elements";
-import { getIconName } from "../../../../functions/GetPetIconName";
-import { NoHeaderProps } from "../../../../interface/TNoHeaderProps";
-import { useAuth } from "../../../../app/context/AuthContext";
-import { truncateText } from "../../../../functions/TruncateText";
-
-export const ShelterListScreen : FC<NoHeaderProps> = ({navigation, route} : any) => {
+export const ChooseShelter: FC<CreateNavigationStackScreenProps<'ChooseShelter'>> = ({navigation, route}) => {
     const {authState} = useAuth();
-    const favAttempt = route.params;
+    const [isLoading, setIsLoading] = useState<boolean>(true);
     const [provinceData, setProvinceData] = useState<Location[]>([]);
     const [shelterData, setShelterData] = useState<ShelterData[]>([]);
     const [shelterFav, setShelterFav] = useState<ShelterData[]>([]);
@@ -39,45 +29,10 @@ export const ShelterListScreen : FC<NoHeaderProps> = ({navigation, route} : any)
         label: "",
         value: ""
     });
-    // console.log(filterLocation)
-    const [applyPressed, setApplyPressed] = useState<boolean>(false);
-    const [isLoading, setIsLoading] = useState<boolean>(true);
     const [search, setSearch] = useState<string>('');
     const [debounceValue] = useDebounce(search, 1000);
-    const bottomSheetModalRef = useRef<BottomSheetModal>(null);
     const [refreshing, setRefreshing] = useState(false);
-    // const [isModalVisible, setModalVisible] = useState(false);
 
-    // console.log(navigateNoHeader)
-    const onRefresh = async () => {
-        try{
-            setRefreshing(true);
-            await fetchData();
-        } catch(e){
-            console.log(e);
-        }
-    };
-
-    const getMyProvince = async () => {
-        try {
-            const res = await myProvince();
-            if (res?.data && res.status === 200) {
-                // Transform data to match Location interface
-                const transformedData: Location[] = res.data.map((item: { Id: string; LocationName: string }) => ({
-                    label: item.LocationName,
-                    value: item.Id
-                }));                
-                // Set provinceData state with transformed data
-                setProvinceData(transformedData);
-            }
-        } catch (e) {
-            console.error(e);
-        }
-    };
-
-    const handleFilterPress = useCallback(() => {
-        bottomSheetModalRef.current?.present();
-    }, []);
     const fetchShelter = async () => {
         try{
             const response = await get(`${BackendApiUri.getShelterList}/?search=${search}&location_name=${filterLocation?.label}`);
@@ -121,7 +76,6 @@ export const ShelterListScreen : FC<NoHeaderProps> = ({navigation, route} : any)
             });
         }
     };
-    
 
     const [mergedData, setMergedData] = useState<ShelterFav[]>([]);
     const [petTypes, setPetTypes] = useState<PetType[]>([]);
@@ -134,6 +88,23 @@ export const ShelterListScreen : FC<NoHeaderProps> = ({navigation, route} : any)
         }
     }
 
+    const getMyProvince = async () => {
+        try {
+            const res = await myProvince();
+            if (res?.data && res.status === 200) {
+                // Transform data to match Location interface
+                const transformedData: Location[] = res.data.map((item: { Id: string; LocationName: string }) => ({
+                    label: item.LocationName,
+                    value: item.Id
+                }));                
+                // Set provinceData state with transformed data
+                setProvinceData(transformedData);
+            }
+        } catch (e) {
+            console.error(e);
+        }
+    };
+
     const fetchData =  () => {
         const data = mergeShelters();
         setMergedData(data);
@@ -145,174 +116,48 @@ export const ShelterListScreen : FC<NoHeaderProps> = ({navigation, route} : any)
     }, [shelterFav, shelterData]);
 
     useEffect(() => {
-        getMyProvince();
-    },[]);
-
-    const onPressFav = async (shelterId: string) => {
-        try {
-            const body = { "ShelterId": shelterId }; // Body as an array containing an object
-            const res = await post(BackendApiUri.postShelterFav, body);
-            if(res.status === 200) {
-                setMergedData(prevData => {
-                    return prevData.map(shelter => {
-                        if (shelter.Id === shelterId) {
-                            return { ...shelter, isFav: !shelter.isFav }; // Toggle isFav property
-                        }
-                        return shelter;
-                    });
-                });
-            }
-        } catch (error) {
-            console.error('Error:', error); // Handle error
-        }
-    }
-
-    useEffect(() => {
         fetchShelter();
         fetchShelterFav();
         fetchPetType();
-        setApplyPressed(false)
-    }, [debounceValue, refreshing, favAttempt, applyPressed]);
+    }, [debounceValue, refreshing]);
 
-    const styles = StyleSheet.create({
-        bottomSheetModal: {
-            borderTopLeftRadius: 20,
-            borderTopRightRadius: 20,
-            backgroundColor: 'white',
-        },
-        dropdown: {
-            margin: 16,
-            height: 50,
-            backgroundColor: 'white',
-            borderRadius: 12,
-            padding: 12,
-            shadowColor: '#000',
-            shadowOffset: {
-            width: 0,
-            height: 1,
-            },
-            shadowOpacity: 0.2,
-            shadowRadius: 1.41,
-    
-            elevation: 2,
-        },
-        icon: {
-            marginRight: 5,
-        },
-        item: {
-            padding: 17,
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-        },
-        textItem: {
-            flex: 1,
-            fontSize: 16,
-        },
-        placeholderStyle: {
-            fontSize: 16,
-        },
-        selectedTextStyle: {
-            fontSize: 16,
-        },
-        iconStyle: {
-            width: 20,
-            height: 20,
-        },
-        inputSearchStyle: {
-            height: 40,
-            fontSize: 16,
-        },
-    }); 
-    
-    const renderItem = (item : Location) => {
-        return (
-            <View className="p-4 flex-row justify-between items-center">
-                <Text className="flex-1 text-base">{item.label}</Text>
-            </View>
-        );
+    const onRefresh = async () => {
+        try{
+            setRefreshing(true);
+            await fetchData();
+        } catch(e){
+            console.log(e);
+        }
     };
 
-    const handleApplyPress = () => {
-        setApplyPressed(true);
-        bottomSheetModalRef.current?.dismiss();
-    };
-    
+
 
     return (
-        <>
-            <BottomSheetModalProvider>
-                <View className=''>
-                    <View className='flex-row items-center justify-around'>
+        <SafeAreaProvider style={{flex: 1}}>
+            <SafeAreaView style={{flex: 1}}>
+                <View className="">
+                    <View className="mt-5 flex-row items-center justify-center mb-3">
+                        <Ionicons name="chevron-back" size={24} color="black"
+                            onPress={() => {
+                                // if (image) {
+                                //     removeImage(image!);
+                                // }
+                                navigation.goBack()
+                            }}
+                            style={{ position: 'absolute', left: 20 }} />
+                        <Text className="text-xl">Shelter List</Text>
+                    </View>
+                    <View className="mx-3">
                         <Searchbar
-                            placeholder='Text Here...'
+                            placeholder="Search"
+                            onChangeText={text => setSearch(text)}
                             value={search}
-                            onChangeText={setSearch}
-                            style={{backgroundColor: 'transparent', width:'87%'}}
                             loading={isLoading}
                         />
-                        <MaterialCommunityIcons name='tune-variant' size={24} color='black'
-                            style={{marginRight: 10}}
-                            onPress={handleFilterPress}
-                        />
-                        <BottomSheetModal
-                            ref={bottomSheetModalRef}
-                            index={0}
-                            snapPoints={['65%']}
-                            backdropComponent={(props) => (
-                                <BottomSheetBackdrop
-                                    {...props}
-                                    disappearsOnIndex={-1}
-                                    appearsOnIndex={1}
-                                    pressBehavior="close"
-                                />
-                            )}
-                            style={styles.bottomSheetModal}
-                            >
-                            <BottomSheetView style={{ flex: 1 }}>
-                                <View style={{ flex: 1 }}>
-                                    <View className='mx-5'>
-                                        <Text className='text-xl font-bold'>Filter</Text>
-                                        <View className='flex flex-row items-center justify-between'>
-                                            <Text className='text-xl font-bold mt-2 mb-2'>Location</Text>
-                                            <TouchableOpacity className='mt-2 mb-2 px-10 py-3 rounded-2xl' onPress={() => setFilterLocation({label: '', value: ''})}>
-                                                <Text className='text-[#4689FD] text-lg font-bold'>Reset</Text>
-                                            </TouchableOpacity>
-                                        </View>
-                                        <Dropdown
-                                            style={{ borderWidth: 1, paddingHorizontal: 8, paddingVertical: 5, borderRadius: 10 }}
-                                            containerStyle={{ borderWidth: 10 }}
-                                            placeholderStyle={styles.placeholderStyle}
-                                            selectedTextStyle={styles.selectedTextStyle}
-                                            inputSearchStyle={styles.inputSearchStyle}
-                                            iconStyle={styles.iconStyle}
-                                            data={provinceData.map(item => ({ label: item.label, value: item.value }))}
-                                            search
-                                            maxHeight={300}
-                                            labelField="label"
-                                            valueField="value"
-                                            searchPlaceholder="Search..."
-                                            value={filterLocation?.value}
-                                            onChange={(item) => {
-                                                setFilterLocation(item);
-                                            }}
-                                            renderItem={renderItem}
-                                        />
-
-                                    </View>
-                                </View>
-                                <View className='items-center my-5'>
-                                    <Button
-                                        title="Apply"
-                                        accessibilityLabel='Apply this'
-                                        containerStyle={{ width: '35%' }}
-                                        onPress={handleApplyPress}
-                                    />
-                                </View>
-                            </BottomSheetView>
-                        </BottomSheetModal>
+                        <Text className="text-md">Pilih shelter yang di-inginkan untuk rescue/surrender pet</Text>
                     </View>
                 </View>
+
                 <>
                     {isLoading ? (
                         <View className='flex-1 justify-center items-center'>
@@ -331,8 +176,9 @@ export const ShelterListScreen : FC<NoHeaderProps> = ({navigation, route} : any)
                                     renderItem={({item: shelter}) => (
                                         <TouchableOpacity 
                                             style={{ overflow: 'hidden', marginHorizontal: 15 }} 
-                                            onPress={() => navigation.navigate("ShelterDetailScreen", {shelterId : shelter.Id})}
-                                            activeOpacity={1}>
+                                            // onPress={}
+                                            activeOpacity={1}
+                                        >
                                                 {shelter.ImageBase64 === null ? (
                                                     <Image source={require('../../../../assets/animal-shelter.png')} 
                                                         resizeMode='cover'
@@ -351,7 +197,7 @@ export const ShelterListScreen : FC<NoHeaderProps> = ({navigation, route} : any)
                                                     <View style={{ marginTop: 10, backgroundColor: "#FFFDFF", paddingHorizontal: 20, paddingVertical: 15, borderRadius: 20 }}>
                                                         <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
                                                             <Text style={{ fontSize: 20, fontWeight: 'bold' }}>{truncateText(shelter.ShelterName, 40)}</Text>
-                                                            <TouchableOpacity onPress={() => onPressFav(shelter.Id)}>
+                                                            <TouchableOpacity activeOpacity={0}>
                                                                 {
                                                                     shelter.isFav ? (
                                                                         <FontAwesome
@@ -368,7 +214,6 @@ export const ShelterListScreen : FC<NoHeaderProps> = ({navigation, route} : any)
                                                                     )
                                                                 }
                                                             </TouchableOpacity>
-
                                                         </View>
                                                         <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10 }}>
                                                             <FontAwesome6 name='location-dot' size={20} color='#4689FD' />
@@ -412,7 +257,8 @@ export const ShelterListScreen : FC<NoHeaderProps> = ({navigation, route} : any)
                         </>
                     )}
                 </>
-            </BottomSheetModalProvider>
-        </>
+                
+            </SafeAreaView>
+        </SafeAreaProvider>
     )
 }
