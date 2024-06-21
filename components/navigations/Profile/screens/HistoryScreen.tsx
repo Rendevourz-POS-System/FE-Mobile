@@ -1,23 +1,21 @@
 import { Ionicons } from "@expo/vector-icons";
 import React, { FC, useEffect, useState } from "react";
-import { ScrollView, Text, View, StyleSheet } from "react-native";
-import { SafeAreaProvider } from "react-native-safe-area-context";
+import { SectionList, Text, View, StyleSheet } from "react-native";
+import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { ProfileNavigationStackScreenProps } from "../../../StackParams/StackScreenProps";
 import { get } from "../../../../functions/Fetch";
 import { BackendApiUri } from "../../../../functions/BackendApiUri";
 import { useAuth } from "../../../../app/context/AuthContext";
 
 interface History {
-    Data: {
-        Id: string,
-        UserId: string,
-        PetId: string,
-        ShelterId: string,
-        Type: string,
-        Status: string,
-        Reason: string,
-        RequestedAt: string,
-    }[]
+    Id: string,
+    UserId: string,
+    PetId: string,
+    ShelterId: string,
+    Type: string,
+    Status: string,
+    Reason: string,
+    RequestedAt: string,
 }
 
 interface ShelterProps {
@@ -26,30 +24,64 @@ interface ShelterProps {
     }
 }
 
+interface GroupedHistory {
+    title: string;
+    data: History[];
+}
+
 export const HistoryScreen: FC<ProfileNavigationStackScreenProps<'HistoryScreen'>> = ({ navigation }) => {
     const { authState } = useAuth();
-    const [data, setData] = useState<History>();
+    const [data, setData] = useState<History[]>([]);
+    const [groupedData, setGroupedData] = useState<GroupedHistory[]>([]);
     const [shelterData, setShelterData] = useState<ShelterProps>();
     const [shelterNames, setShelterNames] = useState<{ [key: string]: string }>({});
 
     const fetchData = async () => {
         try {
-            const response = await get(`${BackendApiUri.findRequest}?user_id=${authState?.userId}`)
+            const response = await get(`${BackendApiUri.findRequest}?user_id=${authState?.userId}`);
             if (response.status === 200) {
-                setData(response.data)
+                const fetchedData = response.data.Data;
+                setData(fetchedData);
+                setGroupedData(groupByDate(fetchedData));
+            } else {
+                setData([]);
+                setGroupedData([]);
             }
         } catch (e) {
-            console.log(e)
+            console.error('Fetch error:', e);
         }
-    }
+    };
 
     const fetchShelterName = async (shelterId: string) => {
         if (!shelterNames[shelterId]) {
-            const response = await get(`${BackendApiUri.getShelterDetail}/${shelterId}`);
-            if (response.status === 200) {
-                setShelterNames(prev => ({ ...prev, [shelterId]: response.data.Data.ShelterName }));
+            try {
+                const response = await get(`${BackendApiUri.getShelterDetail}/${shelterId}`);
+                if (response.status === 200) {
+                    setShelterNames(prev => ({ ...prev, [shelterId]: response.data.Data.ShelterName }));
+                    console.log(`Fetched shelter name for ${shelterId}:`, response.data.Data.ShelterName);
+                } else {
+                    console.error(`Error fetching shelter name for ${shelterId}:`, response.status);
+                }
+            } catch (e) {
+                console.error(`Fetch shelter name error for ${shelterId}:`, e);
             }
         }
+    };
+
+    const groupByDate = (data: History[]): GroupedHistory[] => {
+        const grouped = data.reduce((acc: { [key: string]: History[] }, item) => {
+            const date = new Date(item.RequestedAt).toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' });
+            if (!acc[date]) {
+                acc[date] = [];
+            }
+            acc[date].push(item);
+            return acc;
+        }, {});
+
+        return Object.keys(grouped).map(date => ({
+            title: date,
+            data: grouped[date],
+        }));
     };
 
     useEffect(() => {
@@ -57,14 +89,6 @@ export const HistoryScreen: FC<ProfileNavigationStackScreenProps<'HistoryScreen'
             fetchData();
         }
     }, [authState]);
-
-    useEffect(() => {
-        if (data) {
-            data.Data.forEach(item => {
-                fetchShelterName(item.ShelterId);
-            });
-        }
-    }, [data]);
 
     const formatDate = (dateString: string): string => {
         const options: Intl.DateTimeFormatOptions = { day: '2-digit', month: 'long', year: 'numeric' };
@@ -77,72 +101,72 @@ export const HistoryScreen: FC<ProfileNavigationStackScreenProps<'HistoryScreen'
         return date.toLocaleTimeString('id-ID', timeOptions);
     };
 
-    const sortDataByDate = (data: History) => {
-        return data.Data.sort((a, b) => new Date(b.RequestedAt).getTime() - new Date(a.RequestedAt).getTime());
-    };
+    const renderHistoryItem = ({ item }: { item: History }) => (
+        <View className="mx-5 my-2 bg-blue-200 rounded-md px-4 py-3">
+            <View className="flex-row justify-between">
+                <Text>{item.Type}</Text>
+                <Text style={styles.historyItemText}>{item.Status}</Text>
+                <Text>{formatTime(item.RequestedAt)}</Text>
+            </View>
+            <View>
+                <Text>{item.Reason}</Text>
+                {/* <Text style={styles.historyItemText}>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Delectus ab ipsam atque fugit officiis esse corporis quae ut deserunt, iste similique possimus assumenda accusamus eum nulla error sed id laboriosam quod odit cupiditate qui. Consequuntur quidem voluptatum illum voluptates, delectus, at ad temporibus error nulla dicta iste eius quod ipsa?</Text> */}
+            </View>
+        </View>
+    );
+
+    const renderSectionHeader = ({ section }: { section: { title: string } }) => (
+        <View style={styles.sectionHeader}>
+            <Text style={styles.sectionHeaderText}>{section.title}</Text>
+        </View>
+    );
 
     return (
-        <SafeAreaProvider style={styles.container} className='bg-gray-100'>
-            <View className="mt-5 flex-row items-center justify-center">
-                <Ionicons name="chevron-back" size={24} color="black" onPress={() => navigation.goBack()} style={{ position: 'absolute', left: 20 }} />
-                <Text className="text-xl">History</Text>
-            </View>
-
-            <ScrollView>
-                <View className="top-5" style={{ marginHorizontal: 30 }}>
-                    {data && sortDataByDate(data).map((item, index) => (
-                        <View key={index}>
-                            <View className="flex-row justify-between">
-                                <Text style={styles.heading}>{formatDate(item.RequestedAt)}</Text>
-                                <Text style={styles.heading}>{formatTime(item.RequestedAt)}</Text>
-                            </View>
-                            <View style={styles.historyContainer}>
-                                <Text style={styles.historyText}>{item.Status} {item.Type} to {shelterNames[item.ShelterId] || '...'}</Text>
-                            </View>
-                        </View>
-                    ))}
+        <SafeAreaProvider style={styles.container}>
+            <SafeAreaView style={{ flex: 1 }}>
+                <View style={styles.header}>
+                    <Ionicons name="chevron-back" size={24} color="black" onPress={() => navigation.goBack()} style={{ position: 'absolute', left: 20 }} />
+                    <Text style={styles.title}>History</Text>
                 </View>
-            </ScrollView>
+                <SectionList
+                    sections={groupedData}
+                    keyExtractor={(item) => item.Id}
+                    renderItem={renderHistoryItem}
+                    renderSectionHeader={renderSectionHeader}
+                />
+            </SafeAreaView>
         </SafeAreaProvider>
     );
-}
+};
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+        backgroundColor: '#f0f0f0',
     },
     header: {
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        zIndex: 1,
+        marginTop: 5,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
     },
     title: {
+        fontSize: 24,
         fontWeight: 'bold',
-        fontSize: 20,
-        bottom: 15
     },
-    heading: {
-        top: 20,
-        marginBottom: 25
+    sectionHeader: {
+        backgroundColor: '#f3f3f3',
+        paddingVertical: 5,
+        paddingHorizontal: 10,
     },
-    historyText: {
-        fontSize: 13,
-        fontWeight: '600',
-        flexWrap: 'wrap'
+    sectionHeaderText: {
+        fontSize: 16,
+        fontWeight: 'bold',
     },
-    historyContainer: {
-        backgroundColor: '#378CE74D',
-        padding: 20,
-        borderRadius: 10,
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        marginBottom: 5
+    historyItemDetails: {
+        flexDirection: 'column',
     },
-    transactionContainer: {
-        backgroundColor: '#F5F5F5',
-        borderRadius: 15,
-        elevation: 5,
-        marginBottom: 20
+    historyItemText: {
+        fontSize: 14,
     },
 });
