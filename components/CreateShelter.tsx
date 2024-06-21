@@ -91,7 +91,7 @@ export const CreateShelter = () => {
         const options : ImagePicker.ImagePickerOptions = {
             mediaTypes: ImagePicker.MediaTypeOptions.Images,
                 allowsEditing: true,
-                aspect: [1, 1],
+                aspect: [2, 2],
                 quality: 1,
         }
 

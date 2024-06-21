@@ -1,3 +1,6 @@
 export type CreateNavigationStackParams = {
-    CreateScreen : undefined
+    ChooseScreen : undefined
+    CreateRescueScreen : undefined
+    CreateSurrenderScreen: undefined
+    ChooseShelter: undefined
 }
