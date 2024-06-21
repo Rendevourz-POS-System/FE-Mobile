@@ -33,6 +33,7 @@ type CreateShelterFormType = z.infer<typeof editShelterFormSchema>
 
 export const ManageShelterScreen: FC<ProfileNavigationStackScreenProps<'ManageShelterScreen'>> = ({ navigation }) => {
     const [image, setImage] = useState<string | null>(null);
+    const [previousImage, setPreviousImage] = useState<string | null>('');
     const [selected, setSelected] = useState<string[]>();
     const [shelterLocation, setShelterLocation] = useState<ShelterLocation[]>([]);
     const [petTypes, setPetTypes] = useState<PetType[]>([]);
@@ -101,6 +102,7 @@ export const ManageShelterScreen: FC<ProfileNavigationStackScreenProps<'ManageSh
         const fileName = uri.substring(uri.lastIndexOf('/') + 1);
         const dest = imgDir + fileName;
         await FileSystem.copyAsync({ from: uri, to: dest });
+        setPreviousImage(dest);
         setImage(dest);
     }
     const selectImage = async (useLibrary : boolean) => {
@@ -120,6 +122,9 @@ export const ManageShelterScreen: FC<ProfileNavigationStackScreenProps<'ManageSh
         }
 
         if (!result.canceled) {
+            if (previousImage) {
+                removeImage(previousImage)
+            }
             saveImage(result.assets[0].uri);
         }
         bottomSheetModalRef.current?.close();
@@ -196,7 +201,15 @@ export const ManageShelterScreen: FC<ProfileNavigationStackScreenProps<'ManageSh
                             </BottomSheetView>
                         </BottomSheetModal>
                         <View className="mt-5 flex-row items-center justify-center mb-3">
-                            <Ionicons name="chevron-back" size={24} color="black" onPress={() => navigation.goBack()} style={{ position: 'absolute', left: 20 }} />
+                            <Ionicons name="chevron-back" size={24} color="black" 
+                                onPress={() => {
+                                    if (image) {
+                                        removeImage(image!);
+                                    }
+                                    navigation.goBack()
+                                }} 
+                                style={{ position: 'absolute', left: 20 }} 
+                            />
                             <Text className="text-xl">Manage Shelter Profile</Text>
                         </View>
 

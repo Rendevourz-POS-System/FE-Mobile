@@ -42,6 +42,7 @@ export const CreateSurrenderScreen : FC<CreateNavigationStackScreenProps<'Create
     const { control, handleSubmit, setValue, formState: { errors } } = useForm<CreatePetFormType>({
         resolver: zodResolver(createPetFormSchema),
     });
+    const [previousImage, setPreviousImage] = useState<string | null>('');
 
     const fetchPetType = async () => {
         const res = await get(BackendApiUri.getPetTypes);
@@ -69,6 +70,7 @@ export const CreateSurrenderScreen : FC<CreateNavigationStackScreenProps<'Create
         const fileName = uri.substring(uri.lastIndexOf('/') + 1);
         const dest = imgDir + fileName;
         await FileSystem.copyAsync({ from: uri, to: dest });
+        setPreviousImage(dest);
         setImage(dest);
     }
     const selectImage = async (useLibrary : boolean) => {
@@ -88,6 +90,9 @@ export const CreateSurrenderScreen : FC<CreateNavigationStackScreenProps<'Create
         }
 
         if (!result.canceled) {
+            if (previousImage) {
+                removeImage(previousImage)
+            }
             saveImage(result.assets[0].uri);
         }
         bottomSheetModalRef.current?.close();
@@ -181,9 +186,9 @@ export const CreateSurrenderScreen : FC<CreateNavigationStackScreenProps<'Create
                         <View className="mt-5 flex-row items-center justify-center mb-3">
                             <Ionicons name="chevron-back" size={24} color="black"
                                 onPress={() => {
-                                    // if (image) {
-                                    //     removeImage(image!);
-                                    // }
+                                    if (image) {
+                                        removeImage(image!);
+                                    }
                                     navigation.goBack()
                                 }}
                                 style={{ position: 'absolute', left: 20 }} />

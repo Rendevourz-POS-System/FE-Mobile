@@ -42,6 +42,8 @@ export const CreateRescueScreen : FC<CreateNavigationStackScreenProps<'CreateRes
     const { control, handleSubmit, setValue, formState: { errors } } = useForm<CreatePetFormType>({
         resolver: zodResolver(createPetFormSchema),
     });
+    const [previousImage, setPreviousImage] = useState<string | null>('');
+    
 
     const fetchPetType = async () => {
         const res = await get(BackendApiUri.getPetTypes);
@@ -69,6 +71,7 @@ export const CreateRescueScreen : FC<CreateNavigationStackScreenProps<'CreateRes
         const fileName = uri.substring(uri.lastIndexOf('/') + 1);
         const dest = imgDir + fileName;
         await FileSystem.copyAsync({ from: uri, to: dest });
+        setPreviousImage(dest);
         setImage(dest);
     }
     const selectImage = async (useLibrary : boolean) => {
@@ -88,6 +91,9 @@ export const CreateRescueScreen : FC<CreateNavigationStackScreenProps<'CreateRes
         }
 
         if (!result.canceled) {
+            if (previousImage) {
+                removeImage(previousImage)
+            }
             saveImage(result.assets[0].uri);
         }
         bottomSheetModalRef.current?.close();
@@ -181,9 +187,9 @@ export const CreateRescueScreen : FC<CreateNavigationStackScreenProps<'CreateRes
                         <View className="mt-5 flex-row items-center justify-center mb-3">
                             <Ionicons name="chevron-back" size={24} color="black"
                                 onPress={() => {
-                                    // if (image) {
-                                    //     removeImage(image!);
-                                    // }
+                                    if (image) {
+                                        removeImage(image!);
+                                    }
                                     navigation.goBack()
                                 }}
                                 style={{ position: 'absolute', left: 20 }} />
