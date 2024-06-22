@@ -114,7 +114,6 @@ export const ManagePetScreen: FC<ProfileNavigationStackScreenProps<"ManagePetScr
         }
 
         formData.append('data', JSON.stringify(payload));
-        console.log(formData)
         // return;
         const res = await putForm(`${BackendApiUri.putPetUpdate}`, formData);
         if (res.status == 200) {
