@@ -151,11 +151,10 @@ export const CreateRescueScreen : FC<CreateNavigationStackScreenProps<'CreateRes
                 'Authorization' : `Bearer ${authState?.token}`
             }
         });
-        console.log(res.status)
+        if(image) {
+            removeImage(image!);
+        }
         if (res?.status === 200) {
-            if(image) {
-                removeImage(image!);
-            }
             Alert.alert("Request Rescue Berhasil", "Rescue Pet Berhasil dibuat, mohon tunggu informasi lebih lanjut dari pihak shelter", 
                 [ { text: "OK", onPress: () => navigation.navigate('ChooseScreen')
 

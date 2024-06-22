@@ -28,11 +28,12 @@ const createPetFormSchema = z.object({
     PetGender: z.string({ required_error: "Jenis kelamin hewan tidak boleh kosong" }),
     // IsVaccinated: z.string({ required_error: "Vaksinasi hewan tidak boleh kosong" }),
     PetDescription: z.string({ required_error: "Deskripsi hewan tidak boleh kosong" }).min(10, { message: "Deskripsi hewan harus lebih dari 10 karakter" }),
+    Reason: z.string({ required_error: "Alasan tidak boleh kosong" }).min(10, { message: "Alasan harus lebih dari 10 karakter" })
 })
 
 type CreatePetFormType = z.infer<typeof createPetFormSchema>
 
-export const CreateSurrenderScreen : FC<CreateNavigationStackScreenProps<'CreateSurrenderScreen'>> = ({navigation, route}) => {
+export const CreateSurrenderScreen : FC<CreateNavigationStackScreenProps<'CreateSurrenderScreen'>> = ({navigation, route} : any) => {
     const routeParam = route.params
     const { authState } = useAuth();
     const bottomSheetModalRef = useRef<BottomSheetModal>(null);
@@ -110,12 +111,18 @@ export const CreateSurrenderScreen : FC<CreateNavigationStackScreenProps<'Create
 
     const onSubmit = async (data: CreatePetFormType) => {
         const payload = {
-            ShelterId: 1,
+            ShelterId: routeParam.shelterId,
             PetName: data.PetName,
             PetAge: data.PetAge,
             PetType: data.PetType,
             PetGender: data.PetGender,
             PetDescription: data.PetDescription
+        }
+
+        const request = {
+            Status : "Ongoing",
+            Type: "Surrender",
+            Reason: data.Reason
         }
 
         const formData = new FormData();
@@ -130,11 +137,14 @@ export const CreateSurrenderScreen : FC<CreateNavigationStackScreenProps<'Create
         }
 
         let payloadString = JSON.stringify(payload);
+        let requestString = JSON.stringify(request);
         
-        formData.append('data', payloadString);
+        formData.append('pet', payloadString);
+        formData.append('request', requestString);
+
         
         // const res = await postForm(BackendApiUri.postPet, formData);
-        const res = await fetch(`${baseUrl + BackendApiUri.postPet}`, {
+        const res = await fetch(`${baseUrl + BackendApiUri.rescueOrSurennder}`, {
             method: 'POST',
             body : formData,
             headers : {
@@ -142,13 +152,14 @@ export const CreateSurrenderScreen : FC<CreateNavigationStackScreenProps<'Create
                 'Authorization' : `Bearer ${authState?.token}`
             }
         });
+        console.log(res.status)
+        if(image) {
+            removeImage(image!);
+        }
         if (res?.status === 200) {
-            if(image) {
-                removeImage(image!);
-            }
-            Alert.alert("Pet Berhasil", "Pet Berhasil dibuat", [ { text: "OK", onPress: () => navigation.goBack()}]);
+            Alert.alert("Request Pet Surrender Berhasil", "Mohon tunggu informasi lebih lanjut dari pihak shelter", [ { text: "OK", onPress: () => navigation.navigate('ChooseScreen') }]);
         }else{
-            Alert.alert("Pet Gagal", "Pet gagal dibuat, mohon diisi dengan yang benar");
+            Alert.alert("Request Pet Surrender Gagal", "Request Pet Surrender Gagal, mohon diisi dengan yang benar");
         }
     }
 
@@ -312,6 +323,24 @@ export const CreateSurrenderScreen : FC<CreateNavigationStackScreenProps<'Create
                                 />
                             </View>
                             <Text style={styles.errorMessage}>{errors.PetDescription?.message}</Text>
+
+                            <Text style={styles.textColor}>Alasan<Text className='text-[#ff0000]'>*</Text></Text>
+                            <View style={styles.inputBox}>
+                                <Controller
+                                    name="Reason"
+                                    control={control}
+                                    render={() => (
+                                        <TextInput
+                                            placeholder="Masukkan Reason"
+                                            style={{ flex: 1 }}
+                                            multiline
+                                            numberOfLines={4}
+                                            onChangeText={(text: string) => setValue('Reason', text)}
+                                        />
+                                    )}
+                                />
+                            </View>
+                            <Text style={styles.errorMessage}>{errors.Reason?.message}</Text>
 
                             <TouchableOpacity style={[styles.button]} onPress={handleSubmit(onSubmit)}>
                                 <Text className="text-center font-bold text-white">Save</Text>
