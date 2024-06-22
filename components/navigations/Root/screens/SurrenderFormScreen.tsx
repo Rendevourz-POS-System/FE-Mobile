@@ -1,261 +1,355 @@
 import { FontAwesome, Ionicons } from "@expo/vector-icons";
-import React, { FC, useState } from "react";
-import { ScrollView, Text, View, StyleSheet, TextInput, TouchableOpacity, Image } from "react-native";
+import React, { FC, useCallback, useEffect, useRef, useState } from "react";
+import { ScrollView, Text, View, StyleSheet, TextInput, TouchableOpacity, Image, SafeAreaView, Alert } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { z } from "zod";
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Controller, useForm } from 'react-hook-form';
-import DatePicker from "../../../DatePicker";
 import { RadioButton } from "react-native-paper";
 import * as ImagePicker from 'expo-image-picker';
+import * as FileSystem from 'expo-file-system';
 import { SelectList } from "react-native-dropdown-select-list";
-import { dataJenisHewan, dataSpesiesHewan } from "../../../../constans/data";
 import { NoHeaderNavigationStackScreenProps } from "../../../StackParams/StackScreenProps";
+import { BottomSheetBackdrop, BottomSheetModal, BottomSheetModalProvider, BottomSheetView } from "@gorhom/bottom-sheet";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { BackendApiUri, baseUrl } from "../../../../functions/BackendApiUri";
+import { useAuth } from "../../../../app/context/AuthContext";
+import { PetType } from "../../../../interface/IPetType";
+import { get } from "../../../../functions/Fetch";
 
-const surrenderFormSchema = z.object({
-    name: z.string({ required_error: "Nama tidak boleh kosong" }).min(1, { message: "Nama tidak boleh kosong" }),
-    dob: z.string({ required_error: "Tanggal lahir tidak boleh kosong" }).min(10, { message: 'Tanggal lahir tidak boleh kosong' }),
-    type: z.string({ required_error: "Jenis Hewan tidak boleh kosong" }).min(1, { message: "Jenis Hewan tidak boleh kosong" }),
-    species: z.string({ required_error: 'Spesies hewan tidak boleh kosong' }).min(1, { message: "Spesies hewan tidak boleh kosong" }),
-    gender: z.string({ required_error: "Jenis kelamin hewan tidak boleh kosong" }),
-    steril: z.string({ required_error: 'Steril tidak boleh kosong' }),
-    description: z.string({ required_error: "Deskripsi tidak boleh kosong" }).min(5, { message: "Deskripsi tidak boleh kurang dari 5 karakter" }).max(120, { message: 'Deskripsi tidak boleh lebih dari 120 karakter' }),
-    condition: z.string({ required_error: "Kondisi hewan tidak boleh kosong" }).min(5, { message: "Kondisi hewan tidak boleh kurang dari 5 karakter" }),
+const createPetFormSchema = z.object({
+    PetName: z.string({ required_error: "Nama hewan tidak boleh kosong" }).min(1, { message: "Nama hewan tidak boleh kosong" }),
+    PetType: z.string({ required_error: "Jenis hewan tidak boleh kosong" }).min(1, { message: 'Jenis hewan tidak boleh kosong' }),
+    PetAge: z.number({ required_error: "Umur hewan tidak boleh kosong" }).int().positive().nonnegative("Umur hewan harus merupakan bilangan bulat positif"),
+    PetGender: z.string({ required_error: "Jenis kelamin hewan tidak boleh kosong" }),
+    // IsVaccinated: z.string({ required_error: "Vaksinasi hewan tidak boleh kosong" }),
+    PetDescription: z.string({ required_error: "Deskripsi hewan tidak boleh kosong" }).min(10, { message: "Deskripsi hewan harus lebih dari 10 karakter" }),
+    Reason: z.string({ required_error: "Alasan tidak boleh kosong" }).min(10, { message: "Alasan harus lebih dari 10 karakter" })
 })
 
-type SurrenderFormType = z.infer<typeof surrenderFormSchema>
+type CreatePetFormType = z.infer<typeof createPetFormSchema>
 
-export const SurrenderFormScreen: FC<NoHeaderNavigationStackScreenProps<'SurrenderFormScreen'>> = ({ navigation }) => {
-    const {
-        control,
-        watch,
-        setValue,
-        handleSubmit,
-        formState: { errors },
-    } = useForm<SurrenderFormType>({
-        resolver: zodResolver(surrenderFormSchema),
+
+export const SurrenderFormScreen: FC<NoHeaderNavigationStackScreenProps<'SurrenderFormScreen'>> = ({ navigation, route }) => {
+    const routeParam = route.params
+    const { authState } = useAuth();
+    const bottomSheetModalRef = useRef<BottomSheetModal>(null);
+    const [petTypes, setPetTypes] = useState<PetType[]>([]);
+    const imgDir = FileSystem.documentDirectory + 'images/';
+    const [image, setImage] = useState<string | null>(null);
+    const { control, handleSubmit, setValue, formState: { errors } } = useForm<CreatePetFormType>({
+        resolver: zodResolver(createPetFormSchema),
     });
+    const [previousImage, setPreviousImage] = useState<string | null>('');
 
-    const onSubmit = async (data: SurrenderFormType) => {
-        console.log(data)
+    const fetchPetType = async () => {
+        const res = await get(BackendApiUri.getPetTypes);
+        setPetTypes(res.data)
     }
 
-    const [enable, setEnable] = useState<{
-        dob: boolean;
-    }>({
-        dob: false,
-    });
+    const petTypeData = petTypes.map((item) => ({
+        key: item.Id,
+        value: item.Type,
+    }));
 
-    const {
-        dob, type
-    } = watch();
+    useEffect(() => {
+        fetchPetType()
+    }, [])
 
-    const onConfirmBirthDate = (value: Date) => {
-        setEnable({ ...enable, dob: false });
-        const getYear = value.toLocaleString('default', { year: 'numeric' });
-        const getMonth = value.toLocaleString('default', { month: '2-digit' });
-        let getDay = value.toLocaleString('default', { day: '2-digit' });
-        getDay = `${getYear}-${getMonth}-${getDay}`;
-        setValue('dob', getDay.toString());
-    };
+    const ensureDirExists = async () => {
+        const dirInfo = await FileSystem.getInfoAsync(imgDir);
+        if (!dirInfo.exists) {
+            await FileSystem.makeDirectoryAsync(imgDir, { intermediates: true });
+        }
+    }
 
-    const [image, setImage] = useState('');
+    const saveImage = async (uri: string) => {
+        await ensureDirExists();
+        const fileName = uri.substring(uri.lastIndexOf('/') + 1);
+        const dest = imgDir + fileName;
+        await FileSystem.copyAsync({ from: uri, to: dest });
+        setPreviousImage(dest);
+        setImage(dest);
+    }
+    const selectImage = async (useLibrary : boolean) => {
+        let result;
+        const options : ImagePicker.ImagePickerOptions = {
+            mediaTypes: ImagePicker.MediaTypeOptions.Images,
+                allowsEditing: true,
+                aspect: [1, 1],
+                quality: 1,
+        }
 
-    const pickImage = async () => {
-        let result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ImagePicker.MediaTypeOptions.All,
-            allowsEditing: true,
-            aspect: [1, 1],
-            quality: 1,
-        })
+        if (useLibrary) {
+            result = await ImagePicker.launchImageLibraryAsync(options);
+        } else {
+            await ImagePicker.requestCameraPermissionsAsync();
+            result = await ImagePicker.launchCameraAsync(options);
+        }
 
         if (!result.canceled) {
-            setImage(result.assets[0].uri)
+            if (previousImage) {
+                removeImage(previousImage)
+            }
+            saveImage(result.assets[0].uri);
         }
+        bottomSheetModalRef.current?.close();
     };
 
-    const handleSpeciesSelection = () => {
-        if(type == "Dog") return dataSpesiesHewan.Dog;
-        if(type == "Cat") return dataSpesiesHewan.Cat;
-        if(type == "Rabbit") return dataSpesiesHewan.Rabbit
-        return []
-    };
+    const removeImage = async (imageUri: string) => {
+        await FileSystem.deleteAsync(imageUri);
+        setImage(null);
+    }
+
+    const handleImagePress = useCallback(() => {
+        bottomSheetModalRef.current?.present();
+    }, []);
+
+
+    const onSubmit = async (data: CreatePetFormType) => {
+        const payload = {
+            ShelterId: routeParam.shelterId,
+            PetName: data.PetName,
+            PetAge: data.PetAge,
+            PetType: data.PetType,
+            PetGender: data.PetGender,
+            PetDescription: data.PetDescription
+        }
+
+        const request = {
+            Status : "Ongoing",
+            Type: "Surrender",
+            Reason: data.Reason
+        }
+
+        const formData = new FormData();
+
+        if (image) {
+            const fileInfo = await FileSystem.getInfoAsync(image);
+            formData.append('files', {
+                uri: image,
+                name: fileInfo.uri.split('/').pop(),
+                type: 'image/jpeg'
+            } as any); // You can also check and set the type dynamically based on file extension
+        }
+
+        let payloadString = JSON.stringify(payload);
+        let requestString = JSON.stringify(request);
+        
+        formData.append('pet', payloadString);
+        formData.append('request', requestString);
+
+        
+        // const res = await postForm(BackendApiUri.postPet, formData);
+        const res = await fetch(`${baseUrl + BackendApiUri.rescueOrSurennder}`, {
+            method: 'POST',
+            body : formData,
+            headers : {
+                'Content-Type' : 'multipart/form-data',
+                'Authorization' : `Bearer ${authState?.token}`
+            }
+        });
+        console.log(res.status)
+        if(image) {
+            removeImage(image!);
+        }
+        if (res?.status === 200) {
+            Alert.alert("Request Pet Surrender Berhasil", "Mohon tunggu informasi lebih lanjut dari pihak shelter", [ { text: "OK", onPress: () => navigation.goBack }]);
+        }else{
+            Alert.alert("Request Pet Surrender Gagal", "Request Pet Surrender Gagal, mohon diisi dengan yang benar");
+        }
+    }
+
 
     return (
-        <SafeAreaProvider style={styles.container}>
-            <View className="mt-5 mb-5 flex-row items-center justify-center">
-                <Ionicons name="chevron-back" size={24} color="black" onPress={() => navigation.goBack()} style={{ position: 'absolute', left: 20 }} />
-                <Text className="text-xl">Penyerahan Hewan</Text>
-            </View>
-
-            <ScrollView>
-                <Text className='mt-5 mb-8 text-xs text-center text-[#8A8A8A]'>Isilah Data Penyerahan Hewan Anda dengan Baik dan Benar</Text>
-
-                <Text style={styles.textColor}>Nama Hewan<Text className='text-[#ff0000]'>*</Text></Text>
-                <View style={styles.inputBox}>
-                    <Controller
-                        name="name"
-                        control={control}
-                        render={() => (
-                            <TextInput
-                                placeholder="Masukkan Nama Hewan"
-                                style={{ flex: 1 }}
-                                onChangeText={(text: string) => setValue('name', text)}
-                            />
-                        )}
-                    />
-                </View>
-                <Text style={styles.errorMessage}>{errors.name?.message}</Text>
-
-                <Text style={styles.textColor}>Tanggal Lahir Hewan<Text className='text-[#ff0000]'>*</Text></Text>
-                <Controller
-                    name="dob"
-                    control={control}
-                    render={() => (
-                        <DatePicker
-                            isModalVisible={enable.dob}
-                            date={dob ? new Date(dob) : undefined}
-                            onConfirm={onConfirmBirthDate}
-                            onCancel={() => setEnable({ ...enable, dob: false })}
-                            onPress={() => setEnable({ ...enable, dob: true })}
-                            disabled={false}
-                            style={{ marginTop: 10 }}
-                        />
-                    )}
-                />
-                <Text style={styles.errorMessage}>{errors.dob?.message}</Text>
-
-                <Text style={styles.textColor}>Jenis Hewan<Text className='text-[#ff0000]'>*</Text></Text>
-                <Controller
-                    name="type"
-                    control={control}
-                    render={() => (
-                        <SelectList
-                            setSelected={(text: string) => setValue('type', text)}
-                            data={dataJenisHewan}
-                            save="value"
-                            search={true}
-                            dropdownStyles={styles.inputBox}
-                            boxStyles={styles.selectBox}
-                            inputStyles={{ padding: 3 }}
-                            arrowicon={<FontAwesome name="chevron-down" size={12} color={'#808080'} style={{ padding: 3 }} />}
-                            placeholder="Masukkan Jenis Hewan"
-                        />
-                    )}
-                />
-                <Text style={styles.errorMessage}>{errors.type?.message}</Text>
-
-                <Text style={styles.textColor}>Spesies Hewan<Text className='text-[#ff0000]'>*</Text></Text>
-                <Controller
-                    name="species"
-                    control={control}
-                    render={() => (
-                        <SelectList
-                            setSelected={(text: string) => setValue('species', text)}
-                            data={handleSpeciesSelection()}
-                            save="value"
-                            search={true}
-                            dropdownStyles={styles.inputBox}
-                            boxStyles={styles.selectBox}
-                            inputStyles={{ padding: 3 }}
-                            arrowicon={<FontAwesome name="chevron-down" size={12} color={'#808080'} style={{ padding: 3}} />}
-                            placeholder="Masukkan Spesies Hewan"
-                        />
-                    )}
-                />
-                <Text style={styles.errorMessage}>{errors.species?.message}</Text>
-
-                <Text style={styles.textColor}>Jenis Kelamin Hewan<Text className='text-[#ff0000]'>*</Text></Text>
-                <View style={{ marginHorizontal: 30 }}>
-                    <Controller
-                        name="gender"
-                        control={control}
-                        render={({ field: { onChange, value } }) => (
-                            <RadioButton.Group onValueChange={onChange} value={value} >
-                                <View className="flex flex-row">
-                                    <View className="flex-row justify-start items-center mr-5">
-                                        <RadioButton.Android value="laki-laki" color={'#4689FD'} uncheckedColor="#808080" />
-                                        <Text className="text-base text-[#808080]">Laki-Laki</Text>
-                                    </View>
-                                    <View className="flex-row justify-start items-center">
-                                        <RadioButton.Android value="perempuan" color={'#4689FD'} uncheckedColor="#808080" />
-                                        <Text className="text-base text-[#808080]">Perempuan</Text>
-                                    </View>
+        <SafeAreaProvider style={{flex: 1}}>
+            <SafeAreaView style={{flex: 1}}>
+                <GestureHandlerRootView style={{ flex: 1 }}>
+                    <BottomSheetModalProvider>
+                        <BottomSheetModal
+                            ref={bottomSheetModalRef}
+                            index={0}
+                            snapPoints={['20%']}
+                            backdropComponent={(props) => (
+                                <BottomSheetBackdrop
+                                    {...props}
+                                    disappearsOnIndex={-1}
+                                    appearsOnIndex={0}
+                                    pressBehavior="close"
+                                />
+                            )}
+                        >
+                            <BottomSheetView className="flex items-center justify-center">
+                                <View className="flex flex-col items-center">
+                                    <TouchableOpacity className="py-4" onPress={() => selectImage(true)}>
+                                        <Text className="text-lg ">Choose Photo</Text>
+                                    </TouchableOpacity>
+                                    <TouchableOpacity className="py-4" onPress={() => selectImage(false)}>
+                                        <Text className="text-lg ">Take Photo</Text>
+                                    </TouchableOpacity>
                                 </View>
-                            </RadioButton.Group>
-                        )}
-                    />
-                </View>
-                <Text style={styles.errorMessage}>{errors.gender?.message}</Text>
+                            </BottomSheetView>
+                        </BottomSheetModal>
 
-                <Text style={styles.textColor}>Steril<Text className='text-[#ff0000]'>*</Text></Text>
-                <View style={{ marginHorizontal: 30 }}>
-                    <Controller
-                        name="steril"
-                        control={control}
-                        render={({ field: { onChange, value } }) => (
-                            <RadioButton.Group onValueChange={onChange} value={value} >
-                                <View className="flex flex-row">
-                                    <View className="flex-row justify-start items-center mr-10">
-                                        <RadioButton.Android value="Sudah" color={'#4689FD'} uncheckedColor="#808080" />
-                                        <Text className="text-base text-[#808080]">Sudah</Text>
-                                    </View>
-                                    <View className="flex-row justify-start items-center">
-                                        <RadioButton.Android value="Belum" color={'#4689FD'} uncheckedColor="#808080" />
-                                        <Text className="text-base text-[#808080]">Belum</Text>
-                                    </View>
+                        <View className="mt-5 flex-row items-center justify-center mb-3">
+                            <Ionicons name="chevron-back" size={24} color="black"
+                                onPress={() => {
+                                    if (image) {
+                                        removeImage(image!);
+                                    }
+                                    navigation.goBack()
+                                }}
+                                style={{ position: 'absolute', left: 20 }} />
+                            <Text className="text-xl">Surrender Pet</Text>
+                        </View>
+                        <ScrollView className="mt-5">
+                            {image && (
+                                <View className="items-end mx-5 mt-8 ">
+                                    <TouchableOpacity className="flex-row items-end" onPress={() => removeImage(image)}>
+                                        <Ionicons name="trash" size={20} color="black" />
+                                        <Text className="text-xs">Hapus Gambar</Text>
+                                    </TouchableOpacity>
                                 </View>
-                            </RadioButton.Group>
-                        )}
-                    />
-                </View>
-                <Text style={styles.errorMessage}>{errors.steril?.message}</Text>
+                            )}
+                            <View className="mt-2 mb-10 items-center">
+                                <TouchableOpacity
+                                    style={{ width: 350, height: 200, backgroundColor: '#2E3A59', borderRadius: 10, justifyContent: 'center', alignItems: 'center' }}
+                                    onPress={handleImagePress}
+                                >
 
-                <Text style={styles.textColor}>Deskripsi Hewan<Text className='text-[#ff0000]'>*</Text></Text>
-                <View style={styles.inputBox}>
-                    <Controller
-                        name="description"
-                        control={control}
-                        render={() => (
-                            <TextInput
-                                placeholder="Masukkan Deskripsi Hewan"
-                                style={{ flex: 1 }}
-                                onChangeText={(text: string) => setValue('description', text)}
-                                multiline
+                                    {image ? (
+                                        <Image source={{ uri: image }} style={{ width: "100%", height: "100%", borderRadius: 10 }} resizeMode="cover" />) :
+                                        (<Ionicons name="camera" size={40} color="white" />)}
+                                </TouchableOpacity>
+                            </View>
+
+                            <Text style={styles.textColor}>Nama Hewan<Text className='text-[#ff0000]'>*</Text></Text>
+                            <View style={styles.inputBox}>
+                                <Controller
+                                    name="PetName"
+                                    control={control}
+                                    render={() => (
+                                        <TextInput
+                                            placeholder="Masukkan Nama Hewan"
+                                            style={{ flex: 1 }}
+                                            onChangeText={(text: string) => setValue('PetName', text)}
+                                        />
+                                    )}
+                                />
+                            </View>
+                            <Text style={styles.errorMessage}>{errors.PetName?.message}</Text>
+
+                            <Text style={styles.textColor}>Jenis Hewan<Text className='text-[#ff0000]'>*</Text></Text>
+                            <Controller
+                                name="PetType"
+                                control={control}
+                                render={() => (
+                                    <SelectList
+                                        setSelected={(text: string) => setValue('PetType', text)}
+                                        data={petTypeData}
+                                        save="value"
+                                        search={true}
+                                        dropdownStyles={styles.inputBox}
+                                        boxStyles={styles.selectBox}
+                                        inputStyles={{ padding: 3 }}
+                                        arrowicon={<FontAwesome name="chevron-down" size={12} color={'#808080'} style={{ padding: 3 }} />}
+                                        placeholder="Masukkan Jenis Hewan"
+                                    />
+                                )}
                             />
-                        )}
-                    />
-                </View>
-                <Text style={styles.errorMessage}>{errors.description?.message}</Text>
+                            <Text style={styles.errorMessage}>{errors.PetType?.message}</Text>
 
-                <Text style={styles.textColor}>Kondisi Hewan<Text className='text-[#ff0000]'>*</Text></Text>
-                <View style={styles.inputBox}>
-                    <Controller
-                        name="condition"
-                        control={control}
-                        render={() => (
-                            <TextInput
-                                placeholder="Masukkan Kondisi Hewan"
-                                style={{ flex: 1 }}
-                                onChangeText={(text: string) => setValue('condition', text)}
-                            />
-                        )}
-                    />
-                </View>
-                <Text style={styles.errorMessage}>{errors.condition?.message}</Text>
+                            <Text style={styles.textColor}>Umur Hewan<Text className='text-[#ff0000]'>*</Text></Text>
+                            <View style={styles.inputBox}>
+                                <Controller
+                                    name="PetAge"
+                                    control={control}
+                                    render={() => (
+                                        <TextInput
+                                            style={{ flex: 1 }}
+                                            placeholder="Masukkan Umur Hewan"
+                                            onChangeText={(text: string) => {
+                                                const numericValue = parseInt(text);
+                                                if (!isNaN(numericValue)) {
+                                                    setValue('PetAge', numericValue);
+                                                }
+                                            }}
+                                            keyboardType="numeric"
+                                        />
+                                    )}
+                                />
+                            </View>
+                            <Text style={styles.errorMessage}>{errors.PetAge?.message}</Text>
 
-                <Text style={styles.textColor}>Gambar<Text className='text-[#ff0000]'>*</Text></Text>
-                <TouchableOpacity onPress={pickImage} style={styles.imageBox}>
-                    <Text className='text-center text-gray-500'>Pilih Gambar</Text>
-                </TouchableOpacity>
-                {image ? (<Image source={{ uri: image }} style={{ width: 100, height: 100, marginHorizontal: 35, marginTop: 10, borderRadius: 10 }} />) : (<Ionicons name="camera" size={40} color="white" />)}
+                            <Text style={styles.textColor}>Jenis Kelamin Hewan<Text className='text-[#ff0000]'>*</Text></Text>
+                            <View style={{ marginHorizontal: 30 }}>
+                                <Controller
+                                    name="PetGender"
+                                    control={control}
+                                    render={({ field: { onChange, value } }) => (
+                                        <RadioButton.Group onValueChange={onChange} value={value} >
+                                            <View className="flex flex-row">
+                                                <View className="flex-row justify-start items-center mr-5">
+                                                    <RadioButton.Android value="Male" color={'#4689FD'} uncheckedColor="#808080" />
+                                                    <Text className="text-base text-[#808080]">Laki-Laki</Text>
+                                                </View>
+                                                <View className="flex-row justify-start items-center">
+                                                    <RadioButton.Android value="Female" color={'#4689FD'} uncheckedColor="#808080" />
+                                                    <Text className="text-base text-[#808080]">Perempuan</Text>
+                                                </View>
+                                            </View>
+                                        </RadioButton.Group>
+                                    )}
+                                />
+                            </View>
+                            <Text style={styles.errorMessage}>{errors.PetGender?.message}</Text>
 
-                <TouchableOpacity style={styles.submitButton} onPress={handleSubmit(onSubmit)} className='mb-5'>
-                    <Text className="text-center font-bold text-white">Submit</Text>
-                </TouchableOpacity>
-            </ScrollView>
+                            <Text style={styles.textColor}>Deskripsi Hewan<Text className='text-[#ff0000]'>*</Text></Text>
+                            <View style={styles.inputBox}>
+                                <Controller
+                                    name="PetDescription"
+                                    control={control}
+                                    render={() => (
+                                        <TextInput
+                                            placeholder="Masukkan Deskripsi Hewan"
+                                            style={{ flex: 1 }}
+                                            multiline
+                                            onChangeText={(text: string) => setValue('PetDescription', text)}
+                                        />
+                                    )}
+                                />
+                            </View>
+                            <Text style={styles.errorMessage}>{errors.PetDescription?.message}</Text>
+
+                            <Text style={styles.textColor}>Alasan Penyerahan Hewan<Text className='text-[#ff0000]'>*</Text></Text>
+                            <View style={styles.inputBox}>
+                                <Controller
+                                    name="Reason"
+                                    control={control}
+                                    render={() => (
+                                        <TextInput
+                                            placeholder="Masukkan Alasan Penyerahan Hewan"
+                                            style={{ flex: 1 }}
+                                            multiline
+                                            numberOfLines={4}
+                                            onChangeText={(text: string) => setValue('Reason', text)}
+                                        />
+                                    )}
+                                />
+                            </View>
+                            <Text style={styles.errorMessage}>{errors.Reason?.message}</Text>
+
+                            <TouchableOpacity style={[styles.button]} onPress={handleSubmit(onSubmit)}>
+                                <Text className="text-center font-bold text-white">Save</Text>
+                            </TouchableOpacity>
+                        </ScrollView>
+
+
+                    </BottomSheetModalProvider>
+                </GestureHandlerRootView>
+            </SafeAreaView>
         </SafeAreaProvider>
-    );
+    )
 }
 
 const styles = StyleSheet.create({
@@ -316,5 +410,13 @@ const styles = StyleSheet.create({
         borderWidth: 2,
         borderRadius: 25,
         flexDirection: 'row'
+    },
+    button: {
+        backgroundColor: "#378CE7",
+        padding: 15,
+        marginHorizontal: 30,
+        borderRadius: 10,
+        top: 30,
+        marginBottom: 60
     },
 });
