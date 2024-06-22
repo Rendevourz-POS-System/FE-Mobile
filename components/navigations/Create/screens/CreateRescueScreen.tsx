@@ -1,6 +1,6 @@
 import { Image, Text, TextInput, View } from "react-native"
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context"
-import { CreateNavigationStackScreenProps } from "../../../StackParams/StackScreenProps"
+import { CreateNavigationStackScreenProps, ProfileNavigationStackScreenProps, UserBottomTabCompositeNavigationProps } from "../../../StackParams/StackScreenProps"
 import { FC, useCallback, useEffect, useRef, useState } from "react"
 import { FontAwesome, Ionicons } from "@expo/vector-icons"
 import { GestureHandlerRootView } from "react-native-gesture-handler"
@@ -20,6 +20,7 @@ import { BackendApiUri, baseUrl } from "../../../../functions/BackendApiUri"
 import { useAuth } from "../../../../app/context/AuthContext"
 import { get } from "../../../../functions/Fetch"
 import { PetType } from "../../../../interface/IPetType"
+import { useNavigation } from "@react-navigation/native"
 
 const createPetFormSchema = z.object({
     PetName: z.string({ required_error: "Nama hewan tidak boleh kosong" }).min(1, { message: "Nama hewan tidak boleh kosong" }),
@@ -28,11 +29,11 @@ const createPetFormSchema = z.object({
     PetGender: z.string({ required_error: "Jenis kelamin hewan tidak boleh kosong" }),
     // IsVaccinated: z.string({ required_error: "Vaksinasi hewan tidak boleh kosong" }),
     PetDescription: z.string({ required_error: "Deskripsi hewan tidak boleh kosong" }).min(10, { message: "Deskripsi hewan harus lebih dari 10 karakter" }),
-})
+    Reason: z.string({ required_error: "Alasan tidak boleh kosong" }).min(10, { message: "Alasan harus lebih dari 10 karakter" }),})
 
 type CreatePetFormType = z.infer<typeof createPetFormSchema>
 
-export const CreateRescueScreen : FC<CreateNavigationStackScreenProps<'CreateRescueScreen'>> = ({navigation, route}) => {
+export const CreateRescueScreen : FC<CreateNavigationStackScreenProps<'CreateRescueScreen'>> = ({navigation, route} : any) => {
     const routeParam = route.params
     const { authState } = useAuth();
     const bottomSheetModalRef = useRef<BottomSheetModal>(null);
@@ -108,15 +109,20 @@ export const CreateRescueScreen : FC<CreateNavigationStackScreenProps<'CreateRes
         bottomSheetModalRef.current?.present();
     }, []);
 
-
     const onSubmit = async (data: CreatePetFormType) => {
         const payload = {
-            ShelterId: 1,
+            ShelterId: routeParam.shelterId,
             PetName: data.PetName,
             PetAge: data.PetAge,
             PetType: data.PetType,
             PetGender: data.PetGender,
             PetDescription: data.PetDescription
+        }
+
+        const request = {
+            Status : "Ongoing",
+            Type: "Rescue",
+            Reason: data.Reason
         }
 
         const formData = new FormData();
@@ -131,11 +137,13 @@ export const CreateRescueScreen : FC<CreateNavigationStackScreenProps<'CreateRes
         }
 
         let payloadString = JSON.stringify(payload);
+        let requestString = JSON.stringify(request);
         
-        formData.append('data', payloadString);
+        formData.append('pet', payloadString);
+        formData.append('request', requestString);
         
         // const res = await postForm(BackendApiUri.postPet, formData);
-        const res = await fetch(`${baseUrl + BackendApiUri.postPet}`, {
+        const res = await fetch(`${baseUrl + BackendApiUri.rescueOrSurennder}`, {
             method: 'POST',
             body : formData,
             headers : {
@@ -143,13 +151,17 @@ export const CreateRescueScreen : FC<CreateNavigationStackScreenProps<'CreateRes
                 'Authorization' : `Bearer ${authState?.token}`
             }
         });
+        console.log(res.status)
         if (res?.status === 200) {
             if(image) {
                 removeImage(image!);
             }
-            Alert.alert("Pet Berhasil", "Pet Berhasil dibuat", [ { text: "OK", onPress: () => navigation.goBack()}]);
+            Alert.alert("Request Rescue Berhasil", "Rescue Pet Berhasil dibuat, mohon tunggu informasi lebih lanjut dari pihak shelter", 
+                [ { text: "OK", onPress: () => navigation.navigate('ChooseScreen')
+
+            }]);
         }else{
-            Alert.alert("Pet Gagal", "Pet gagal dibuat, mohon diisi dengan yang benar");
+            Alert.alert("Request Rescue Gagal", "Request Rescue Gagal, mohon diisi dengan yang benar");
         }
     }
 
@@ -313,6 +325,24 @@ export const CreateRescueScreen : FC<CreateNavigationStackScreenProps<'CreateRes
                                 />
                             </View>
                             <Text style={styles.errorMessage}>{errors.PetDescription?.message}</Text>
+                            
+                            <Text style={styles.textColor}>Alasan<Text className='text-[#ff0000]'>*</Text></Text>
+                            <View style={styles.inputBox}>
+                                <Controller
+                                    name="Reason"
+                                    control={control}
+                                    render={() => (
+                                        <TextInput
+                                            placeholder="Masukkan Reason"
+                                            style={{ flex: 1 }}
+                                            multiline
+                                            numberOfLines={4}
+                                            onChangeText={(text: string) => setValue('Reason', text)}
+                                        />
+                                    )}
+                                />
+                            </View>
+                            <Text style={styles.errorMessage}>{errors.Reason?.message}</Text>
 
                             <TouchableOpacity style={[styles.button]} onPress={handleSubmit(onSubmit)}>
                                 <Text className="text-center font-bold text-white">Save</Text>
