@@ -69,19 +69,22 @@ export const HistoryScreen: FC<ProfileNavigationStackScreenProps<'HistoryScreen'
     };
 
     const groupByDate = (data: History[]): GroupedHistory[] => {
-        const grouped = data.reduce((acc: { [key: string]: History[] }, item) => {
-            const date = new Date(item.RequestedAt).toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' });
-            if (!acc[date]) {
-                acc[date] = [];
-            }
-            acc[date].push(item);
-            return acc;
-        }, {});
-
-        return Object.keys(grouped).map(date => ({
-            title: date,
-            data: grouped[date],
-        }));
+        if(data) {
+            const grouped = data.reduce((acc: { [key: string]: History[] }, item) => {
+                const date = new Date(item.RequestedAt).toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' });
+                if (!acc[date]) {
+                    acc[date] = [];
+                }
+                acc[date].push(item);
+                return acc;
+            }, {});
+    
+            return Object.keys(grouped).map(date => ({
+                title: date,
+                data: grouped[date],
+            }));
+        }
+        return [];
     };
 
     useEffect(() => {

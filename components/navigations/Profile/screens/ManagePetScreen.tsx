@@ -99,7 +99,7 @@ export const ManagePetScreen: FC<ProfileNavigationStackScreenProps<"ManagePetScr
             PetGender: data.PetGender,
             IsVaccinated: data.IsVaccinated == "true" ? true : false,
             PetDescription: data.PetDescription,
-            OldImage: petData?.Data.Image,
+            OldImage: petData?.Data.OldImage,
         }
         const formData = new FormData();
 
@@ -114,6 +114,7 @@ export const ManagePetScreen: FC<ProfileNavigationStackScreenProps<"ManagePetScr
         }
 
         formData.append('data', JSON.stringify(payload));
+        console.log(formData)
         // return;
         const res = await putForm(`${BackendApiUri.putPetUpdate}`, formData);
         if (res.status == 200) {

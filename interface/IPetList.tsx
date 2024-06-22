@@ -11,7 +11,7 @@ export interface PetData {
     IsVaccinated : boolean;
     IsAdopted: boolean;
     ReadyToAdopt: boolean;
-    Image : [];
+    OldImage : [];
     ImageBase64: [];
     CreatedAt : Date;
 }

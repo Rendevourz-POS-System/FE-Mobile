@@ -28,7 +28,7 @@ const editShelterFormSchema = z.object({
     TotalPet: z.number({ required_error: "Total hewan tidak boleh kosong" }).int().positive().nonnegative("Total hewan harus merupakan bilangan bulat positif"),
     BankAccountNumber: z.string({ required_error: 'Nomor rekening bank tidak boleh kosong' }).min(10, { message: 'Nomor rekening harus lebih dari 10 digit' }).refine(value => /^\d+$/.test(value), { message: "Nomor rekening harus berupa angka (0-9)" }),
     Pin: z.string({ required_error: "Pin tidak boleh kosong" }).min(6, { message: "Pin tidak boleh kurang dari 6 karakter" }).refine(value => /^\d+$/.test(value), { message: "Pin harus berupa angka (0-9)" }),
-    OldImage: z.array(z.string()).optional()
+    // OldImage: z.array(z.string()).optional()
 })
 
 type CreateShelterFormType = z.infer<typeof editShelterFormSchema>
@@ -41,7 +41,7 @@ export const ManageShelterScreen: FC<ProfileNavigationStackScreenProps<'ManageSh
     const [petTypes, setPetTypes] = useState<PetType[]>([]);
     const bottomSheetModalRef = useRef<BottomSheetModal>(null);
     const imgDir = FileSystem.documentDirectory + 'images/';
-    const { control, setValue, handleSubmit, formState: { errors } } = useForm<CreateShelterFormType>({
+    const { control, setValue, handleSubmit, formState: { errors }, watch } = useForm<CreateShelterFormType>({
         resolver: zodResolver(editShelterFormSchema),
     });
     const [shelterUser, setShelterUser] = useState<ManageShelterUser>();
@@ -68,9 +68,23 @@ export const ManageShelterScreen: FC<ProfileNavigationStackScreenProps<'ManageSh
         fetchData();
     }, []);
     const onSubmit = async (data: CreateShelterFormType) => {
-        let payloadString = JSON.stringify(data);
+        const payload = {
+            ShelterName: data.ShelterName,
+            ShelterLocation: data.ShelterLocation,
+            ShelterAddress: data.ShelterAddress,
+            ShelterCapacity: data.ShelterCapacity,
+            ShelterContactNumber: data.ShelterContactNumber,
+            ShelterDescription: data.ShelterDescription,
+            PetTypeAccepted: data.PetTypeAccepted,
+            TotalPet: data.TotalPet,
+            BankAccountNumber: data.BankAccountNumber,
+            Pin: data.Pin,
+            OldImage: shelterUser?.ImagePath
+        }
+        let payloadString = JSON.stringify(payload);
         const formData = new FormData();
         if(image) {
+            console.log("masuk imagee nih")
             const fileInfo = await FileSystem.getInfoAsync(image);
             formData.append('files', {
                 uri: image,
@@ -80,7 +94,7 @@ export const ManageShelterScreen: FC<ProfileNavigationStackScreenProps<'ManageSh
         }
 
         formData.append('data', payloadString);
-        // console.log(formData);
+        console.log(formData);
         // return;
 
         const res = await putForm(`${BackendApiUri.putShelterUpdate}`, formData);
@@ -88,7 +102,11 @@ export const ManageShelterScreen: FC<ProfileNavigationStackScreenProps<'ManageSh
             removeImage(image!)
         }
         if (res.status == 200) {
-            Alert.alert('Shelter Berhasil Terupdate', 'Data shelter anda telah berhasil terupdate.', [{ text: "OK", onPress: () => {navigation.goBack() }}]);
+            Alert.alert('Shelter Berhasil Terupdate', 'Data shelter anda telah berhasil terupdate.', 
+                [{ text: "OK", 
+                    onPress: () => {
+                        navigation.goBack() 
+                    }}]);
         } else {
             Alert.alert('Shelter Gagal Update', 'Data shelter anda gagal terupdate.');
         }
@@ -98,6 +116,18 @@ export const ManageShelterScreen: FC<ProfileNavigationStackScreenProps<'ManageSh
         const dirInfo = await FileSystem.getInfoAsync(imgDir);
         if (!dirInfo.exists) {
             await FileSystem.makeDirectoryAsync(imgDir, { intermediates: true });
+        }
+    }
+
+    useEffect(() => {
+        loadImages();
+    }, []);
+
+    const loadImages = async () => {
+        await ensureDirExists();
+        const files = await FileSystem.readDirectoryAsync(imgDir);
+        if (files.length > 0) {
+            setImage(imgDir + files[0]);
         }
     }
 
