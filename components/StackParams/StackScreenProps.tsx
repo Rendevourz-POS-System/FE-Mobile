@@ -18,8 +18,11 @@ export type UserBottomTabCompositeNavigationProps<T extends keyof UserBottomTabP
     CompositeNavigationProp<
         BottomTabNavigationProp<UserBottomTabParams, T>,
         CompositeNavigationProp<
-            NativeStackNavigationProp<HomeUserNavigationStackParams>,
-            NativeStackNavigationProp<ProfileNavigationStackParams>
+            CompositeNavigationProp<
+                NativeStackNavigationProp<HomeUserNavigationStackParams>,
+                NativeStackNavigationProp<ProfileNavigationStackParams>
+                >,
+                NativeStackNavigationProp<CreateNavigationStackParams>
         >
     >;
 // Navigate Screens that doesnt have a Header Welcome back
