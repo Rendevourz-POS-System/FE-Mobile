@@ -203,7 +203,7 @@ const AppNavigationStack: FC = () => {
 
     const ProfileUserStack = createNativeStackNavigator<ProfileNavigationStackParams>();
     const ProfileStackGroup = () => (
-        <ProfileUserStack.Navigator>
+        <ProfileUserStack.Navigator initialRouteName="ProfileScreen">
             <ProfileUserStack.Screen name="ProfileScreen" component={ProfileScreen} options={noHeader} />
             <ProfileUserStack.Screen name="ManageScreen" component={ManageScreen} options={{ presentation: "modal", headerShown: false }} />
             <ProfileUserStack.Screen name="ChangePasswordScreen" component={ChangePasswordScreen} options={{ presentation: "modal", headerShown: false }} />

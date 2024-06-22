@@ -37,24 +37,30 @@ export const ManagePetScreen: FC<ProfileNavigationStackScreenProps<"ManagePetScr
     const [petTypes, setPetTypes] = useState<PetType[]>([]);
     const [petImage, setPetImage] = useState<string | null>();
     const [image, setImage] = useState<string | null>(null);
+    const [previousImage, setPreviousImage] = useState<string | null>('');
     const imgDir = FileSystem.documentDirectory + 'images/';
     const [isLoading, setIsLoading] = useState<boolean>(true);
-    const { control, handleSubmit, setValue, formState: { errors } } = useForm<EditPetFormType>({
+    const { control, handleSubmit, setValue, formState: { errors }, watch } = useForm<EditPetFormType>({
         resolver: zodResolver(editPetFormSchema),
     });
 
     useEffect(() => {
+        fetchPetType();
         fetchPet();
-    }, [route.params.petId])
+    }, [])
 
     const fetchPet = async () => {
         try {
             setIsLoading(false)
             const response = await get(`${BackendApiUri.getPet}/${route.params.petId}`);
             if (response && response.status === 200) {
+                loadImages();
                 setPetData(response.data);
                 setValue("PetName", response.data.Data.PetName);
-                setValue("PetType", response.data.Data.petType);
+                const selectedPetType = petTypeData.find(item => item.key == response.data.Data.PetType);
+                if(selectedPetType) {
+                    setValue("PetType", selectedPetType.key);
+                }
                 setValue("PetAge", response.data.Data.PetAge);
                 setValue("PetGender", response.data.Data.PetGender);
                 if (response.data.Data.IsVaccinated == true) {
@@ -83,10 +89,6 @@ export const ManagePetScreen: FC<ProfileNavigationStackScreenProps<"ManagePetScr
         value: item.Type,
     }));
 
-    useEffect(() => {
-        fetchPetType()
-    }, [])
-
     const onSubmit = async (data: EditPetFormType) => {
         const payload = {
             Id: route.params.petId,
@@ -97,7 +99,7 @@ export const ManagePetScreen: FC<ProfileNavigationStackScreenProps<"ManagePetScr
             PetGender: data.PetGender,
             IsVaccinated: data.IsVaccinated == "true" ? true : false,
             PetDescription: data.PetDescription,
-            OldImage: petData?.Data.Image,
+            OldImage: petData?.Data.OldImage,
         }
         const formData = new FormData();
 
@@ -112,6 +114,7 @@ export const ManagePetScreen: FC<ProfileNavigationStackScreenProps<"ManagePetScr
         }
 
         formData.append('data', JSON.stringify(payload));
+        // return;
         const res = await putForm(`${BackendApiUri.putPetUpdate}`, formData);
         if (res.status == 200) {
             Alert.alert('Pet Berhasil Terupdate', 'Data pet anda telah berhasil terupdate.', [{ text: "OK", onPress: () => navigation.goBack() }]);
@@ -137,6 +140,9 @@ export const ManagePetScreen: FC<ProfileNavigationStackScreenProps<"ManagePetScr
         }
 
         if (!result.canceled) {
+            if (previousImage) {
+                removeImage(previousImage)
+            }
             saveImage(result.assets[0].uri);
         }
 
@@ -154,6 +160,7 @@ export const ManagePetScreen: FC<ProfileNavigationStackScreenProps<"ManagePetScr
         const fileName = uri.substring(uri.lastIndexOf('/') + 1);
         const dest = imgDir + fileName;
         await FileSystem.copyAsync({ from: uri, to: dest });
+        setPreviousImage(dest);
         setImage(dest);
     }
 
@@ -185,7 +192,6 @@ export const ManagePetScreen: FC<ProfileNavigationStackScreenProps<"ManagePetScr
             PetId: [`${route.params.petId}`],
             UserId: authState?.userId
         }
-        console.log(payload)
         Alert.alert(`Apakah Anda Yakin ingin menghapus ${petData?.Data.PetName}`, '', [
             {
                 text: 'Batal',
@@ -215,7 +221,7 @@ export const ManagePetScreen: FC<ProfileNavigationStackScreenProps<"ManagePetScr
             <View className="mt-5 flex-row items-center justify-center mb-3">
                 <Ionicons name="chevron-back" size={24} color="black" 
                 onPress={() => {
-                    if(image){
+                    if(image) {
                         removeImage(image!);
                     }
                     navigation.goBack()
@@ -225,21 +231,28 @@ export const ManagePetScreen: FC<ProfileNavigationStackScreenProps<"ManagePetScr
             </View>
 
             <ScrollView className="mt-5">
-                {petImage && (
+                {(petImage) ? (
                     <View className="items-end mx-10">
-                        <TouchableOpacity className="flex-row items-center" onPress={() => removeShelterImage(petImage)}>
+                        <TouchableOpacity className="flex-row items-center" 
+                        onPress={() => {
+                            setPetImage(null)
+                        }}
+                    >
                             <Ionicons name="trash" size={20} color="black" />
                             <Text className="text-xs">Hapus Gambar</Text>
                         </TouchableOpacity>
                     </View>
-                )}
-                {image && (
-                    <View className="items-end mx-10">
-                        <TouchableOpacity className="flex-row items-center" onPress={() => removeImage(image)}>
-                            <Ionicons name="trash" size={20} color="black" />
-                            <Text className="text-xs">Hapus Gambar</Text>
-                        </TouchableOpacity>
-                    </View>
+                ) : (
+                    <>
+                        {image && (
+                            <View className="items-end mx-10">
+                                <TouchableOpacity className="flex-row items-center" onPress={() => removeImage(image)}>
+                                    <Ionicons name="trash" size={20} color="black" />
+                                    <Text className="text-xs">Hapus Gambar</Text>
+                                </TouchableOpacity>
+                            </View>
+                        )}
+                    </>
                 )}
                 <View className="items-center mb-5">
                     <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: 350 }}>
@@ -261,11 +274,14 @@ export const ManagePetScreen: FC<ProfileNavigationStackScreenProps<"ManagePetScr
                             </>
                         )}
                     </View>
-                    {image && (
-                        <Image source={{ uri: image }} style={{ width: 350, height: 200, borderRadius: 10 }} resizeMode="cover" />
-                    )}
-                    {petImage && (
+                    {(petImage) ? (
                         <Image source={{ uri: `data:image/*;base64,${petImage}` }} style={{ width: 350, height: 200, borderRadius: 10 }} resizeMode="cover" />
+                    ) : (
+                        <>
+                            {(image) && (
+                                <Image source={{ uri: image }} style={{ width: 350, height: 200, borderRadius: 10 }} resizeMode="cover" />
+                            )}
+                        </>
                     )}
                 </View>
 
@@ -288,11 +304,13 @@ export const ManagePetScreen: FC<ProfileNavigationStackScreenProps<"ManagePetScr
 
                 <Text style={styles.textColor}>Jenis Hewan<Text className='text-[#ff0000]'>*</Text></Text>
                 <Controller
-                    name="PetName"
+                    name="PetType"
                     control={control}
                     render={({ field: { value } }) => (
                         <SelectList
-                            setSelected={(text: string) => setValue('PetType', text)}
+                            setSelected={(text: string) => {
+                                setValue('PetType', text)
+                            }}
                             data={petTypeData}
                             save="value"
                             search={true}
@@ -305,7 +323,7 @@ export const ManagePetScreen: FC<ProfileNavigationStackScreenProps<"ManagePetScr
                         />
                     )}
                 />
-                <Text style={styles.errorMessage}>{errors.PetName?.message}</Text>
+                <Text style={styles.errorMessage}>{errors.PetType?.message}</Text>
 
                 <Text style={styles.textColor}>Umur Hewan<Text className='text-[#ff0000]'>*</Text></Text>
                 <View style={styles.inputBox}>

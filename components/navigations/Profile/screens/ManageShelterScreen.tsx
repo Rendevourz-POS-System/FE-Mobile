@@ -15,6 +15,7 @@ import { ProfileNavigationStackScreenProps } from "../../../StackParams/StackScr
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { BottomSheetBackdrop, BottomSheetModal, BottomSheetModalProvider, BottomSheetView } from "@gorhom/bottom-sheet";
 import * as FileSystem from 'expo-file-system';
+import { ManageShelterUser, ShelterUser } from "../../../../interface/IShelter";
 
 const editShelterFormSchema = z.object({
     ShelterName: z.string({ required_error: "Nama shelter tidak boleh kosong" }).min(1, { message: "Nama shelter tidak boleh kosong" }),
@@ -27,25 +28,29 @@ const editShelterFormSchema = z.object({
     TotalPet: z.number({ required_error: "Total hewan tidak boleh kosong" }).int().positive().nonnegative("Total hewan harus merupakan bilangan bulat positif"),
     BankAccountNumber: z.string({ required_error: 'Nomor rekening bank tidak boleh kosong' }).min(10, { message: 'Nomor rekening harus lebih dari 10 digit' }).refine(value => /^\d+$/.test(value), { message: "Nomor rekening harus berupa angka (0-9)" }),
     Pin: z.string({ required_error: "Pin tidak boleh kosong" }).min(6, { message: "Pin tidak boleh kurang dari 6 karakter" }).refine(value => /^\d+$/.test(value), { message: "Pin harus berupa angka (0-9)" }),
+    // OldImage: z.array(z.string()).optional()
 })
 
 type CreateShelterFormType = z.infer<typeof editShelterFormSchema>
 
 export const ManageShelterScreen: FC<ProfileNavigationStackScreenProps<'ManageShelterScreen'>> = ({ navigation }) => {
     const [image, setImage] = useState<string | null>(null);
+    const [previousImage, setPreviousImage] = useState<string | null>('');
     const [selected, setSelected] = useState<string[]>();
     const [shelterLocation, setShelterLocation] = useState<ShelterLocation[]>([]);
     const [petTypes, setPetTypes] = useState<PetType[]>([]);
     const bottomSheetModalRef = useRef<BottomSheetModal>(null);
     const imgDir = FileSystem.documentDirectory + 'images/';
-    const { control, setValue, handleSubmit, formState: { errors } } = useForm<CreateShelterFormType>({
+    const { control, setValue, handleSubmit, formState: { errors }, watch } = useForm<CreateShelterFormType>({
         resolver: zodResolver(editShelterFormSchema),
     });
+    const [shelterUser, setShelterUser] = useState<ManageShelterUser>();
 
     useEffect(() => {
         const fetchData = async () => {
             try {
                 const response = await get(`${BackendApiUri.getUserShelter}`);
+                setShelterUser(response.data.Data);
                 setValue("ShelterName", response.data.Data.ShelterName)
                 setValue("ShelterLocation", response.data.Data.ShelterLocation);
                 setValue("ShelterAddress", response.data.Data.ShelterAddress)
@@ -55,7 +60,6 @@ export const ManageShelterScreen: FC<ProfileNavigationStackScreenProps<'ManageSh
                 setValue("TotalPet", response.data.Data.TotalPet);
                 setValue("BankAccountNumber", response.data.Data.BankAccountNumber);
                 setValue("Pin", response.data.Data.Pin);
-
                 setSelected(response.data.Data.PetTypeAccepted)
             } catch (error) {
                 console.error("Error fetching shelter data:", error);
@@ -63,13 +67,25 @@ export const ManageShelterScreen: FC<ProfileNavigationStackScreenProps<'ManageSh
         };
         fetchData();
     }, []);
-
     const onSubmit = async (data: CreateShelterFormType) => {
-        let payloadString = JSON.stringify(data);
+        const payload = {
+            ShelterName: data.ShelterName,
+            ShelterLocation: data.ShelterLocation,
+            ShelterAddress: data.ShelterAddress,
+            ShelterCapacity: data.ShelterCapacity,
+            ShelterContactNumber: data.ShelterContactNumber,
+            ShelterDescription: data.ShelterDescription,
+            PetTypeAccepted: data.PetTypeAccepted,
+            TotalPet: data.TotalPet,
+            BankAccountNumber: data.BankAccountNumber,
+            Pin: data.Pin,
+            OldImage: shelterUser?.ImagePath
+        }
+        let payloadString = JSON.stringify(payload);
         const formData = new FormData();
         if(image) {
+            console.log("masuk imagee nih")
             const fileInfo = await FileSystem.getInfoAsync(image);
-            console.log(fileInfo);
             formData.append('files', {
                 uri: image,
                 name: fileInfo.uri.split('/').pop(),
@@ -78,12 +94,19 @@ export const ManageShelterScreen: FC<ProfileNavigationStackScreenProps<'ManageSh
         }
 
         formData.append('data', payloadString);
-        // console.log(formData);
+        console.log(formData);
         // return;
 
         const res = await putForm(`${BackendApiUri.putShelterUpdate}`, formData);
+        if(image){
+            removeImage(image!)
+        }
         if (res.status == 200) {
-            Alert.alert('Shelter Berhasil Terupdate', 'Data shelter anda telah berhasil terupdate.', [{ text: "OK", onPress: () => navigation.goBack() }]);
+            Alert.alert('Shelter Berhasil Terupdate', 'Data shelter anda telah berhasil terupdate.', 
+                [{ text: "OK", 
+                    onPress: () => {
+                        navigation.goBack() 
+                    }}]);
         } else {
             Alert.alert('Shelter Gagal Update', 'Data shelter anda gagal terupdate.');
         }
@@ -96,11 +119,24 @@ export const ManageShelterScreen: FC<ProfileNavigationStackScreenProps<'ManageSh
         }
     }
 
+    useEffect(() => {
+        loadImages();
+    }, []);
+
+    const loadImages = async () => {
+        await ensureDirExists();
+        const files = await FileSystem.readDirectoryAsync(imgDir);
+        if (files.length > 0) {
+            setImage(imgDir + files[0]);
+        }
+    }
+
     const saveImage = async (uri: string) => {
         await ensureDirExists();
         const fileName = uri.substring(uri.lastIndexOf('/') + 1);
         const dest = imgDir + fileName;
         await FileSystem.copyAsync({ from: uri, to: dest });
+        setPreviousImage(dest);
         setImage(dest);
     }
     const selectImage = async (useLibrary : boolean) => {
@@ -120,6 +156,9 @@ export const ManageShelterScreen: FC<ProfileNavigationStackScreenProps<'ManageSh
         }
 
         if (!result.canceled) {
+            if (previousImage) {
+                removeImage(previousImage)
+            }
             saveImage(result.assets[0].uri);
         }
         bottomSheetModalRef.current?.close();
@@ -196,7 +235,15 @@ export const ManageShelterScreen: FC<ProfileNavigationStackScreenProps<'ManageSh
                             </BottomSheetView>
                         </BottomSheetModal>
                         <View className="mt-5 flex-row items-center justify-center mb-3">
-                            <Ionicons name="chevron-back" size={24} color="black" onPress={() => navigation.goBack()} style={{ position: 'absolute', left: 20 }} />
+                            <Ionicons name="chevron-back" size={24} color="black" 
+                                onPress={() => {
+                                    if (image) {
+                                        removeImage(image!);
+                                    }
+                                    navigation.goBack()
+                                }} 
+                                style={{ position: 'absolute', left: 20 }} 
+                            />
                             <Text className="text-xl">Manage Shelter Profile</Text>
                         </View>
 
@@ -209,10 +256,12 @@ export const ManageShelterScreen: FC<ProfileNavigationStackScreenProps<'ManageSh
                                 >
 
                                     {image ? (
-                                        <Image source={{ uri: image }} style={{ width: 350, height: 200, borderRadius: 10 }} />)
-                                        :
-                                        (<Ionicons name="camera" size={40} color="white" />
-                                        )}
+                                        <Image source={{ uri: image }} style={{ width: 350, height: 200, borderRadius: 10 }} />
+                                    ) : shelterUser?.ImageBase64 ? (
+                                        <Image source={{ uri: `data:image/*;base64,${shelterUser.ImageBase64}` }} style={{ width: 350, height: 200, borderRadius: 10 }} />
+                                    ) :(
+                                        <Ionicons name="camera" size={40} color="white" />
+                                    )}
                                 </TouchableOpacity>
                             </View>
 

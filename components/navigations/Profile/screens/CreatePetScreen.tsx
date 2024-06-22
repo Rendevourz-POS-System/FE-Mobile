@@ -31,6 +31,7 @@ type CreatePetFormType = z.infer<typeof createPetFormSchema>
 export const CreatePetScreen: FC<ProfileNavigationStackScreenProps<'CreatePetScreen'>> = ({ navigation, route }) => {
     const { authState } = useAuth();
     const [image, setImage] = useState<string | null>(null);
+    const [previousImage, setPreviousImage] = useState<string | null>('');
     const [petTypes, setPetTypes] = useState<PetType[]>([]);
     const [fileName, setFileName] = useState('');
     const imgDir = FileSystem.documentDirectory + 'images/';
@@ -65,6 +66,7 @@ export const CreatePetScreen: FC<ProfileNavigationStackScreenProps<'CreatePetScr
         const fileName = uri.substring(uri.lastIndexOf('/') + 1);
         const dest = imgDir + fileName;
         await FileSystem.copyAsync({ from: uri, to: dest });
+        setPreviousImage(dest);
         setImage(dest);
     }
     const selectImage = async (useLibrary : boolean) => {
@@ -84,6 +86,9 @@ export const CreatePetScreen: FC<ProfileNavigationStackScreenProps<'CreatePetScr
         }
 
         if (!result.canceled) {
+            if (previousImage) {
+                removeImage(previousImage)
+            }
             saveImage(result.assets[0].uri);
         }
         bottomSheetModalRef.current?.close();
@@ -174,7 +179,14 @@ export const CreatePetScreen: FC<ProfileNavigationStackScreenProps<'CreatePetScr
                         </BottomSheetModal>
 
                         <View className=" mt-5 flex-row items-center justify-center">
-                            <Ionicons name="chevron-back" size={24} color="black" onPress={() => navigation.goBack()} style={{ position: 'absolute', left: 20 }} />
+                            <Ionicons name="chevron-back" size={24} color="black" 
+                            onPress={() => {
+                                if (image) {
+                                    removeImage(image!);
+                                }
+                                navigation.goBack()
+                            }} 
+                            style={{ position: 'absolute', left: 20 }} />
                             <Text className="text-xl">Tambah Hewan</Text>
                         </View>
 
