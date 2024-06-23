@@ -44,7 +44,6 @@ export const CreateSurrenderScreen : FC<CreateNavigationStackScreenProps<'Create
         resolver: zodResolver(createPetFormSchema),
     });
     const [previousImage, setPreviousImage] = useState<string | null>('');
-
     const fetchPetType = async () => {
         const res = await get(BackendApiUri.getPetTypes);
         setPetTypes(res.data)
@@ -108,7 +107,6 @@ export const CreateSurrenderScreen : FC<CreateNavigationStackScreenProps<'Create
         bottomSheetModalRef.current?.present();
     }, []);
 
-
     const onSubmit = async (data: CreatePetFormType) => {
         const payload = {
             ShelterId: routeParam.shelterId,
@@ -141,10 +139,9 @@ export const CreateSurrenderScreen : FC<CreateNavigationStackScreenProps<'Create
         
         formData.append('pet', payloadString);
         formData.append('request', requestString);
-
         
         // const res = await postForm(BackendApiUri.postPet, formData);
-        const res = await fetch(`${baseUrl + BackendApiUri.rescueOrSurennder}`, {
+        const res = await fetch(`${baseUrl + BackendApiUri.rescueOrSurrender}`, {
             method: 'POST',
             body : formData,
             headers : {
@@ -203,7 +200,7 @@ export const CreateSurrenderScreen : FC<CreateNavigationStackScreenProps<'Create
                                     navigation.goBack()
                                 }}
                                 style={{ position: 'absolute', left: 20 }} />
-                            <Text className="text-xl">Create Pet Rescue</Text>
+                            <Text className="text-xl">Create Pet Surrender</Text>
                         </View>
                         <ScrollView className="mt-5">
                             {image && (

@@ -1,6 +1,6 @@
 // export const baseUrl = "https://shelter-apps-v5z53glgzq-et.a.run.app"
 // export const baseUrl = "http://192.168.43.15:8080"
-export const baseUrl = "http://192.168.43.15:8080"
+export const baseUrl = "http://192.168.18.3:8080"
 
 export const BackendApiUri = {
     registerUser : '/user/register',
@@ -34,7 +34,8 @@ export const BackendApiUri = {
     // Request
     postRequestDonation: '/request/donation',
     findRequest: '/request/find',
-    rescueOrSurennder : '/request/rescue_or_surrender',
+    rescueOrSurrender : '/request/rescue_or_surrender',
+
     
     // Admin
     deleteAdminUser: '/admin/user/delete',

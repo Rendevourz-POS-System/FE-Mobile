@@ -1,24 +1,84 @@
 import { Ionicons } from "@expo/vector-icons";
-import React, { FC, useState } from "react";
-import { ScrollView, Text, View, StyleSheet } from "react-native";
-import { SafeAreaProvider } from "react-native-safe-area-context";
+import React, { FC, useEffect, useState } from "react";
+import { ScrollView, Text, View, StyleSheet, ActivityIndicator } from "react-native";
+import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { ProfileNavigationStackScreenProps } from "../../../StackParams/StackScreenProps";
+import { useAuth } from "../../../../app/context/AuthContext";
+import { ShelterData } from "../../../../interface/IShelterList";
+import { Location } from "../../../../interface/ILocation";
+import { useDebounce } from "use-debounce";
+import { myProvince } from "../../../../functions/getLocation";
+import { get } from "../../../../functions/Fetch";
+import { BackendApiUri } from "../../../../functions/BackendApiUri";
+import { PetData } from "../../../../interface/IPetList";
 
 export const ApprovalScreen: FC<ProfileNavigationStackScreenProps<"ApprovalScreen">> = ({ navigation }) => {
+    const {authState} = useAuth();
+    const [provinceData, setProvinceData] = useState<Location[]>([]);
+    const [shelterData, setShelterData] = useState<ShelterData[]>([]);
+    const [shelterFav, setShelterFav] = useState<ShelterData[]>([]);
+    const [filterLocation, setFilterLocation] = useState<Location>({
+        label: "",
+        value: ""
+    });
+    const [isLoading, setIsLoading] = useState<boolean>(true);
+    const [search, setSearch] = useState<string>('');
+    const [debounceValue] = useDebounce(search, 1000);
+    const [refreshing, setRefreshing] = useState(false);
+    const [petData, setPetData] = useState<PetData[]>([]);
+    
+    const onRefresh = () => {
+        try { 
+            setRefreshing(true);
+            fetchPet();
+        } catch(e) {
+            console.log(e);
+        }
+    };
+
+    const fetchPet = async () => {
+        try{
+            const response = await get(`${BackendApiUri.findRequest}`)
+        } catch(e) {
+            throw Error;
+        } finally {
+            setIsLoading(false);
+        }
+    }
+
+    useEffect(() => {
+        fetchPet();
+    }, [debounceValue, refreshing]);
+
+
+
+
+
+
+
+    
+
 
 
     return (
         <SafeAreaProvider style={styles.container}>
-            <View className="mt-5 flex-row items-center justify-center">
-                <Ionicons name="chevron-back" size={24} color="black" onPress={() => navigation.goBack()} style={{ position: 'absolute', left: 20 }} />
-                <Text className="text-xl">Approval</Text>
-            </View>
-
-            <ScrollView>
-                <View className="top-5">
-                    
+            <SafeAreaView style={styles.container}>
+                <View className="mt-5 flex-row items-center justify-center">
+                    <Ionicons name="chevron-back" size={24} color="black" onPress={() => navigation.goBack()} style={{ position: 'absolute', left: 20 }} />
+                    <Text className="text-xl">Approval</Text>
                 </View>
-            </ScrollView>
+
+                {isLoading ? (
+                    <View className='flex-1 justify-center items-center'>
+                        <ActivityIndicator color="blue" size="large"/>
+                    </View>
+                ) : (
+                    <>
+
+                    </>
+                )}
+
+            </SafeAreaView>
         </SafeAreaProvider>
     );
 }

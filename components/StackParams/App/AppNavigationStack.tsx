@@ -97,7 +97,7 @@ const AppNavigationStack: FC = () => {
         tabBarStyle: {
             backgroundColor: "#fff",
             borderTopWidth: 0,
-            height:75,
+            height:65,
         },
         tabBarLabel: "Home",
         headerTitle: "",
@@ -120,7 +120,7 @@ const AppNavigationStack: FC = () => {
         tabBarStyle: {
             backgroundColor: "#fff",
             borderTopWidth: 0,
-            height: 75,
+            height: 65,
         },
         tabBarLabel: "Create",
         headerTitle: "",
@@ -143,7 +143,7 @@ const AppNavigationStack: FC = () => {
         tabBarStyle: {
             backgroundColor: "#fff",
             borderTopWidth: 0,
-            height: 75,
+            height: 65,
         },
         tabBarLabel: "Profile",
         headerShown: false,
