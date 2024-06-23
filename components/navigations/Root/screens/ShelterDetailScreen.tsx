@@ -139,7 +139,7 @@ export const ShelterDetailScreen: FC<NoHeaderNavigationStackScreenProps<'Shelter
 
     const handleWhatsApp = (phoneNumber: string) => {
         const message = 'Halo saya ingin bertanya mengenai shelter anda.';
-        Linking.openURL(`whatsapp://send?text=${encodeURIComponent(message)}&phone=${phoneNumber}`);
+        Linking.openURL(`whatsapp://send?text=${encodeURIComponent(message)}&phone=${'+62' + phoneNumber}`);
     }
 
     return (

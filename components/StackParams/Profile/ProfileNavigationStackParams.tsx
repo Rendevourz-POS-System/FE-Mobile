@@ -11,4 +11,5 @@ export type ProfileNavigationStackParams = {
     HistoryShelterScreen: undefined;
     ManagePetScreen: { petId: string };
     ApprovalScreen: undefined;
+    ApprovalPetScreen: {petId : string | null, userId: string | null, requestId: string | null}
 }

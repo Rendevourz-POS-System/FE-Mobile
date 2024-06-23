@@ -1,13 +1,11 @@
 import { FontAwesome, FontAwesome6, Ionicons } from "@expo/vector-icons";
-import React, { FC, useEffect, useState } from "react";
+import React, { FC, useCallback, useEffect, useState } from "react";
 import { ScrollView, Text, View, StyleSheet, ActivityIndicator } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
-import { NoHeaderNavigationStackScreenProps, ProfileNavigationStackScreenProps, UserBottomTabCompositeNavigationProps } from "../../../StackParams/StackScreenProps";
+import { ProfileNavigationStackScreenProps } from "../../../StackParams/StackScreenProps";
 import { useAuth } from "../../../../app/context/AuthContext";
-import { ShelterData } from "../../../../interface/IShelterList";
 import { Location } from "../../../../interface/ILocation";
 import { useDebounce } from "use-debounce";
-import { myProvince } from "../../../../functions/getLocation";
 import { get } from "../../../../functions/Fetch";
 import { BackendApiUri } from "../../../../functions/BackendApiUri";
 import { PetData } from "../../../../interface/IPetList";
@@ -15,17 +13,18 @@ import { RefreshControl } from "react-native";
 import { FlashList } from "@shopify/flash-list";
 import { TouchableOpacity } from "react-native";
 import { Image } from "react-native";
-import { useNavigation } from "@react-navigation/native";
+import { Request } from "../../../../interface/IRequest";
+import { TouchableHighlight } from "react-native";
 
 interface ShelterInfo {
     ShelterId: string;
-    ShelterName : string;
+    ShelterName: string;
     UserId: string;
 }
 
 export const ApprovalScreen: FC<ProfileNavigationStackScreenProps<"ApprovalScreen">> = ({ navigation }) => {
-    const {authState} = useAuth();
-    const [shelterRequest, setShelterRequest] = useState<[]>([]);
+    const { authState } = useAuth();
+    const [shelterRequest, setShelterRequest] = useState<Request[]>([]);
     const [userShelter, setUserShelter] = useState<ShelterInfo>({
         ShelterId: "",
         UserId: "",
@@ -40,81 +39,94 @@ export const ApprovalScreen: FC<ProfileNavigationStackScreenProps<"ApprovalScree
     const [debounceValue] = useDebounce(search, 1000);
     const [refreshing, setRefreshing] = useState(false);
     const [petData, setPetData] = useState<PetData[]>([]);
-    const navigateToPetDetail = useNavigation<NoHeaderNavigationStackScreenProps<'PetDetailScreen'>>();
-    
-    const onRefresh = () => {
-        try { 
-            setRefreshing(true);
-            fetchRequest();
-            fetchPetByShelter()
-        } catch(e) {
-            console.log(e);
-        } finally {
-            setRefreshing(false);
-        }
-    };
-    const fetchPetByShelter = async () => {
-        try{
-            const response = await get(`${BackendApiUri.getPet}?shelter_id=${userShelter.ShelterId}`);
-            if(response.status == 200 && response.data) {
+    const [mergedData, setMergedData] = useState<any[]>([]);
+
+    const onRefresh = useCallback(() => {
+        setRefreshing(true);
+        fetchShelterUser();
+        setRefreshing(false);
+    }, []);
+
+    const fetchPetByShelter = async (shelterId: string) => {
+        try {
+            const response = await get(`${BackendApiUri.getPet}?shelter_id=${shelterId}`);
+            if (response.status == 200 && response.data) {
                 setPetData(response.data);
             }
-        } catch(e) {
-            throw Error;
+        } catch (e) {
+            console.error(e);
         }
-    }
+    };
 
     const fetchShelterUser = async () => {
-        try{
+        try {
             const response = await get(`${BackendApiUri.getUserShelter}`);
-            if(response.status == 200 && response.data.Data) {
+            if (response.status == 200 && response.data.Data) {
                 setUserShelter({
                     ShelterId: response.data.Data.Id,
                     UserId: response.data.Data.UserId,
                     ShelterName: response.data.Data.ShelterName
                 });
+                fetchRequest(userShelter.ShelterId);
+                fetchPetByShelter(userShelter.ShelterId);
             }
-        } catch(e) {
-            throw Error;
+        } catch (e) {
+            console.error(e);
         }
-    }
+    };
 
-    useEffect(() => {
-        fetchShelterUser();
-        fetchPetByShelter()
-    }, [])
-
-    const fetchRequest = async () => {
-        try{
-            const response = await get(`${BackendApiUri.findRequest}/?search=${debounceValue}&shelter_id=${userShelter.ShelterId}&status=Ongoing`);
-            if(response.status && response.data.Data) {
+    const fetchRequest = async (shelterId: string) => {
+        try {
+            const response = await get(`${BackendApiUri.findRequest}/?shelter_id=${shelterId}&status=${'Ongoing'}`);
+            if (response.status && response.data.Data) {
                 setShelterRequest(response.data.Data);
             }
-        } catch(e) {
-            throw Error;
+        } catch (e) {
+            console.error(e);
         } finally {
             setIsLoading(false);
         }
-    }
+    };
+    
+    const mergeData = useCallback(() => {
+        const filteredRequests = shelterRequest.filter(request => request.ShelterId === userShelter.ShelterId);
+
+        const merged = filteredRequests.map(request => {
+            const pet = petData.find(pet => pet.Id === request.PetId);
+            return { ...request, ...pet }; // Merge the request and pet data
+        });
+        setMergedData(merged);
+    }, [shelterRequest, petData]);
 
     useEffect(() => {
-        fetchRequest();
-        fetchPetByShelter()
-        fetchPetByShelter();
-    }, [debounceValue, refreshing]);
+        fetchShelterUser();
+    }, []);
 
-    const renderPetItem = ({ item }: { item: PetData }) => (
+    useEffect(() => {
+        if (shelterRequest.length > 0 && petData.length > 0) {
+            mergeData();
+        }
+    }, [shelterRequest, petData, mergeData]);
+
+    const renderPetItem = ({ item }: any) => (
         <TouchableOpacity
             className='mx-3 mb-7'
             style={styles.petItem}
             activeOpacity={1}
-            onPress={() => navigateToPetDetail.navigation.navigate('PetDetailScreen', { petId: item.Id })}
+            onPress={() => navigation.navigate('ApprovalPetScreen', { petId: item.Id, userId: item.UserId, requestId: item.Id})}
         >
             <Image
                 source={item.ImageBase64 && item.ImageBase64.length > 0 ? { uri: `data:image/*;base64,${item.ImageBase64}` } : require("../../../../assets/default_paw2.jpg")}
                 style={styles.petImage}
                 resizeMode="cover"
             />
+            <TouchableHighlight
+                style={{ position: 'absolute', top: 15, right: 20, paddingHorizontal: 25, paddingVertical: 8, borderRadius: 20 }}
+                underlayColor="transparent"
+                className={`bg-[#4689FD] opacity-90`}
+            >
+                <Text className="text-white font-bold text-md">{item.Type == "Rescue" ? "Rescue" : "Surrender"}</Text>
+            </TouchableHighlight>
             <View style={styles.petInfoContainer}>
                 <View style={styles.petInfo}>
                     <Text style={styles.petName}>{item.PetName}</Text>
@@ -138,17 +150,17 @@ export const ApprovalScreen: FC<ProfileNavigationStackScreenProps<"ApprovalScree
 
                 {isLoading ? (
                     <View className='flex-1 justify-center items-center'>
-                        <ActivityIndicator color="blue" size="large"/>
+                        <ActivityIndicator color="blue" size="large" />
                     </View>
                 ) : (
                     <>
-                        {shelterRequest.length > 0 ? (
-                            <View style={{flex: 1, marginTop: 15}}>
+                        {mergedData.length > 0 ? (
+                            <View style={{ flex: 1, marginTop: 15 }}>
                                 <FlashList
                                     refreshControl={
                                         <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
                                     }
-                                    data={petData}
+                                    data={mergedData}
                                     estimatedItemSize={200}
                                     renderItem={renderPetItem}
                                 />
@@ -161,7 +173,7 @@ export const ApprovalScreen: FC<ProfileNavigationStackScreenProps<"ApprovalScree
                                         <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
                                     }
                                     className="w-full h-full"
-                                    contentContainerStyle={{flex: 1, justifyContent: 'center', alignItems: 'center'}}
+                                    contentContainerStyle={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}
                                 >
                                     <Text className=''>Anda tidak mempunyai request baru</Text>
                                 </ScrollView>
@@ -193,6 +205,14 @@ const styles = StyleSheet.create({
     },
     petItem: {
         marginBottom: 20,
+        elevation: 10,
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.5,
+        shadowRadius: 10,
+        height: 330,
+        borderRadius: 25
+        
     },
     petImage: {
         width: '100%',
