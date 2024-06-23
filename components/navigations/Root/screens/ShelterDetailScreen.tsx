@@ -177,7 +177,7 @@ export const ShelterDetailScreen: FC<NoHeaderNavigationStackScreenProps<'Shelter
 
                             <View className='mt-2 flex flex-row items-center'>
                                 <FontAwesome6 name='location-dot' size={20} color='#4689FD' style={{ marginLeft: 2 }} />
-                            <Text className='text-base ml-2 text-[#8A8A8A]'>{data.Data.ShelterLocationName}</Text>
+                                <Text className='text-base ml-2 text-[#8A8A8A]'>{data.Data.ShelterLocationName}</Text>
                             </View>
 
                             <View className="flex flex-row justify-between items-center mt-4">
@@ -197,9 +197,9 @@ export const ShelterDetailScreen: FC<NoHeaderNavigationStackScreenProps<'Shelter
                                             if (matchingPet) {
                                                 const iconName = getIconName(matchingPet.Type);
                                                 if (iconName === 'rabbit') {
-                                                    return <MaterialCommunityIcons key={matchingPet.Id} name={iconName} size={29} color='#8A8A8A' style={{ }} />;
+                                                    return <MaterialCommunityIcons key={matchingPet.Id} name={iconName} size={29} color='#8A8A8A' />;
                                                 }
-                                                return <FontAwesome6 key={matchingPet.Id} name={iconName} size={24} color='#8A8A8A' style={{ }} />;
+                                                return <FontAwesome6 key={matchingPet.Id} name={iconName} size={24} color='#8A8A8A' />;
                                             }
                                             return null;
                                         })}
@@ -216,7 +216,7 @@ export const ShelterDetailScreen: FC<NoHeaderNavigationStackScreenProps<'Shelter
                                     <MaterialIcons name="pets" size={24} color="white" />
                                     <Text style={styles.fontButton} className='ml-3 text-s text-center'>Adoption Pet</Text>
                                 </TouchableOpacity>
-                                <TouchableOpacity style={styles.buttonBox} onPress={() => navigation.navigate("SurrenderFormScreen")}>
+                                <TouchableOpacity style={styles.buttonBox} onPress={() => navigation.navigate("SurrenderFormScreen", { shelterId: route.params.shelterId })}>
                                     <FontAwesome6 name="house-medical-circle-exclamation" size={24} color="white" />
                                     <Text style={styles.fontButton} className='ml-3 text-s text-center'>Surrender Pet</Text>
                                 </TouchableOpacity>
@@ -227,7 +227,7 @@ export const ShelterDetailScreen: FC<NoHeaderNavigationStackScreenProps<'Shelter
                                     <FontAwesome6 name="hand-holding-heart" size={24} color="white" />
                                     <Text style={styles.fontButton} className='ml-3 text-s text-center'>Donation</Text>
                                 </TouchableOpacity>
-                                <TouchableOpacity style={styles.buttonBox} onPress={() => navigation.navigate("RescueFormScreen")}>
+                                <TouchableOpacity style={styles.buttonBox} onPress={() => navigation.navigate("RescueFormScreen", { shelterId: route.params.shelterId })}>
                                     <MaterialIcons name="warning" size={24} color="white" />
                                     <Text style={styles.fontButton} className='ml-3 text-s text-center'>Rescue</Text>
                                 </TouchableOpacity>

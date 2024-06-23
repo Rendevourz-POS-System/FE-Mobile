@@ -321,14 +321,14 @@ export const CreateSurrenderScreen : FC<CreateNavigationStackScreenProps<'Create
                             </View>
                             <Text style={styles.errorMessage}>{errors.PetDescription?.message}</Text>
 
-                            <Text style={styles.textColor}>Alasan<Text className='text-[#ff0000]'>*</Text></Text>
+                            <Text style={styles.textColor}>Alasan Penyerahan Hewan<Text className='text-[#ff0000]'>*</Text></Text>
                             <View style={styles.inputBox}>
                                 <Controller
                                     name="Reason"
                                     control={control}
                                     render={() => (
                                         <TextInput
-                                            placeholder="Masukkan Reason"
+                                            placeholder="Masukkan Alasan Penyerahan Hewan"
                                             style={{ flex: 1 }}
                                             multiline
                                             numberOfLines={4}

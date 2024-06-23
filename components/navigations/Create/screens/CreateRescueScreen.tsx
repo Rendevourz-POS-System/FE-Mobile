@@ -204,7 +204,7 @@ export const CreateRescueScreen : FC<CreateNavigationStackScreenProps<'CreateRes
                                     navigation.goBack()
                                 }}
                                 style={{ position: 'absolute', left: 20 }} />
-                            <Text className="text-xl">Create Pet Surrender</Text>
+                            <Text className="text-xl">Create Pet Rescue</Text>
                         </View>
                         <ScrollView className="mt-5">
                             {image && (
@@ -325,14 +325,14 @@ export const CreateRescueScreen : FC<CreateNavigationStackScreenProps<'CreateRes
                             </View>
                             <Text style={styles.errorMessage}>{errors.PetDescription?.message}</Text>
                             
-                            <Text style={styles.textColor}>Alasan<Text className='text-[#ff0000]'>*</Text></Text>
+                            <Text style={styles.textColor}>Alasan Penyelamatan Hewan<Text className='text-[#ff0000]'>*</Text></Text>
                             <View style={styles.inputBox}>
                                 <Controller
                                     name="Reason"
                                     control={control}
                                     render={() => (
                                         <TextInput
-                                            placeholder="Masukkan Reason"
+                                            placeholder="Masukkan Alasan Penyelamatan Hewan"
                                             style={{ flex: 1 }}
                                             multiline
                                             numberOfLines={4}

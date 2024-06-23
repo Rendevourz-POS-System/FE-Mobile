@@ -1,8 +1,8 @@
-import React, { FC, useCallback, useRef, useState } from 'react';
-import { Image, ScrollView, TouchableOpacity, View, StyleSheet, TextInput } from 'react-native';
+import React, { FC, useCallback, useEffect, useRef, useState } from 'react';
+import { Image, ScrollView, TouchableOpacity, View, StyleSheet, TextInput, SafeAreaView, Alert } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { Text } from 'react-native-elements';
-import { Ionicons } from '@expo/vector-icons';
+import { FontAwesome, Ionicons } from '@expo/vector-icons';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Controller, useForm } from 'react-hook-form';
@@ -11,26 +11,50 @@ import * as FileSystem from 'expo-file-system';
 import { NoHeaderNavigationStackScreenProps } from '../../../StackParams/StackScreenProps';
 import { BottomSheetBackdrop, BottomSheetModal, BottomSheetModalProvider, BottomSheetView } from "@gorhom/bottom-sheet";
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { SelectList } from 'react-native-dropdown-select-list';
+import { BackendApiUri, baseUrl } from '../../../../functions/BackendApiUri';
+import { get } from '../../../../functions/Fetch';
+import { PetType } from '../../../../interface/IPetType';
+import { useAuth } from '../../../../app/context/AuthContext';
+import { RadioButton } from 'react-native-paper';
 
-const rescueFormSchema = z.object({
-    condition: z.string({ required_error: "Kondisi hewan tidak boleh kosong" }).min(1, { message: "Kondisi hewan tidak boleh kosong" }),
-    address: z.string({ required_error: "Alamat tidak boleh kosong" }).min(1, { message: "Alamat tidak boleh kosong" }),
-})
+const createPetFormSchema = z.object({
+    PetName: z.string({ required_error: "Nama hewan tidak boleh kosong" }).min(1, { message: "Nama hewan tidak boleh kosong" }),
+    PetType: z.string({ required_error: "Jenis hewan tidak boleh kosong" }).min(1, { message: 'Jenis hewan tidak boleh kosong' }),
+    PetAge: z.number({ required_error: "Umur hewan tidak boleh kosong" }).int().positive().nonnegative("Umur hewan harus merupakan bilangan bulat positif"),
+    PetGender: z.string({ required_error: "Jenis kelamin hewan tidak boleh kosong" }),
+    // IsVaccinated: z.string({ required_error: "Vaksinasi hewan tidak boleh kosong" }),
+    PetDescription: z.string({ required_error: "Deskripsi hewan tidak boleh kosong" }).min(10, { message: "Deskripsi hewan harus lebih dari 10 karakter" }),
+    Reason: z.string({ required_error: "Alasan tidak boleh kosong" }).min(10, { message: "Alasan harus lebih dari 10 karakter" }),})
 
-type RescueFormType = z.infer<typeof rescueFormSchema>
+type CreatePetFormType = z.infer<typeof createPetFormSchema>
 
 export const RescueFormScreen: FC<NoHeaderNavigationStackScreenProps<'RescueFormScreen'>> = ({ navigation, route }: any) => {
-    const [image, setImage] = useState<string | null>(null);
-    const imgDir = FileSystem.documentDirectory + 'images/';
+    const routeParam = route.params
+    const { authState } = useAuth();
     const bottomSheetModalRef = useRef<BottomSheetModal>(null);
-
-    const { control, setValue, handleSubmit, formState: { errors } } = useForm<RescueFormType>({
-        resolver: zodResolver(rescueFormSchema),
+    const [petTypes, setPetTypes] = useState<PetType[]>([]);
+    const imgDir = FileSystem.documentDirectory + 'images/';
+    const [image, setImage] = useState<string | null>(null);
+    const { control, handleSubmit, setValue, formState: { errors } } = useForm<CreatePetFormType>({
+        resolver: zodResolver(createPetFormSchema),
     });
+    const [previousImage, setPreviousImage] = useState<string | null>('');
+    
 
-    const onSubmit = async (data: RescueFormType) => {
-        console.log(data)
+    const fetchPetType = async () => {
+        const res = await get(BackendApiUri.getPetTypes);
+        setPetTypes(res.data)
     }
+
+    const petTypeData = petTypes.map((item) => ({
+        key: item.Id,
+        value: item.Type,
+    }));
+
+    useEffect(() => {
+        fetchPetType()
+    }, [])
 
     const ensureDirExists = async () => {
         const dirInfo = await FileSystem.getInfoAsync(imgDir);
@@ -39,13 +63,21 @@ export const RescueFormScreen: FC<NoHeaderNavigationStackScreenProps<'RescueForm
         }
     }
 
-    const selectImage = async (useLibrary: boolean) => {
+    const saveImage = async (uri: string) => {
+        await ensureDirExists();
+        const fileName = uri.substring(uri.lastIndexOf('/') + 1);
+        const dest = imgDir + fileName;
+        await FileSystem.copyAsync({ from: uri, to: dest });
+        setPreviousImage(dest);
+        setImage(dest);
+    }
+    const selectImage = async (useLibrary : boolean) => {
         let result;
-        const options: ImagePicker.ImagePickerOptions = {
+        const options : ImagePicker.ImagePickerOptions = {
             mediaTypes: ImagePicker.MediaTypeOptions.Images,
-            allowsEditing: true,
-            aspect: [1, 1],
-            quality: 1,
+                allowsEditing: true,
+                aspect: [1, 1],
+                quality: 1,
         }
 
         if (useLibrary) {
@@ -56,18 +88,13 @@ export const RescueFormScreen: FC<NoHeaderNavigationStackScreenProps<'RescueForm
         }
 
         if (!result.canceled) {
+            if (previousImage) {
+                removeImage(previousImage)
+            }
             saveImage(result.assets[0].uri);
         }
         bottomSheetModalRef.current?.close();
     };
-
-    const saveImage = async (uri: string) => {
-        await ensureDirExists();
-        const fileName = uri.substring(uri.lastIndexOf('/') + 1);
-        const dest = imgDir + fileName;
-        await FileSystem.copyAsync({ from: uri, to: dest });
-        setImage(dest);
-    }
 
     const removeImage = async (imageUri: string) => {
         await FileSystem.deleteAsync(imageUri);
@@ -78,113 +105,251 @@ export const RescueFormScreen: FC<NoHeaderNavigationStackScreenProps<'RescueForm
         bottomSheetModalRef.current?.present();
     }, []);
 
+    const onSubmit = async (data: CreatePetFormType) => {
+        const payload = {
+            ShelterId: routeParam.shelterId,
+            PetName: data.PetName,
+            PetAge: data.PetAge,
+            PetType: data.PetType,
+            PetGender: data.PetGender,
+            PetDescription: data.PetDescription
+        }
+
+        const request = {
+            Status : "Ongoing",
+            Type: "Rescue",
+            Reason: data.Reason
+        }
+
+        const formData = new FormData();
+
+        if (image) {
+            const fileInfo = await FileSystem.getInfoAsync(image);
+            formData.append('files', {
+                uri: image,
+                name: fileInfo.uri.split('/').pop(),
+                type: 'image/jpeg'
+            } as any); // You can also check and set the type dynamically based on file extension
+        }
+
+        let payloadString = JSON.stringify(payload);
+        let requestString = JSON.stringify(request);
+        
+        formData.append('pet', payloadString);
+        formData.append('request', requestString);
+       
+        // const res = await postForm(BackendApiUri.postPet, formData);
+        const res = await fetch(`${baseUrl + BackendApiUri.rescueOrSurennder}`, {
+            method: 'POST',
+            body : formData,
+            headers : {
+                'Content-Type' : 'multipart/form-data',
+                'Authorization' : `Bearer ${authState?.token}`
+            }
+        });
+        if(image) {
+            removeImage(image!);
+        }
+        if (res?.status === 200) {
+            Alert.alert("Request Rescue Berhasil", "Rescue Pet Berhasil dibuat, mohon tunggu informasi lebih lanjut dari pihak shelter", 
+                [ { text: "OK", onPress: () => navigation.goBack()
+
+            }]);
+        }else{
+            Alert.alert("Request Rescue Gagal", "Request Rescue Gagal, mohon diisi dengan yang benar");
+        }
+    }
+
+
     return (
-        <SafeAreaProvider className='flex-1 bg-white'>
-            <GestureHandlerRootView style={{ flex: 1 }}>
-                <BottomSheetModalProvider>
-
-                    <BottomSheetModal
-                        ref={bottomSheetModalRef}
-                        index={0}
-                        snapPoints={['20%%']}
-                        backdropComponent={(props) => (
-                            <BottomSheetBackdrop
-                                {...props}
-                                disappearsOnIndex={-1}
-                                appearsOnIndex={0}
-                                pressBehavior="close"
-                            />
-                        )}
-                    >
-                        <BottomSheetView className="flex items-center justify-center">
-                            <View className="flex flex-col items-center">
-                                <TouchableOpacity className="py-4" onPress={() => selectImage(true)}>
-                                    <Text className="text-lg ">Choose Photo</Text>
-                                </TouchableOpacity>
-                                <TouchableOpacity className="py-4" onPress={() => selectImage(false)}>
-                                    <Text className="text-lg ">Take Photo</Text>
-                                </TouchableOpacity>
-                            </View>
-                        </BottomSheetView>
-                    </BottomSheetModal>
-
-                    <View className="mt-5 flex-row items-center justify-center mb-3">
-                        <Ionicons name="chevron-back" size={24} color="black" onPress={() => navigation.goBack()} style={{ position: 'absolute', left: 20 }} />
-                        <Text className="text-xl">Lapor Penyelamatan</Text>
-                    </View>
-
-                    <ScrollView>
-                        <Text className='mt-5 mb-5 text-xs text-center text-[#8A8A8A]'>Isilah data Anda dengan baik dan benar</Text>
-
-                        {image && (
-                            <View className="items-end mx-5 ">
-                                <TouchableOpacity className="flex-row items-center p-2" onPress={() => removeImage(image)}>
-                                    <Ionicons name="trash" size={20} color="black" />
-                                    <Text className="text-xs">Hapus Gambar</Text>
-                                </TouchableOpacity>
-                            </View>
-                        )}
-                        <View className="items-center mb-5">
-                            <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: 350 }}>
-                                {image == null && (
-                                    <>
-                                        <TouchableOpacity
-                                            style={{ width: 350, height: 200, backgroundColor: '#2E3A59', borderRadius: 10, justifyContent: 'center', alignItems: 'center', marginLeft: 5 }}
-                                            onPress={handleImagePress}
-                                        >
-                                            <Ionicons name="camera" size={40} color="white" />
-                                        </TouchableOpacity>
-                                    </>
-                                )}
-                            </View>
-                            {image && (
-                                <Image source={{ uri: image }} style={{ width: 350, height: 200, borderRadius: 10 }} resizeMode="cover" />
+        <SafeAreaProvider style={{flex: 1}}>
+            <SafeAreaView style={{flex: 1}}>
+                <GestureHandlerRootView style={{ flex: 1 }}>
+                    <BottomSheetModalProvider>
+                        <BottomSheetModal
+                            ref={bottomSheetModalRef}
+                            index={0}
+                            snapPoints={['20%']}
+                            backdropComponent={(props) => (
+                                <BottomSheetBackdrop
+                                    {...props}
+                                    disappearsOnIndex={-1}
+                                    appearsOnIndex={0}
+                                    pressBehavior="close"
+                                />
                             )}
-                        </View>
+                        >
+                            <BottomSheetView className="flex items-center justify-center">
+                                <View className="flex flex-col items-center">
+                                    <TouchableOpacity className="py-4" onPress={() => selectImage(true)}>
+                                        <Text className="text-lg ">Choose Photo</Text>
+                                    </TouchableOpacity>
+                                    <TouchableOpacity className="py-4" onPress={() => selectImage(false)}>
+                                        <Text className="text-lg ">Take Photo</Text>
+                                    </TouchableOpacity>
+                                </View>
+                            </BottomSheetView>
+                        </BottomSheetModal>
 
-                        <Text style={styles.textColor}>Kondisi Hewan<Text className='text-[#ff0000]'>*</Text></Text>
-                        <View style={styles.inputBox}>
+                        <View className="mt-5 flex-row items-center justify-center mb-3">
+                            <Ionicons name="chevron-back" size={24} color="black"
+                                onPress={() => {
+                                    if (image) {
+                                        removeImage(image!);
+                                    }
+                                    navigation.goBack()
+                                }}
+                                style={{ position: 'absolute', left: 20 }} />
+                            <Text className="text-xl">Pet Rescue</Text>
+                        </View>
+                        <ScrollView className="mt-5">
+                            {image && (
+                                <View className="items-end mx-5 mt-8 ">
+                                    <TouchableOpacity className="flex-row items-end" onPress={() => removeImage(image)}>
+                                        <Ionicons name="trash" size={20} color="black" />
+                                        <Text className="text-xs">Hapus Gambar</Text>
+                                    </TouchableOpacity>
+                                </View>
+                            )}
+                            <View className="mt-2 mb-10 items-center">
+                                <TouchableOpacity
+                                    style={{ width: 350, height: 200, backgroundColor: '#2E3A59', borderRadius: 10, justifyContent: 'center', alignItems: 'center' }}
+                                    onPress={handleImagePress}
+                                >
+
+                                    {image ? (
+                                        <Image source={{ uri: image }} style={{ width: "100%", height: "100%", borderRadius: 10 }} resizeMode="cover" />) :
+                                        (<Ionicons name="camera" size={40} color="white" />)}
+                                </TouchableOpacity>
+                            </View>
+
+                            <Text style={styles.textColor}>Nama Hewan<Text className='text-[#ff0000]'>*</Text></Text>
+                            <View style={styles.inputBox}>
+                                <Controller
+                                    name="PetName"
+                                    control={control}
+                                    render={() => (
+                                        <TextInput
+                                            placeholder="Masukkan Nama Hewan"
+                                            style={{ flex: 1 }}
+                                            onChangeText={(text: string) => setValue('PetName', text)}
+                                        />
+                                    )}
+                                />
+                            </View>
+                            <Text style={styles.errorMessage}>{errors.PetName?.message}</Text>
+
+                            <Text style={styles.textColor}>Jenis Hewan<Text className='text-[#ff0000]'>*</Text></Text>
                             <Controller
-                                name="condition"
+                                name="PetType"
                                 control={control}
                                 render={() => (
-                                    <TextInput
-                                        placeholder="Masukkan kondisi hewan"
-                                        style={{ flex: 1 }}
-                                        onChangeText={(text: string) => setValue('condition', text)}
+                                    <SelectList
+                                        setSelected={(text: string) => setValue('PetType', text)}
+                                        data={petTypeData}
+                                        save="value"
+                                        search={true}
+                                        dropdownStyles={styles.inputBox}
+                                        boxStyles={styles.selectBox}
+                                        inputStyles={{ padding: 3 }}
+                                        arrowicon={<FontAwesome name="chevron-down" size={12} color={'#808080'} style={{ padding: 3 }} />}
+                                        placeholder="Masukkan Jenis Hewan"
                                     />
                                 )}
                             />
-                        </View>
-                        <Text style={styles.errorMessage}>{errors.condition?.message}</Text>
+                            <Text style={styles.errorMessage}>{errors.PetType?.message}</Text>
 
-                        <Text style={styles.textColor}>Alamat<Text className='text-[#ff0000]'>*</Text></Text>
-                        <View style={styles.inputBox}>
-                            <Controller
-                                name="address"
-                                control={control}
-                                render={() => (
-                                    <TextInput
-                                        placeholder="Masukkan Alamat"
-                                        style={{ flex: 1 }}
-                                        onChangeText={(text: string) => setValue('address', text)}
-                                    />
-                                )}
-                            />
-                        </View>
-                        <Text style={styles.errorMessage}>{errors.address?.message}</Text>
+                            <Text style={styles.textColor}>Umur Hewan<Text className='text-[#ff0000]'>*</Text></Text>
+                            <View style={styles.inputBox}>
+                                <Controller
+                                    name="PetAge"
+                                    control={control}
+                                    render={() => (
+                                        <TextInput
+                                            style={{ flex: 1 }}
+                                            placeholder="Masukkan Umur Hewan"
+                                            onChangeText={(text: string) => {
+                                                const numericValue = parseInt(text);
+                                                if (!isNaN(numericValue)) {
+                                                    setValue('PetAge', numericValue);
+                                                }
+                                            }}
+                                            keyboardType="numeric"
+                                        />
+                                    )}
+                                />
+                            </View>
+                            <Text style={styles.errorMessage}>{errors.PetAge?.message}</Text>
 
-                        <TouchableOpacity style={styles.submitButton} onPress={handleSubmit(onSubmit)} className='mb-5'>
-                            <Text className="text-center font-bold text-white">Submit</Text>
-                        </TouchableOpacity>
-                    </ScrollView>
+                            <Text style={styles.textColor}>Jenis Kelamin Hewan<Text className='text-[#ff0000]'>*</Text></Text>
+                            <View style={{ marginHorizontal: 30 }}>
+                                <Controller
+                                    name="PetGender"
+                                    control={control}
+                                    render={({ field: { onChange, value } }) => (
+                                        <RadioButton.Group onValueChange={onChange} value={value} >
+                                            <View className="flex flex-row">
+                                                <View className="flex-row justify-start items-center mr-5">
+                                                    <RadioButton.Android value="Male" color={'#4689FD'} uncheckedColor="#808080" />
+                                                    <Text className="text-base text-[#808080]">Laki-Laki</Text>
+                                                </View>
+                                                <View className="flex-row justify-start items-center">
+                                                    <RadioButton.Android value="Female" color={'#4689FD'} uncheckedColor="#808080" />
+                                                    <Text className="text-base text-[#808080]">Perempuan</Text>
+                                                </View>
+                                            </View>
+                                        </RadioButton.Group>
+                                    )}
+                                />
+                            </View>
+                            <Text style={styles.errorMessage}>{errors.PetGender?.message}</Text>
 
-                </BottomSheetModalProvider>
+                            <Text style={styles.textColor}>Deskripsi Hewan<Text className='text-[#ff0000]'>*</Text></Text>
+                            <View style={styles.inputBox}>
+                                <Controller
+                                    name="PetDescription"
+                                    control={control}
+                                    render={() => (
+                                        <TextInput
+                                            placeholder="Masukkan Deskripsi Hewan"
+                                            style={{ flex: 1 }}
+                                            multiline
+                                            onChangeText={(text: string) => setValue('PetDescription', text)}
+                                        />
+                                    )}
+                                />
+                            </View>
+                            <Text style={styles.errorMessage}>{errors.PetDescription?.message}</Text>
+                            
+                            <Text style={styles.textColor}>Alasan Penyelamatan Hewan<Text className='text-[#ff0000]'>*</Text></Text>
+                            <View style={styles.inputBox}>
+                                <Controller
+                                    name="Reason"
+                                    control={control}
+                                    render={() => (
+                                        <TextInput
+                                            placeholder="Masukkan Alasan Penyelamatan Hewan"
+                                            style={{ flex: 1 }}
+                                            multiline
+                                            numberOfLines={4}
+                                            onChangeText={(text: string) => setValue('Reason', text)}
+                                        />
+                                    )}
+                                />
+                            </View>
+                            <Text style={styles.errorMessage}>{errors.Reason?.message}</Text>
 
-            </GestureHandlerRootView>
+                            <TouchableOpacity style={[styles.button]} onPress={handleSubmit(onSubmit)}>
+                                <Text className="text-center font-bold text-white">Save</Text>
+                            </TouchableOpacity>
+                        </ScrollView>
 
+
+                    </BottomSheetModalProvider>
+                </GestureHandlerRootView>
+            </SafeAreaView>
         </SafeAreaProvider>
-    );
+    )
 }
 
 const styles = StyleSheet.create({
@@ -233,5 +398,21 @@ const styles = StyleSheet.create({
         marginHorizontal: 30,
         borderRadius: 10,
         marginTop: 20
+    },
+    button: {
+        backgroundColor: "#378CE7",
+        padding: 15,
+        marginHorizontal: 30,
+        borderRadius: 10,
+        top: 30,
+        marginBottom: 60
+    },
+    selectBox: {
+        marginTop: 5,
+        marginHorizontal: 30,
+        borderColor: "#CECECE",
+        borderWidth: 2,
+        borderRadius: 25,
+        flexDirection: 'row'
     },
 });

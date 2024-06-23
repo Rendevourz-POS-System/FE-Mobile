@@ -166,39 +166,23 @@ const AppNavigationStack: FC = () => {
                 component={TopTabsWithHeader}
                 options={noHeader}
             />
-            <HomeUserStack.Screen name="ShelterDetailScreen" component={ShelterDetailScreen} options={{ presentation: "modal"}}/>
-            <HomeUserStack.Screen name="PetDetailScreen" component={PetDetailScreen} options={{ presentation: "modal" }}/>
-            <HomeUserStack.Screen name="AdoptionFormScreen" component={AdoptionFormScreen} options={{ presentation: "modal" }}/>
-            <HomeUserStack.Screen name="HewanAdopsiScreen" component={HewanAdopsiScreen} options={{ presentation: "modal" }}/>
-            <HomeUserStack.Screen name="SurrenderFormScreen" component={SurrenderFormScreen} options={{ presentation: "modal" }}/>
-            <HomeUserStack.Screen name="DonateScreen" component={DonateScreen} options={{ presentation: "modal" }}/>
-            <HomeUserStack.Screen name="RescueFormScreen" component={RescueFormScreen} options={{ presentation: "modal" }}/>
+            <HomeUserStack.Screen name="ShelterDetailScreen" component={ShelterDetailScreen} options={{ presentation: "modal" }} />
+            <HomeUserStack.Screen name="PetDetailScreen" component={PetDetailScreen} options={{ presentation: "modal" }} />
+            <HomeUserStack.Screen name="AdoptionFormScreen" component={AdoptionFormScreen} options={{ presentation: "modal" }} />
+            <HomeUserStack.Screen name="HewanAdopsiScreen" component={HewanAdopsiScreen} options={{ presentation: "modal" }} />
+            <HomeUserStack.Screen name="SurrenderFormScreen" component={SurrenderFormScreen} options={{ presentation: "modal" }} />
+            <HomeUserStack.Screen name="DonateScreen" component={DonateScreen} options={{ presentation: "modal" }} />
+            <HomeUserStack.Screen name="RescueFormScreen" component={RescueFormScreen} options={{ presentation: "modal" }} />
         </HomeUserStack.Navigator>
     );
 
     const CreateUserStack = createNativeStackNavigator<CreateNavigationStackParams>();
     const CreateUserStackGroup = () => (
         <CreateUserStack.Navigator screenOptions={{ headerShown: false }}>
-            <CreateUserStack.Screen
-                name="ChooseScreen"
-                component={CreateScreen}
-                options={noHeader}
-            />
-            <CreateUserStack.Screen
-                name="CreateRescueScreen"
-                component={CreateRescueScreen}
-                options={noHeader}
-            />
-            <CreateUserStack.Screen
-                name="CreateSurrenderScreen"
-                component={CreateSurrenderScreen}
-                options={noHeader}
-            />
-            <CreateUserStack.Screen
-                name="ChooseShelter"
-                component={ChooseShelter}
-                options={noHeader}
-            />
+            <CreateUserStack.Screen name="ChooseScreen" component={CreateScreen} options={noHeader} />
+            <CreateUserStack.Screen name="CreateRescueScreen" component={CreateRescueScreen} options={{ presentation: "modal" }} />
+            <CreateUserStack.Screen name="CreateSurrenderScreen" component={CreateSurrenderScreen} options={{ presentation: "modal" }} />
+            <CreateUserStack.Screen name="ChooseShelter" component={ChooseShelter} options={{ presentation: "modal" }} />
         </CreateUserStack.Navigator>
     )
 
