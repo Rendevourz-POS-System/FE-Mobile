@@ -48,6 +48,7 @@ import { CreateScreen } from "../../navigations/Create/screens/ChooseScreen";
 import { CreateRescueScreen } from "../../navigations/Create/screens/CreateRescueScreen";
 import { CreateSurrenderScreen } from "../../navigations/Create/screens/CreateSurrenderScreen";
 import { ChooseShelter } from "../../navigations/Create/screens/ChooseShelter";
+import { ApprovalPetScreen } from "../../navigations/Profile/screens/ApprovalPetScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -97,7 +98,7 @@ const AppNavigationStack: FC = () => {
         tabBarStyle: {
             backgroundColor: "#fff",
             borderTopWidth: 0,
-            height: 75,
+            height:65,
         },
         tabBarLabel: "Home",
         headerTitle: "",
@@ -120,7 +121,7 @@ const AppNavigationStack: FC = () => {
         tabBarStyle: {
             backgroundColor: "#fff",
             borderTopWidth: 0,
-            height: 75,
+            height: 65,
         },
         tabBarLabel: "Create",
         headerTitle: "",
@@ -143,7 +144,7 @@ const AppNavigationStack: FC = () => {
         tabBarStyle: {
             backgroundColor: "#fff",
             borderTopWidth: 0,
-            height: 75,
+            height: 65,
         },
         tabBarLabel: "Profile",
         headerShown: false,
@@ -200,6 +201,8 @@ const AppNavigationStack: FC = () => {
             <ProfileUserStack.Screen name="CreatePetScreen" component={CreatePetScreen} options={{ presentation: "modal", headerShown: false }} />
             <ProfileUserStack.Screen name="ManagePetScreen" component={ManagePetScreen} options={{ presentation: "modal", headerShown: false }} />
             <ProfileUserStack.Screen name="ApprovalScreen" component={ApprovalScreen} options={{ presentation: "modal", headerShown: false }} />
+            <ProfileUserStack.Screen name="ApprovalPetScreen" component={ApprovalPetScreen} options={{ presentation: "modal", headerShown: false }} />
+
         </ProfileUserStack.Navigator>
     )
 

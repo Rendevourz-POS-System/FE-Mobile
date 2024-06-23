@@ -1,21 +1,22 @@
 import React, { FC, useEffect, useState } from 'react';
-import { ScrollView, TouchableOpacity, View, StyleSheet, ImageBackground, TouchableHighlight, ActivityIndicator } from 'react-native';
+import { ScrollView, TouchableOpacity, View, StyleSheet, ImageBackground, TouchableHighlight, ActivityIndicator, Linking } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { Text } from 'react-native-elements';
 import { FontAwesome, FontAwesome6, Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { PetData } from '../../../../interface/IPetList';
-import { get, post } from '../../../../functions/Fetch';
+import { get, post, put } from '../../../../functions/Fetch';
 import { BackendApiUri } from '../../../../functions/BackendApiUri';
-import { NoHeaderNavigationStackScreenProps } from '../../../StackParams/StackScreenProps';
+import { NoHeaderNavigationStackScreenProps, ProfileNavigationStackScreenProps } from '../../../StackParams/StackScreenProps';
+import { truncateText } from '../../../../functions/TruncateText';
+import { IUser } from '../../../../interface/IUser';
+import { Request } from '../../../../interface/IRequest';
 
 interface PetProps {
     Data: PetData
 }
 
 
-export const PetDetailScreen: FC<NoHeaderNavigationStackScreenProps<"PetDetailScreen">> = ({ navigation, route }: any) => {
-    const [isFavorite, setIsFavorite] = useState<boolean>();
-    const [favAttempt, setFavAttempt] = useState<number>(0);
+export const ApprovalPetScreen: FC<ProfileNavigationStackScreenProps<"ApprovalPetScreen">> = ({ navigation, route }: any) => {
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [data, setData] = useState<PetProps>({
         Data: {
@@ -35,6 +36,30 @@ export const PetDetailScreen: FC<NoHeaderNavigationStackScreenProps<"PetDetailSc
             CreatedAt: new Date(),
         }
     })
+    const [userRequest, setUserRequest] = useState<IUser>();
+    const [requestDetail, setRequestDetail] = useState<Request>();
+
+    const fetchRequestDetail = async () => {
+        try {
+            const res = await get(`${BackendApiUri.findRequest}?requestId=${route.params.requestId}`);
+            if(res.status === 200 && res.data) {
+                setRequestDetail(res.data);
+            } 
+        } catch(e) {
+            console.log(e);
+        }
+    }
+
+    const fetchUserRequest = async () => {
+        try {
+            const res = await get(`${BackendApiUri.getUserDetailById}/${route.params.userId}`);
+            if (res?.data && res.status === 200) {
+                setUserRequest(res.data)
+            }
+        } catch(e) {
+            console.error(e)
+        }
+    }
 
     const fetchData = async () => {
         try {
@@ -49,39 +74,37 @@ export const PetDetailScreen: FC<NoHeaderNavigationStackScreenProps<"PetDetailSc
         }
     }
 
-    const petFavData = async () => {
+    useEffect(() => {
+        fetchData()
+        fetchUserRequest()
+        fetchRequestDetail()
+    }, [])
+
+    const handleWhatsApp = (phoneNumber: string) => {
+        const message = 'Halo saya ingin bertanya mengenai Hewan anda.';
+        Linking.openURL(`whatsapp://send?text=${encodeURIComponent(message)}&phone=${'+62' + phoneNumber}`);
+    }
+
+    const handleApprove = async () => {
+        const body = {
+            RequestId : route.params.requestId,
+            Type: requestDetail?.Type,
+            Status: 'approved',
+            Reason: ''
+        }
         try {
-            const res = await get(`${BackendApiUri.getPetFav}`);
-            if (res?.data && res.status === 200) {
-                const detail = await res.data.find((pet: PetData) => pet.Id === data?.Data.Id);
-                if (detail != null) {
-                    setIsFavorite(true);
-                }
-            }
-        } catch (e) {
-            console.error(e)
+            const res = await put(`${BackendApiUri.updateStatusRequest}`,body);
+            console.log(res)
+        } catch(e) {
+            console.log(e);
         }
     }
 
-    useEffect(() => {
-        fetchData()
-    }, [route.params.petId])
-
-    useEffect(() => {
-        petFavData();
-    }, [data?.Data.Id])
-
-    const handlePressFavorite = async (petId: string) => {
+    const handleDecline = async () => {
         try {
-            const body = { "PetId": petId };
-            const res = await post(BackendApiUri.postPetFav, body);
-            if (res.status === 200) {
-                setIsFavorite(!isFavorite);
-            }
-        } catch (e) {
-            console.error(e)
-        } finally {
-            setFavAttempt(prev => prev + 1)
+        
+        } catch(e) {
+
         }
     }
 
@@ -94,28 +117,18 @@ export const PetDetailScreen: FC<NoHeaderNavigationStackScreenProps<"PetDetailSc
             ) : (
                 <>
                     <View style={[styles.nextIcon, { position: 'absolute', left: 20, top: 17, zIndex: 1 }]}>
-                        <Ionicons name="chevron-back" size={24} color="black" onPress={() => navigation.navigate('PetListScreen', { route: favAttempt })} />
+                        <Ionicons name="chevron-back" size={24} color="black" onPress={() => navigation.goBack()} />
                     </View>
                     <ScrollView contentContainerStyle={{ flexGrow: 1, justifyContent: 'space-between', alignContent: 'center' }}>
                         <ImageBackground source={data?.Data.ImageBase64 == null ? require('../../../../assets/default_paw2.jpg') : { uri: `data:image/*;base64,${data?.Data.ImageBase64}` }} style={{ width: '100%', height: 400 }} />
                         <View className='pt-8 px-6 bottom-28 bg-white rounded-t-3xl border border-slate-300 border-b-0'>
                             <View className='flex flex-row justify-between'>
-                                <View className='flex-row items-center'>
-                                    <Text className='text-3xl font-bold mr-2'>{data?.Data.PetName}</Text>
-                                    {data?.Data.PetGender == "Male" ? (
-                                        <FontAwesome6 name='mars' size={28} color='#4689FD' />
-                                    ) : (
-                                        <FontAwesome6 name='venus' size={28} color='#FF6EC7' />
-                                    )}
-                                </View>
-                                <View className='flex flex-row items-center'>
-                                    <TouchableHighlight
-                                        onPress={() => handlePressFavorite(data?.Data.Id)}
-                                        underlayColor="transparent"
-                                    >
-                                        <FontAwesome name={isFavorite ? 'heart' : 'heart-o'} size={24} style={{ color: isFavorite ? '#FF0000' : '#4689FD' }} />
-                                    </TouchableHighlight>
-                                </View>
+                                <Text className='text-3xl font-bold mr-2'>{truncateText(data?.Data.PetName, 30)}</Text>
+                                {data?.Data.PetGender == "Male" ? (
+                                    <FontAwesome6 name='mars' size={28} color='#4689FD' />
+                                ) : (
+                                    <FontAwesome6 name='venus' size={28} color='#FF6EC7' />
+                                )}
                             </View>
 
                             <View className='mt-2 flex flex-row items-center'>
@@ -137,14 +150,28 @@ export const PetDetailScreen: FC<NoHeaderNavigationStackScreenProps<"PetDetailSc
 
                             <Text className='mt-8 text-xl font-bold'>Deskripsi Hewan</Text>
                             <Text className='mt-2 text-base text-[#8A8A8A]'>{data?.Data.PetDescription}</Text>
-                        </View>
 
-                        <View className='mt-5 items-center pb-7 px-5'>
-                            {data.Data.IsAdopted == false &&
-                                <TouchableOpacity style={styles.adopsiButton} onPress={() => navigation.navigate("AdoptionFormScreen", { shelterId: data.Data.ShelterId, petId: data.Data.Id })} className='w-4/5'>
-                                    <Text style={styles.fontButton} className='text-xl text-center'>Adopsi Sekarang</Text>
+                            <Text className='mt-8 text-xl font-bold'>Contact Person</Text>
+                            {userRequest ? (
+                                <TouchableOpacity className='bg-blue-100 rounded-md' onPress={() => handleWhatsApp(userRequest.PhoneNumber)}>
+                                    <View className='ml-2 flex flex-row items-center gap-3 p-3'>
+                                        <FontAwesome name="whatsapp" size={50} color="green" />
+                                        <Text className='font-bold text-xl'>{userRequest.Username}</Text>
+                                    </View>
                                 </TouchableOpacity>
-                            }
+
+                            ) : (
+                                <Text className='mt-2 text-base text-[#8A8A8A]'>Tidak ada kontak person</Text>
+                            )}
+                            </View>
+
+                        <View className='mt-5 items-center pb-7 px-5 flex flex-row justify-around gap-5'>
+                            <TouchableOpacity style={styles.adopsiButton} onPress={handleApprove} className='w-5/12 py-3 rounded-xl'>
+                                <Text style={styles.fontButton} className='text-xl text-center'>Approve</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity style={{elevation: 5}} onPress={handleDecline} className='w-5/12 py-3 rounded-xl bg-red-600'>
+                                <Text style={styles.fontButton} className='text-xl text-center'>Decline</Text>
+                            </TouchableOpacity>
                         </View>
                     </ScrollView>
 
@@ -168,9 +195,6 @@ const styles = StyleSheet.create({
     },
     adopsiButton: {
         backgroundColor: "#4689FD",
-        paddingVertical: 20,
-        height: 70,
-        borderRadius: 30,
         shadowColor: "#000",
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.25,

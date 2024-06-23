@@ -143,7 +143,7 @@ export const CreateRescueScreen : FC<CreateNavigationStackScreenProps<'CreateRes
         formData.append('request', requestString);
         
         // const res = await postForm(BackendApiUri.postPet, formData);
-        const res = await fetch(`${baseUrl + BackendApiUri.rescueOrSurennder}`, {
+        const res = await fetch(`${baseUrl + BackendApiUri.rescueOrSurrender}`, {
             method: 'POST',
             body : formData,
             headers : {

@@ -9,7 +9,7 @@ export interface PetFav {
     PetDescription : string;
     ShelterLocation : string;
     IsVaccinated : boolean;
-    Image : [];
+    OldImage : [];
     ImageBase64: [];
     CreatedAt : Date;
     isFav : boolean;
