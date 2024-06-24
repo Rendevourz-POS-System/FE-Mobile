@@ -97,7 +97,7 @@ export const ShelterScreen: FC<ProfileNavigationStackScreenProps<'ShelterScreen'
 
     return (
         <SafeAreaProvider style={styles.container}>
-            <SafeAreaView className="flex-1 bg-gray-100">
+            <SafeAreaView className="flex-1 bg-white">
                 <GestureHandlerRootView className="flex-1">
                     <BottomSheetModalProvider>
                         {fetchLoading ? (

@@ -148,14 +148,15 @@ export const ChooseShelter: FC<CreateNavigationStackScreenProps<'ChooseShelter'>
                             style={{ position: 'absolute', left: 20 }} />
                         <Text className="text-xl">Shelter List</Text>
                     </View>
-                    <View className="mx-3">
+                    <View className="mx-3 mb-3">
                         <Searchbar
                             placeholder="Search"
                             onChangeText={text => setSearch(text)}
                             value={search}
                             loading={isLoading}
+                            style={{backgroundColor: 'white'}}
                         />
-                        <Text className="text-md">Pilih shelter yang di-inginkan untuk <Text className="underline font-bold">{createType} Pet</Text></Text>
+                        <Text className="text-md mt-2 mx-2">Pilih shelter yang di-inginkan untuk <Text className="underline font-bold">{createType} Pet</Text></Text>
                     </View>
                 </View>
 
