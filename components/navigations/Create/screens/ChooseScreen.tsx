@@ -7,7 +7,7 @@ import { FontAwesome6, MaterialIcons } from "@expo/vector-icons"
 
 export const CreateScreen: FC<CreateNavigationStackScreenProps<'ChooseScreen'>> = ({ navigation, route }: any) => {
     return (
-        <SafeAreaProvider style={{ flex: 1 }}>
+        <SafeAreaProvider style={{ flex: 1, backgroundColor: "white" }}>
             <SafeAreaView style={{ flex: 1 }}>
                 <View className="flex justify-center items-center mt-24">
                     <Text className="text-4xl font-bold">Choose What To Do</Text>

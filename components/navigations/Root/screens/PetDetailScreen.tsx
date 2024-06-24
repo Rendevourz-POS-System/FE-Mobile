@@ -31,7 +31,7 @@ export const PetDetailScreen: FC<NoHeaderNavigationStackScreenProps<"PetDetailSc
             PetDescription: "",
             ShelterLocation: "",
             IsVaccinated: false,
-            Image: [],
+            OldImage: [],
             ImageBase64: [],
             CreatedAt: new Date(),
         }

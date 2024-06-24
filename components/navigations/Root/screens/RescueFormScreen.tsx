@@ -162,7 +162,7 @@ export const RescueFormScreen: FC<NoHeaderNavigationStackScreenProps<'RescueForm
 
 
     return (
-        <SafeAreaProvider style={{flex: 1}}>
+        <SafeAreaProvider style={styles.container}>
             <SafeAreaView style={{flex: 1}}>
                 <GestureHandlerRootView style={{ flex: 1 }}>
                     <BottomSheetModalProvider>
@@ -355,6 +355,7 @@ export const RescueFormScreen: FC<NoHeaderNavigationStackScreenProps<'RescueForm
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+        backgroundColor: 'white'
     },
     title: {
         fontWeight: 'bold',

@@ -162,7 +162,7 @@ export const SurrenderFormScreen: FC<NoHeaderNavigationStackScreenProps<'Surrend
 
 
     return (
-        <SafeAreaProvider style={{flex: 1}}>
+        <SafeAreaProvider style={styles.container}>
             <SafeAreaView style={{flex: 1}}>
                 <GestureHandlerRootView style={{ flex: 1 }}>
                     <BottomSheetModalProvider>
