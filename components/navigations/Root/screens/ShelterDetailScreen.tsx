@@ -216,7 +216,7 @@ export const ShelterDetailScreen: FC<NoHeaderNavigationStackScreenProps<'Shelter
                                     <MaterialIcons name="pets" size={24} color="white" />
                                     <Text style={styles.fontButton} className='ml-3 text-s text-center'>Adoption Pet</Text>
                                 </TouchableOpacity>
-                                <TouchableOpacity style={styles.buttonBox} onPress={() => navigation.navigate("SurrenderFormScreen", { shelterId: route.params.shelterId })}>
+                                <TouchableOpacity style={styles.buttonBox} onPress={() => navigation.navigate('Create', { screen: 'CreateSurrenderScreen', params: { shelterId: route.params.shelterId, type: 'Surrender' } })}>
                                     <FontAwesome6 name="house-medical-circle-exclamation" size={24} color="white" />
                                     <Text style={styles.fontButton} className='ml-3 text-s text-center'>Surrender Pet</Text>
                                 </TouchableOpacity>
@@ -227,7 +227,7 @@ export const ShelterDetailScreen: FC<NoHeaderNavigationStackScreenProps<'Shelter
                                     <FontAwesome6 name="hand-holding-heart" size={24} color="white" />
                                     <Text style={styles.fontButton} className='ml-3 text-s text-center'>Donation</Text>
                                 </TouchableOpacity>
-                                <TouchableOpacity style={styles.buttonBox} onPress={() => navigation.navigate("RescueFormScreen", { shelterId: route.params.shelterId })}>
+                                <TouchableOpacity style={styles.buttonBox} onPress={() => navigation.navigate('Create', { screen: 'CreateRescueScreen', params: { shelterId: route.params.shelterId, type: 'Rescue' } })}>
                                     <MaterialIcons name="warning" size={24} color="white" />
                                     <Text style={styles.fontButton} className='ml-3 text-s text-center'>Rescue</Text>
                                 </TouchableOpacity>

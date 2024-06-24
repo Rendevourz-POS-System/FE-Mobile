@@ -38,9 +38,7 @@ import { ShelterScreen } from "../../navigations/Profile/screens/ShelterScreen";
 import { CreatePetScreen } from "../../navigations/Profile/screens/CreatePetScreen";
 import { AdminNavigationStack } from "../Admin/AdminNavigationStack";
 import { HewanAdopsiScreen } from "../../navigations/Root/screens/HewanAdopsiScreen";
-import { SurrenderFormScreen } from "../../navigations/Root/screens/SurrenderFormScreen";
 import { DonateScreen } from "../../navigations/Root/screens/DonateScreen";
-import { RescueFormScreen } from "../../navigations/Root/screens/RescueFormScreen";
 import { ManagePetScreen } from "../../navigations/Profile/screens/ManagePetScreen";
 import { ApprovalScreen } from "../../navigations/Profile/screens/ApprovalScreen";
 import { CreateNavigationStackParams } from "../Create/CreateNavigationStackParams";
@@ -170,9 +168,8 @@ const AppNavigationStack: FC = () => {
             <HomeUserStack.Screen name="PetDetailScreen" component={PetDetailScreen} options={{ presentation: "modal" }} />
             <HomeUserStack.Screen name="AdoptionFormScreen" component={AdoptionFormScreen} options={{ presentation: "modal" }} />
             <HomeUserStack.Screen name="HewanAdopsiScreen" component={HewanAdopsiScreen} options={{ presentation: "modal" }} />
-            <HomeUserStack.Screen name="SurrenderFormScreen" component={SurrenderFormScreen} options={{ presentation: "modal" }} />
             <HomeUserStack.Screen name="DonateScreen" component={DonateScreen} options={{ presentation: "modal" }} />
-            <HomeUserStack.Screen name="RescueFormScreen" component={RescueFormScreen} options={{ presentation: "modal" }} />
+            <HomeUserStack.Screen name="Create" component={CreateUserStackGroup} options={{ presentation: "modal" }} />
         </HomeUserStack.Navigator>
     );
 
