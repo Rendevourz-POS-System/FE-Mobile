@@ -169,6 +169,7 @@ const AppNavigationStack: FC = () => {
             <HomeUserStack.Screen name="AdoptionFormScreen" component={AdoptionFormScreen} options={{ presentation: "modal" }} />
             <HomeUserStack.Screen name="HewanAdopsiScreen" component={HewanAdopsiScreen} options={{ presentation: "modal" }} />
             <HomeUserStack.Screen name="DonateScreen" component={DonateScreen} options={{ presentation: "modal" }} />
+            <HomeUserStack.Screen name="Create" component={CreateUserStackGroup} options={{ presentation: "modal" }} />
         </HomeUserStack.Navigator>
     );
 

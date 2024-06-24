@@ -1,3 +1,6 @@
+import { NavigatorScreenParams } from "@react-navigation/native"
+import { CreateNavigationStackParams } from "../Create/CreateNavigationStackParams"
+
 export type NoHeaderStackParams = {
     TopTabs: undefined,
     ShelterDetailScreen: { shelterId: string | null }
@@ -5,5 +8,5 @@ export type NoHeaderStackParams = {
     AdoptionFormScreen: undefined
     HewanAdopsiScreen: { shelterId: string }
     DonateScreen: { bankNumber: string }
-    Create: undefined
+    Create: NavigatorScreenParams<CreateNavigationStackParams>;
 }
