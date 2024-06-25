@@ -156,7 +156,7 @@ export const CreateRescueScreen : FC<CreateNavigationStackScreenProps<'CreateRes
         }
         if (res?.status === 200) {
             Alert.alert("Request Rescue Berhasil", "Rescue Pet Berhasil dibuat, mohon tunggu informasi lebih lanjut dari pihak shelter", 
-                [ { text: "OK", onPress: () => navigation.navigate('ChooseScreen')
+                [ { text: "OK", onPress: () => navigation.goBack()
 
             }]);
         }else{

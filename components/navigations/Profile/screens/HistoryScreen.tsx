@@ -69,7 +69,7 @@ export const HistoryScreen: FC<ProfileNavigationStackScreenProps<'HistoryScreen'
     };
 
     const groupByDate = (data: History[]): GroupedHistory[] => {
-        if(data) {
+        if (data) {
             const grouped = data.reduce((acc: { [key: string]: History[] }, item) => {
                 const date = new Date(item.RequestedAt).toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' });
                 if (!acc[date]) {
@@ -78,7 +78,7 @@ export const HistoryScreen: FC<ProfileNavigationStackScreenProps<'HistoryScreen'
                 acc[date].push(item);
                 return acc;
             }, {});
-    
+
             return Object.keys(grouped).map(date => ({
                 title: date,
                 data: grouped[date],
@@ -107,13 +107,11 @@ export const HistoryScreen: FC<ProfileNavigationStackScreenProps<'HistoryScreen'
     const renderHistoryItem = ({ item }: { item: History }) => (
         <View className="mx-5 my-2 bg-blue-200 rounded-md px-4 py-3">
             <View className="flex-row justify-between">
-                <Text>{item.Type}</Text>
-                <Text style={styles.historyItemText}>{item.Status}</Text>
+                <Text>{item.Type} {item.Status}</Text>
                 <Text>{formatTime(item.RequestedAt)}</Text>
             </View>
             <View>
-                <Text>{item.Reason}</Text>
-                {/* <Text style={styles.historyItemText}>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Delectus ab ipsam atque fugit officiis esse corporis quae ut deserunt, iste similique possimus assumenda accusamus eum nulla error sed id laboriosam quod odit cupiditate qui. Consequuntur quidem voluptatum illum voluptates, delectus, at ad temporibus error nulla dicta iste eius quod ipsa?</Text> */}
+                <Text className="text-xs font-light mt-1">{item.Reason}</Text>
             </View>
         </View>
     );
@@ -161,7 +159,7 @@ const styles = StyleSheet.create({
     sectionHeader: {
         backgroundColor: '#f3f3f3',
         paddingVertical: 5,
-        paddingHorizontal: 10,
+        paddingHorizontal: 20,
     },
     sectionHeaderText: {
         fontSize: 16,

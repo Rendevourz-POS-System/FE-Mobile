@@ -154,7 +154,7 @@ export const CreateSurrenderScreen : FC<CreateNavigationStackScreenProps<'Create
             removeImage(image!);
         }
         if (res?.status === 200) {
-            Alert.alert("Request Pet Surrender Berhasil", "Mohon tunggu informasi lebih lanjut dari pihak shelter", [ { text: "OK", onPress: () => navigation.navigate('ChooseScreen') }]);
+            Alert.alert("Request Pet Surrender Berhasil", "Mohon tunggu informasi lebih lanjut dari pihak shelter", [ { text: "OK", onPress: () => navigation.goBack() }]);
         }else{
             Alert.alert("Request Pet Surrender Gagal", "Request Pet Surrender Gagal, mohon diisi dengan yang benar");
         }
