@@ -15,6 +15,7 @@ import { TouchableOpacity } from "react-native";
 import { Image } from "react-native";
 import { Request } from "../../../../interface/IRequest";
 import { TouchableHighlight } from "react-native";
+import { useFocusEffect } from "@react-navigation/native";
 
 interface ShelterInfo {
     ShelterId: string;
@@ -22,7 +23,7 @@ interface ShelterInfo {
     UserId: string;
 }
 
-export const ApprovalScreen: FC<ProfileNavigationStackScreenProps<"ApprovalScreen">> = ({ navigation }) => {
+export const ApprovalScreen: FC<ProfileNavigationStackScreenProps<"ApprovalScreen">> = ({ navigation, route }) => {
     const { authState } = useAuth();
     const [shelterRequest, setShelterRequest] = useState<Request[]>([]);
     const [userShelter, setUserShelter] = useState<ShelterInfo>({
@@ -41,11 +42,14 @@ export const ApprovalScreen: FC<ProfileNavigationStackScreenProps<"ApprovalScree
     const [petData, setPetData] = useState<PetData[]>([]);
     const [mergedData, setMergedData] = useState<any[]>([]);
 
-    const onRefresh = useCallback(() => {
-        setRefreshing(true);
-        fetchShelterUser();
-        setRefreshing(false);
-    }, []);
+    const onRefresh = async () => {
+        try {
+            setRefreshing(true);
+            await fetchData()
+        } catch (e) {
+            console.error(e);
+        }
+    }
 
     const fetchPetByShelter = async (shelterId: string) => {
         try {
@@ -67,8 +71,6 @@ export const ApprovalScreen: FC<ProfileNavigationStackScreenProps<"ApprovalScree
                     UserId: response.data.Data.UserId,
                     ShelterName: response.data.Data.ShelterName
                 });
-                fetchRequest(userShelter.ShelterId);
-                fetchPetByShelter(userShelter.ShelterId);
             }
         } catch (e) {
             console.error(e);
@@ -88,57 +90,99 @@ export const ApprovalScreen: FC<ProfileNavigationStackScreenProps<"ApprovalScree
         }
     };
     
-    const mergeData = useCallback(() => {
-        const filteredRequests = shelterRequest.filter(request => request.ShelterId === userShelter.ShelterId);
+    // useEffect(() => {
+    //     const filteredRequests = shelterRequest.filter(request => request.ShelterId === userShelter.ShelterId);
+    
+    //     const merge = filteredRequests.map(request => {
+    //         const pet = petData.find(pet => pet.Id === request.PetId);
+    //         return { ...request, pet }; 
+    //     });
+        
+    //     const mergedData = merge.filter(request => request.Status === 'Ongoing');
+    //     setMergedData(mergedData);
+    //     setRefreshing(false);
+    // }, [shelterRequest, petData]);
 
-        const merged = filteredRequests.map(request => {
-            const pet = petData.find(pet => pet.Id === request.PetId);
-            return { ...request, ...pet }; // Merge the request and pet data
+    function merge() {
+        const filteredRequests = shelterRequest.filter(request => request.ShelterId === userShelter.ShelterId);
+    
+        const merge = filteredRequests.map(request => {
+            const pet = petData.find(pet => pet.Id == request.PetId);
+            return { ...request, pet }; 
         });
-        setMergedData(merged);
+        
+        const mergedData = merge.filter(request => request.Status === 'Ongoing');
+        return mergedData;
+    }
+
+    const fetchData = () => {
+        const data = merge();
+        setMergedData(data);  
+    }
+
+    // useEffect(() => {
+    //     fetchShelterUser();
+    // }, [refreshing]);
+
+    useEffect(() => {
+        fetchData();
+        setRefreshing(false);
     }, [shelterRequest, petData]);
 
     useEffect(() => {
         fetchShelterUser();
-    }, []);
+        fetchRequest(userShelter.ShelterId);
+        fetchPetByShelter(userShelter.ShelterId);
+    }, [refreshing]);
 
-    useEffect(() => {
-        if (shelterRequest.length > 0 && petData.length > 0) {
-            mergeData();
-        }
-    }, [shelterRequest, petData, mergeData]);
-
-    const renderPetItem = ({ item }: any) => (
-        <TouchableOpacity
-            className='mx-3 mb-7'
-            style={styles.petItem}
-            activeOpacity={1}
-            onPress={() => navigation.navigate('ApprovalPetScreen', { petId: item.Id, userId: item.UserId, requestId: item.Id})}
-        >
-            <Image
-                source={item.ImageBase64 && item.ImageBase64.length > 0 ? { uri: `data:image/*;base64,${item.ImageBase64}` } : require("../../../../assets/default_paw2.jpg")}
-                style={styles.petImage}
-                resizeMode="cover"
-            />
-            <TouchableHighlight
-                style={{ position: 'absolute', top: 15, right: 20, paddingHorizontal: 25, paddingVertical: 8, borderRadius: 20 }}
-                underlayColor="transparent"
-                className={`bg-[#4689FD] opacity-90`}
-            >
-                <Text className="text-white font-bold text-md">{item.Type == "Rescue" ? "Rescue" : "Surrender"}</Text>
-            </TouchableHighlight>
-            <View style={styles.petInfoContainer}>
-                <View style={styles.petInfo}>
-                    <Text style={styles.petName}>{item.PetName}</Text>
-                    <FontAwesome6 name={item.PetGender === "Male" ? 'mars' : 'venus'} size={22} color={item.PetGender === "Male" ? '#4689FD' : '#FF6EC7'} />
-                </View>
-                <View style={styles.petLocation}>
-                    <FontAwesome6 name='location-dot' size={20} color='#4689FD' />
-                    <Text style={styles.petLocationText}>{item.ShelterLocation}</Text>
-                </View>
-            </View>
-        </TouchableOpacity>
+    useFocusEffect(
+        useCallback(() => {
+            const fetch = async () => {
+                setIsLoading(true)
+                await fetchShelterUser();
+                await fetchRequest(userShelter.ShelterId);
+                await fetchPetByShelter(userShelter.ShelterId);
+            }
+            fetch();
+        }, [navigation, route])
     );
+
+    // console.log(mergedData);
+
+    const renderPetItem = ({ item }: any) => {
+        const petImage = item.pet?.ImageBase64 ? { uri: `data:image/*;base64,${item.pet.ImageBase64}` } : require("../../../../assets/default_paw2.jpg");
+        return (
+            <TouchableOpacity
+                className='mx-3 mb-7'
+                style={styles.petItem}
+                activeOpacity={1}
+                onPress={() => navigation.navigate('ApprovalPetScreen', { petId: item.pet.Id, userId: item.UserId, requestId: item.Id})}
+            >
+                <Image
+                    source={petImage}
+                    style={styles.petImage}
+                    resizeMode="cover"
+                />
+                <TouchableHighlight
+                    style={{ position: 'absolute', top: 15, right: 20, paddingHorizontal: 25, paddingVertical: 8, borderRadius: 20 }}
+                    underlayColor="transparent"
+                    className={`bg-[#4689FD] opacity-90`}
+                >
+                    <Text className="text-white font-bold text-md">{item.Type == "Rescue" ? "Rescue" : "Surrender"}</Text>
+                </TouchableHighlight>
+                <View style={styles.petInfoContainer}>
+                    <View style={styles.petInfo}>
+                        <Text style={styles.petName}>{item.pet.PetName}</Text>
+                        <FontAwesome6 name={item.pet.PetGender === "Male" ? 'mars' : 'venus'} size={22} color={item.pet.PetGender === "Male" ? '#4689FD' : '#FF6EC7'} />
+                    </View>
+                    <View style={styles.petLocation}>
+                        <FontAwesome6 name='location-dot' size={20} color='#4689FD' />
+                        <Text style={styles.petLocationText}>{item.pet.ShelterLocation}</Text>
+                    </View>
+                </View>
+            </TouchableOpacity>
+        )
+    }
 
     return (
         <SafeAreaProvider style={styles.container}>
