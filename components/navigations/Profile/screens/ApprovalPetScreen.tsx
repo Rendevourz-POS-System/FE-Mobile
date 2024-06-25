@@ -1,5 +1,5 @@
 import React, { FC, useEffect, useState } from 'react';
-import { ScrollView, TouchableOpacity, View, StyleSheet, ImageBackground, TouchableHighlight, ActivityIndicator, Linking } from 'react-native';
+import { ScrollView, TouchableOpacity, View, StyleSheet, ImageBackground, TouchableHighlight, ActivityIndicator, Linking, Alert } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { Text } from 'react-native-elements';
 import { FontAwesome, FontAwesome6, Ionicons, MaterialIcons } from '@expo/vector-icons';
@@ -16,7 +16,7 @@ interface PetProps {
 }
 
 
-export const ApprovalPetScreen: FC<ProfileNavigationStackScreenProps<"ApprovalPetScreen">> = ({ navigation, route }: any) => {
+export const ApprovalPetScreen: FC<ProfileNavigationStackScreenProps<"ApprovalPetScreen">> = ({ navigation, route }) => {
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [data, setData] = useState<PetProps>({
         Data: {
@@ -37,13 +37,13 @@ export const ApprovalPetScreen: FC<ProfileNavigationStackScreenProps<"ApprovalPe
         }
     })
     const [userRequest, setUserRequest] = useState<IUser>();
-    const [requestDetail, setRequestDetail] = useState<Request>();
+    const [requestDetail, setRequestDetail] = useState<Request[]>([]);
 
     const fetchRequestDetail = async () => {
         try {
             const res = await get(`${BackendApiUri.findRequest}?requestId=${route.params.requestId}`);
             if(res.status === 200 && res.data) {
-                setRequestDetail(res.data);
+                setRequestDetail(res.data.Data);
             } 
         } catch(e) {
             console.log(e);
@@ -88,23 +88,38 @@ export const ApprovalPetScreen: FC<ProfileNavigationStackScreenProps<"ApprovalPe
     const handleApprove = async () => {
         const body = {
             RequestId : route.params.requestId,
-            Type: requestDetail?.Type,
-            Status: 'approved',
-            Reason: ''
+            Type: requestDetail[0].Type,
+            Status: 'approved'
         }
         try {
             const res = await put(`${BackendApiUri.updateStatusRequest}`,body);
-            console.log(res)
+            if(res.Data) {
+                Alert.alert("Success", "Pet berhasil di approved", 
+                    [ { text: "OK", onPress: () => navigation.goBack()
+    
+                }]);
+            }
         } catch(e) {
             console.log(e);
         }
     }
 
     const handleDecline = async () => {
+        const body = {
+            RequestId : route.params.requestId,
+            Type: requestDetail[0].Type,
+            Status: 'rejected'
+        }
         try {
-        
+            const res = await put(`${BackendApiUri.updateStatusRequest}`,body);
+            if(res.Data) {
+                Alert.alert("Success", "Pet berhasil di decline", 
+                    [ { text: "OK", onPress: () => navigation.goBack()
+    
+                }]);
+            }
         } catch(e) {
-
+            console.log(e);
         }
     }
 
@@ -166,10 +181,10 @@ export const ApprovalPetScreen: FC<ProfileNavigationStackScreenProps<"ApprovalPe
                             </View>
 
                         <View className='mt-5 items-center pb-7 px-5 flex flex-row justify-around gap-5'>
-                            <TouchableOpacity style={styles.adopsiButton} onPress={handleApprove} className='w-5/12 py-3 rounded-xl'>
+                            <TouchableOpacity style={styles.adopsiButton} onPress={() => handleApprove()} className='w-5/12 py-3 rounded-xl'>
                                 <Text style={styles.fontButton} className='text-xl text-center'>Approve</Text>
                             </TouchableOpacity>
-                            <TouchableOpacity style={{elevation: 5}} onPress={handleDecline} className='w-5/12 py-3 rounded-xl bg-red-600'>
+                            <TouchableOpacity style={{elevation: 5}} onPress={() => handleDecline()} className='w-5/12 py-3 rounded-xl bg-red-600'>
                                 <Text style={styles.fontButton} className='text-xl text-center'>Decline</Text>
                             </TouchableOpacity>
                         </View>

@@ -5,7 +5,6 @@ export interface PetFav {
     PetType : string;
     PetAge : number;
     PetGender : string;
-    PetStatus : boolean;
     PetDescription : string;
     ShelterLocation : string;
     IsVaccinated : boolean;

@@ -16,6 +16,7 @@ import { ProfileProps } from "../../../../interface/TProfileProps";
 import { NoHeaderProps } from "../../../../interface/TNoHeaderProps";
 import { PetFav } from "../../../../interface/IPetFav";
 import { myProvince } from "../../../../functions/getLocation";
+import { truncateText } from "../../../../functions/TruncateText";
 
 type PetImageMap = {
     [key: string]: any; // This allows indexing with strings
@@ -381,7 +382,7 @@ export const PetListScreen : FC<NoHeaderProps> = ({navigation, route} : any) => 
                                                     <View style={{ position: 'absolute', top: 230, left: 0, right: 0, bottom: 0 }}>
                                                         <View style={{ marginTop: 5, backgroundColor: "#FFFDFF", paddingHorizontal: 10, paddingVertical: 15, borderRadius: 15 }}>
                                                             <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-                                                                <Text style={{ fontSize: 20, fontWeight: 'bold' }}>{pet.PetName}</Text>
+                                                                <Text style={{ fontSize: 20, fontWeight: 'bold' }}>{truncateText(pet.PetName, 11)}</Text>
                                                                 {pet.PetGender === "Male" ? (
                                                                     <FontAwesome6 name='mars' size={22} color='#4689FD' />
                                                                 ) : (
