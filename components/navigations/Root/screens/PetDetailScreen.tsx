@@ -35,6 +35,7 @@ export const PetDetailScreen: FC<NoHeaderNavigationStackScreenProps<"PetDetailSc
             CreatedAt: new Date(),
         }
     })
+    console.log(data);
 
     const fetchData = async () => {
         try {
@@ -140,11 +141,15 @@ export const PetDetailScreen: FC<NoHeaderNavigationStackScreenProps<"PetDetailSc
                         </View>
 
                         <View className='mt-5 items-center pb-7 px-5'>
-                            {data.Data.IsAdopted == false &&
+                            {data.Data.IsAdopted == true ? (
                                 <TouchableOpacity style={styles.adopsiButton} onPress={() => navigation.navigate("AdoptionFormScreen", { shelterId: data.Data.ShelterId, petId: data.Data.Id })} className='w-4/5'>
                                     <Text style={styles.fontButton} className='text-xl text-center'>Adopsi Sekarang</Text>
                                 </TouchableOpacity>
-                            }
+                            ) : (
+                                <TouchableOpacity style={styles.adopButton} className='w-4/5 bg-red-500' disabled>
+                                    <Text style={styles.fontButton} className='text-xl text-center'>Hewan Tidak Tersedia</Text>
+                                </TouchableOpacity>
+                            )}
                         </View>
                     </ScrollView>
 
@@ -168,6 +173,17 @@ const styles = StyleSheet.create({
     },
     adopsiButton: {
         backgroundColor: "#4689FD",
+        paddingVertical: 20,
+        height: 70,
+        borderRadius: 30,
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+        // Properti bayangan untuk Android
+        elevation: 5,
+    },
+    adopButton: {
         paddingVertical: 20,
         height: 70,
         borderRadius: 30,
