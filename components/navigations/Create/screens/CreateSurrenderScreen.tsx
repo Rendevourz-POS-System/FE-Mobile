@@ -26,7 +26,7 @@ const createPetFormSchema = z.object({
     PetType: z.string({ required_error: "Jenis hewan tidak boleh kosong" }).min(1, { message: 'Jenis hewan tidak boleh kosong' }),
     PetAge: z.number({ required_error: "Umur hewan tidak boleh kosong" }).int().positive().nonnegative("Umur hewan harus merupakan bilangan bulat positif"),
     PetGender: z.string({ required_error: "Jenis kelamin hewan tidak boleh kosong" }),
-    // IsVaccinated: z.string({ required_error: "Vaksinasi hewan tidak boleh kosong" }),
+    IsVaccinated: z.string({ required_error: "Vaksinasi hewan tidak boleh kosong" }),
     PetDescription: z.string({ required_error: "Deskripsi hewan tidak boleh kosong" }).min(10, { message: "Deskripsi hewan harus lebih dari 10 karakter" }),
     Reason: z.string({ required_error: "Alasan tidak boleh kosong" }).min(10, { message: "Alasan harus lebih dari 10 karakter" })
 })
@@ -114,6 +114,7 @@ export const CreateSurrenderScreen : FC<CreateNavigationStackScreenProps<'Create
             PetAge: data.PetAge,
             PetType: data.PetType,
             PetGender: data.PetGender,
+            IsVaccinated: data.IsVaccinated == "true" ? true : false,
             PetDescription: data.PetDescription
         }
 
@@ -303,6 +304,29 @@ export const CreateSurrenderScreen : FC<CreateNavigationStackScreenProps<'Create
                                 />
                             </View>
                             <Text style={styles.errorMessage}>{errors.PetGender?.message}</Text>
+
+                            <Text style={styles.textColor}>Vaksinasi Hewan<Text className='text-[#ff0000]'>*</Text></Text>
+                            <View style={{ marginHorizontal: 30 }}>
+                                <Controller
+                                    name="IsVaccinated"
+                                    control={control}
+                                    render={({ field: { onChange, value } }) => (
+                                        <RadioButton.Group onValueChange={onChange} value={value} >
+                                            <View className="flex flex-row">
+                                                <View className="flex-row justify-start items-center mr-5">
+                                                    <RadioButton.Android value="true" color={'#4689FD'} uncheckedColor="#808080" />
+                                                    <Text className="text-base text-[#808080]">Sudah</Text>
+                                                </View>
+                                                <View className="flex-row justify-start items-center">
+                                                    <RadioButton.Android value="false" color={'#4689FD'} uncheckedColor="#808080" />
+                                                    <Text className="text-base text-[#808080]">Belum</Text>
+                                                </View>
+                                            </View>
+                                        </RadioButton.Group>
+                                    )}
+                                />
+                            </View>
+                            <Text style={styles.errorMessage}>{errors.IsVaccinated?.message}</Text>
 
                             <Text style={styles.textColor}>Deskripsi Hewan<Text className='text-[#ff0000]'>*</Text></Text>
                             <View style={styles.inputBox}>
