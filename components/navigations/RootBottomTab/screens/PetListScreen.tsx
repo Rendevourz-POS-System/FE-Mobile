@@ -108,7 +108,9 @@ export const PetListScreen : FC<NoHeaderProps> = ({navigation, route} : any) => 
 
     const fetchData = async () => {
         const data = mergePets();
-        setMergedData(data);
+        const atas = data.filter(item => item.ShelterId != null);
+        setMergedData(atas);
+        setRefreshing(false);
     };
 
     useEffect(() => {
@@ -327,7 +329,7 @@ export const PetListScreen : FC<NoHeaderProps> = ({navigation, route} : any) => 
                     </View>
                     ) : (
                         <>
-                            {petData !== null  && petData.length > 0 ? (
+                            {mergedData !== null  && mergedData.length > 0 ? (
                                 <View style={{ flex: 1 }}>
                                     <FlashList
                                         refreshControl={

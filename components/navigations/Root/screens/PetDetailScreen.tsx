@@ -35,7 +35,6 @@ export const PetDetailScreen: FC<NoHeaderNavigationStackScreenProps<"PetDetailSc
             CreatedAt: new Date(),
         }
     })
-    console.log(data);
 
     const fetchData = async () => {
         try {
@@ -142,15 +141,29 @@ export const PetDetailScreen: FC<NoHeaderNavigationStackScreenProps<"PetDetailSc
 
                         <View className='mt-5 items-center pb-7 px-5'>
                             {data.Data.IsAdopted == true ? (
-                                <TouchableOpacity style={styles.adopsiButton} onPress={() => navigation.navigate("AdoptionFormScreen", { shelterId: data.Data.ShelterId, petId: data.Data.Id })} className='w-4/5'>
+                                <TouchableOpacity 
+                                    style={styles.adopsiButton} 
+                                    onPress={() => navigation.navigate("AdoptionFormScreen", { shelterId: data.Data.ShelterId, petId: data.Data.Id })} 
+                                    className='w-4/5'>
                                     <Text style={styles.fontButton} className='text-xl text-center'>Adopsi Sekarang</Text>
                                 </TouchableOpacity>
+                            ) : data.Data.ReadyToAdopt == false ? (
+                                <TouchableOpacity 
+                                    style={styles.adopButton} 
+                                    className='w-4/5 bg-red-500' 
+                                    disabled>
+                                    <Text style={styles.fontButton} className='text-xl text-center'>Hewan tidak tersedia untuk adopsi</Text>
+                                </TouchableOpacity>
                             ) : (
-                                <TouchableOpacity style={styles.adopButton} className='w-4/5 bg-red-500' disabled>
+                                <TouchableOpacity 
+                                    style={styles.adopButton} 
+                                    className='w-4/5 bg-red-500' 
+                                    disabled>
                                     <Text style={styles.fontButton} className='text-xl text-center'>Hewan Tidak Tersedia</Text>
                                 </TouchableOpacity>
                             )}
                         </View>
+
                     </ScrollView>
 
                 </>

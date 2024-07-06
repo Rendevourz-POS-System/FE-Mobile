@@ -53,7 +53,7 @@ export const ApprovalScreen: FC<ProfileNavigationStackScreenProps<"ApprovalScree
 
     const fetchPetByShelter = async (shelterId: string) => {
         try {
-            const response = await get(`${BackendApiUri.getPet}?shelter_id=${shelterId}`);
+            const response = await get(`${BackendApiUri.getPet}`);
             if (response.status == 200 && response.data) {
                 setPetData(response.data);
             }
@@ -65,7 +65,7 @@ export const ApprovalScreen: FC<ProfileNavigationStackScreenProps<"ApprovalScree
     const fetchShelterUser = async () => {
         try {
             const response = await get(`${BackendApiUri.getUserShelter}`);
-            if (response.status == 200 && response.data.Data) {
+            if (response.status == 200 && response.data.Data != null) {
                 setUserShelter({
                     ShelterId: response.data.Data.Id,
                     UserId: response.data.Data.UserId,
@@ -79,15 +79,20 @@ export const ApprovalScreen: FC<ProfileNavigationStackScreenProps<"ApprovalScree
 
     const fetchRequest = async (shelterId: string) => {
         try {
-            const response = await get(`${BackendApiUri.findRequest}/?shelter_id=${shelterId}&status=${'Ongoing'}`);
-            if (response.status && response.data.Data) {
+            const response = await get(`${BackendApiUri.findRequest}?shelter_id=${shelterId}&status=${'Ongoing'}`);
+            if (response.status && response.data.Data != null) {
                 setShelterRequest(response.data.Data);
             }
+            if(response.data.Data == null) {
+                setShelterRequest([])
+            }
+            console.log(shelterRequest)
         } catch (e) {
             console.error(e);
-        } finally {
-            setIsLoading(false);
-        }
+        } 
+        // finally {
+        //     setIsLoading(false);
+        // }
     };
     
     // useEffect(() => {
@@ -111,13 +116,13 @@ export const ApprovalScreen: FC<ProfileNavigationStackScreenProps<"ApprovalScree
             return { ...request, pet }; 
         });
         
-        const mergedData = merge.filter(request => request.Status === 'Ongoing');
-        return mergedData;
+        return merge;
     }
 
     const fetchData = () => {
         const data = merge();
         setMergedData(data);  
+        setIsLoading(false);
     }
 
     // useEffect(() => {
@@ -138,6 +143,7 @@ export const ApprovalScreen: FC<ProfileNavigationStackScreenProps<"ApprovalScree
     useFocusEffect(
         useCallback(() => {
             const fetch = async () => {
+                console.log("hello");
                 setIsLoading(true)
                 await fetchShelterUser();
                 await fetchRequest(userShelter.ShelterId);
@@ -147,9 +153,8 @@ export const ApprovalScreen: FC<ProfileNavigationStackScreenProps<"ApprovalScree
         }, [navigation, route])
     );
 
-    // console.log(mergedData);
-
     const renderPetItem = ({ item }: any) => {
+        if(!item.pet) return null;
         const petImage = item.pet?.ImageBase64 ? { uri: `data:image/*;base64,${item.pet.ImageBase64}` } : require("../../../../assets/default_paw2.jpg");
         return (
             <TouchableOpacity
@@ -177,7 +182,7 @@ export const ApprovalScreen: FC<ProfileNavigationStackScreenProps<"ApprovalScree
                     </View>
                     <View style={styles.petLocation}>
                         <FontAwesome6 name='location-dot' size={20} color='#4689FD' />
-                        <Text style={styles.petLocationText}>{item.pet.ShelterLocation}</Text>
+                        <Text style={styles.petLocationText}>{item.Type == "Rescue" ? "Rescue" : "Surrender"}</Text>
                     </View>
                 </View>
             </TouchableOpacity>
@@ -295,8 +300,8 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
     },
     petLocationText: {
-        fontSize: 14,
-        marginLeft: 5,
+        fontSize: 16,
+        marginLeft: 12,
     },
     petLocation: {
         flexDirection: 'row',

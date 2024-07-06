@@ -120,7 +120,7 @@ export const VerifyOTPScreen: FC<GuestNavigationStackScreenProps<'VerifyOTP'>> =
                             >
                                 <View style={style.buttonContent}>
                                     {isSubmitting && <ActivityIndicator color="white" style={style.activityIndicator} />}
-                                    <Text style={style.buttonText}>Sign Up</Text>
+                                    <Text style={style.buttonText}>Verify</Text>
                                 </View>
                             </TouchableOpacity>
                         </View>

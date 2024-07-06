@@ -109,7 +109,6 @@ export const CreateSurrenderScreen : FC<CreateNavigationStackScreenProps<'Create
 
     const onSubmit = async (data: CreatePetFormType) => {
         const payload = {
-            ShelterId: routeParam.shelterId,
             PetName: data.PetName,
             PetAge: data.PetAge,
             PetType: data.PetType,
@@ -120,6 +119,7 @@ export const CreateSurrenderScreen : FC<CreateNavigationStackScreenProps<'Create
         const request = {
             Status : "Ongoing",
             Type: "Surrender",
+            ShelterId: routeParam.shelterId,
             Reason: data.Reason
         }
 
