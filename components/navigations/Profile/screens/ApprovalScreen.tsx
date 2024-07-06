@@ -86,7 +86,6 @@ export const ApprovalScreen: FC<ProfileNavigationStackScreenProps<"ApprovalScree
             if(response.data.Data == null) {
                 setShelterRequest([])
             }
-            console.log(shelterRequest)
         } catch (e) {
             console.error(e);
         } 

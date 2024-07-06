@@ -33,6 +33,7 @@ export const BackendApiUri = {
     getUser: '/user',
     postRequest: '/request/create',
     putPetUpdate: '/pet/update',
+    putPetStatusAdopt: '/pet/change_ready_for_adopt',
     deletePet: '/pet/delete',
 
     // Request

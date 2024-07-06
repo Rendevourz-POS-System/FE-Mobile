@@ -15,6 +15,8 @@ import { AdminNavigationStackScreenProps, ProfileNavigationStackScreenProps } fr
 import * as FileSystem from 'expo-file-system';
 import * as ImagePicker from 'expo-image-picker';
 import { useAuth } from "../../../../app/context/AuthContext";
+import { Input } from "react-native-elements";
+import { Picker } from "@react-native-picker/picker";
 
 interface PetProps {
     Data: PetData
@@ -27,6 +29,7 @@ const editPetFormSchema = z.object({
     PetGender: z.string({ required_error: "Jenis kelamin hewan tidak boleh kosong" }),
     IsVaccinated: z.string({ required_error: "Vaksinasi hewan tidak boleh kosong" }),
     PetDescription: z.string({ required_error: "Deskripsi hewan tidak boleh kosong" }),
+    ReadyToAdopt : z.boolean({ required_error: "Tidak boleh kosong" })
 })
 
 type EditPetFormType = z.infer<typeof editPetFormSchema>
@@ -69,6 +72,7 @@ export const ManagePetScreen: FC<ProfileNavigationStackScreenProps<"ManagePetScr
                     setValue("IsVaccinated", "false")
                 }
                 setValue("PetDescription", response.data.Data.PetDescription);
+                setValue("ReadyToAdopt", response.data.Data.ReadyToAdopt);
                 setPetImage(response.data.Data.ImageBase64);
                 setIsLoading(true)
             }
@@ -114,6 +118,11 @@ export const ManagePetScreen: FC<ProfileNavigationStackScreenProps<"ManagePetScr
         }
 
         formData.append('data', JSON.stringify(payload));
+        // const bodyPutAdopt = {
+        //     Id: route.params.petId,
+            
+        // }
+        // const response = await putForm(`${BackendApiUri.putPetStatusAdopt}`, );
         // return;
         const res = await putForm(`${BackendApiUri.putPetUpdate}`, formData);
         if (res.status == 200) {
@@ -306,21 +315,30 @@ export const ManagePetScreen: FC<ProfileNavigationStackScreenProps<"ManagePetScr
                 <Controller
                     name="PetType"
                     control={control}
-                    render={({ field: { value } }) => (
-                        <SelectList
-                            setSelected={(text: string) => {
-                                setValue('PetType', text)
-                            }}
-                            data={petTypeData}
-                            save="value"
-                            search={true}
-                            dropdownStyles={styles.inputBox}
-                            boxStyles={styles.selectBox}
-                            inputStyles={{ padding: 3 }}
-                            arrowicon={<FontAwesome name="chevron-down" size={12} color={'#808080'} style={{ padding: 3 }} />}
-                            placeholder="Masukkan Jenis Hewan"
-                            defaultOption={petTypeData.find(item => item.value === petData?.Data.PetType)}
-                        />
+                    render={({ field: { onChange, value } }) => (
+                        <Picker
+                            selectedValue={value}
+                            onValueChange={onChange}
+                            style={styles.inputBox}
+                        >
+                            {petTypeData.map((item) => (
+                                <Picker.Item key={item.key} label={item.value} value={item.key} />
+                            ))}
+                        </Picker>
+                        // <SelectList
+                        //     setSelected={(text: string) => {
+                        //         setValue('PetType', text)
+                        //     }}
+                        //     data={petTypeData}
+                        //     save="value"
+                        //     search={true}
+                        //     dropdownStyles={styles.inputBox}
+                        //     boxStyles={styles.selectBox}
+                        //     inputStyles={{ padding: 3 }}
+                        //     arrowicon={<FontAwesome name="chevron-down" size={12} color={'#808080'} style={{ padding: 3 }} />}
+                        //     placeholder="Masukkan Jenis Hewan"
+                        //     defaultOption={petTypeData.find(item => item.value === petData?.Data.PetType)}
+                        // />
                     )}
                 />
                 <Text style={styles.errorMessage}>{errors.PetType?.message}</Text>
@@ -393,6 +411,25 @@ export const ManagePetScreen: FC<ProfileNavigationStackScreenProps<"ManagePetScr
                     />
                 </View>
                 <Text style={styles.errorMessage}>{errors.IsVaccinated?.message}</Text>
+
+                <View className="mb-5">
+                    <Text className="mb-1 ml-8 text-base text-[18px] text-blue-500">Status Siap Adopsi<Text className='text-[#ff0000]'>*</Text></Text>
+                    <Controller
+                        control={control}
+                        name="ReadyToAdopt"
+                        render={({ field: { onChange, value } }) => (
+                            <Picker
+                                selectedValue={value}
+                                onValueChange={onChange}
+                                style={styles.inputBox}
+                            >
+                                <Picker.Item label="Siap Diadopsi" value={true}/>
+                                <Picker.Item label="Belum Siap Diadopsi" value={false} />
+                            </Picker>
+                        )}
+                    />
+                    {errors.ReadyToAdopt && <Text className="text-red-500">{errors.ReadyToAdopt.message}</Text>}
+                </View>
 
                 <Text style={styles.textColor}>Deskripsi Hewan<Text className='text-[#ff0000]'>*</Text></Text>
                 <View style={styles.inputBox}>
