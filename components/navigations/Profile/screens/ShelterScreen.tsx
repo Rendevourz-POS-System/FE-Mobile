@@ -15,6 +15,7 @@ import { ProfileNavigationStackScreenProps } from "../../../StackParams/StackScr
 import axios from "axios";
 import { FontAwesome6, Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { getIconName } from "../../../../functions/GetPetIconName";
+import { Request } from "../../../../interface/IRequest";
 
 export const ShelterScreen: FC<ProfileNavigationStackScreenProps<'ShelterScreen'>> = ({ navigation, route }) => {
     const [data, setData] = useState<ShelterUser | null>(null);
@@ -24,7 +25,26 @@ export const ShelterScreen: FC<ProfileNavigationStackScreenProps<'ShelterScreen'
     const [loading, setLoading] = useState(true);
     const [petData, setPetData] = useState<PetData[]>([]);
     const [fetchLoading, setFetchLoading] = useState(true);
+    const [requestData, setRequestData] = useState<Request[]>([]);
+    const [mergedPetData, setMergedPetData] = useState<PetData[]>([]);
 
+    const fetchRequest = async () => {
+        try {
+            const res = await get(`${BackendApiUri.findRequest}?shelter_id=${data?.Data.Id}`);
+            if (res.data.Data) {
+                setRequestData(res.data.Data.filter((request: Request) => request.Status.toLowerCase() === "rejected"))
+            }
+        } catch (e) {
+            console.log(e)
+        }
+    }
+
+    const filterPetDataBasedOnRequests = async () => {
+        if (petData.length > 0 && requestData.length > 0) {
+            const filteredPetData = petData.filter(pet => requestData.find(request => request.PetId !== pet.Id));
+            setMergedPetData(filteredPetData);
+        }
+    };
 
     const fetchProfile = async () => {
         try {
@@ -46,7 +66,7 @@ export const ShelterScreen: FC<ProfileNavigationStackScreenProps<'ShelterScreen'
                 setLoading(true)
             } else {
                 const responsePet = await get(`${BackendApiUri.getPetList}/?shelter_id=${data?.Data.Id}`)
-                if (responsePet && responsePet.status === 200) {
+                if (responsePet.data && responsePet.status === 200) {
                     setPetData(responsePet.data);
                 }
                 setLoading(false)
@@ -55,13 +75,13 @@ export const ShelterScreen: FC<ProfileNavigationStackScreenProps<'ShelterScreen'
         }
     };
 
+
+
     useFocusEffect(
         useCallback(() => {
             const fetchData = async () => {
-                setFetchLoading(true);
                 await fetchProfile();
-                await fetchPetData();
-                setFetchLoading(false);
+                setFetchLoading(false)
             };
             fetchData();
         }, [navigation, route])
@@ -69,9 +89,15 @@ export const ShelterScreen: FC<ProfileNavigationStackScreenProps<'ShelterScreen'
 
     useEffect(() => {
         if (data) {
+            fetchRequest();
             fetchPetData();
         }
     }, [data]);
+
+    useEffect(() => {
+        filterPetDataBasedOnRequests();
+        setLoading(false);
+    }, [petData,requestData]);
 
     const handleInputChange = (text: string) => {
         setInputValue(text);
@@ -94,7 +120,7 @@ export const ShelterScreen: FC<ProfileNavigationStackScreenProps<'ShelterScreen'
         setInputValue("");
         setErrorMessage("");
     }
-
+    
     return (
         <SafeAreaProvider style={styles.container}>
             <SafeAreaView className="flex-1 bg-white">
@@ -144,22 +170,27 @@ export const ShelterScreen: FC<ProfileNavigationStackScreenProps<'ShelterScreen'
                                                 </TouchableOpacity>
                                             </View>
 
-                                            {petData == null &&
+                                            {/* {(mergedPetData.length == 0) &&
                                                 <View className='flex flex-1 justify-center items-center mt-20'>
                                                     <Text className='text-center'>Anda tidak mempunyai data hewan</Text>
                                                 </View>
-                                            }
+                                            } */}
+                                            {loading && (
+                                                <View className='flex flex-1 justify-center items-center mt-20'>
+                                                    <ActivityIndicator size="large" color="#4689FD" />
+                                                </View>
+                                            )}
 
-                                            {petData &&
+                                            {(mergedPetData.length > 0) ? (
                                                 <View style={{ flex: 1, padding: 10 }}>
                                                     <FlashList
                                                         estimatedItemSize={25}
-                                                        data={petData}
+                                                        data={mergedPetData}
                                                         numColumns={1}
                                                         keyExtractor={item => item.Id.toString()}
                                                         renderItem={({ item: pet }) => (
                                                             <View style={{ flex: 1, marginBottom: 35, marginTop: 20 }}>
-                                                                <TouchableOpacity className="mx-2 justify-center" activeOpacity={1} onPress={() => navigation.navigate("ManagePetScreen", { petId: pet.Id })}>
+                                                                <TouchableOpacity className="mx-2 justify-center" activeOpacity={1} onPress={() => navigation.navigate("ManagePetScreen", { petId: pet.Id })} style={styles.petListStyle}>
                                                                     <Image
                                                                         source={pet.ImageBase64 ? { uri: `data:image/*;base64,${pet.ImageBase64}` } : require('../../../../assets/default_paw2.jpg')}
                                                                         className="w-full h-80 rounded-3xl"
@@ -175,10 +206,10 @@ export const ShelterScreen: FC<ProfileNavigationStackScreenProps<'ShelterScreen'
                                                                         <View style={{ marginTop: 5, backgroundColor: "#FFFDFF", paddingHorizontal: 20, paddingVertical: 15, borderRadius: 15 }}>
                                                                             <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
                                                                                 <Text style={{ fontSize: 20, fontWeight: 'bold' }}>{pet.PetName}</Text>
-                                                                                {pet.PetType === "Male" ? (
-                                                                                    <FontAwesome6 name='venus' size={20} color='#FF6EC7' />
-                                                                                ) : (
+                                                                                {pet.PetGender === "Male" ? (
                                                                                     <FontAwesome6 name='mars' size={20} color='#4689FD' />
+                                                                                ) : (
+                                                                                    <FontAwesome6 name='venus' size={20} color='#FF6EC7' />
                                                                                 )}
                                                                             </View>
                                                                             <View className="flex-row justify-between">
@@ -201,7 +232,11 @@ export const ShelterScreen: FC<ProfileNavigationStackScreenProps<'ShelterScreen'
                                                         )}
                                                     />
                                                 </View>
-                                            }
+                                            ) : (
+                                                <View className='flex flex-1 justify-center items-center mt-20'>
+                                                    <Text className='text-center'>Anda tidak mempunyai data hewan</Text>
+                                                </View>
+                                            )}
                                         </ScrollView>
 
                                         {isModalOpen &&
@@ -305,5 +340,14 @@ const styles = StyleSheet.create({
         padding: 5,
         paddingHorizontal: 40,
         borderRadius: 10,
+    },
+    petListStyle: {
+        borderRadius: 15,
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.55,
+        shadowRadius: 5,
+        // Properti bayangan untuk Android
+        elevation: 10,
     },
 });

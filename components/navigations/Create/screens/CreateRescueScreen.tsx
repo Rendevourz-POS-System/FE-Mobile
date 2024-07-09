@@ -111,7 +111,7 @@ export const CreateRescueScreen : FC<CreateNavigationStackScreenProps<'CreateRes
 
     const onSubmit = async (data: CreatePetFormType) => {
         const payload = {
-            ShelterId: routeParam.shelterId,
+            // ShelterId: routeParam.shelterId,
             PetName: data.PetName,
             PetAge: data.PetAge,
             PetType: data.PetType,
@@ -122,7 +122,8 @@ export const CreateRescueScreen : FC<CreateNavigationStackScreenProps<'CreateRes
         const request = {
             Status : "Ongoing",
             Type: "Rescue",
-            Reason: data.Reason
+            Reason: data.Reason,
+            ShelterId: routeParam.shelterId,
         }
 
         const formData = new FormData();
