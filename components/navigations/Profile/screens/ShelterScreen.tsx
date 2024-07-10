@@ -1,4 +1,3 @@
-
 import React, { FC, useCallback, useEffect, useState } from "react";
 import { Text, View, StyleSheet, Modal, TouchableOpacity, TextInput, ScrollView, Image, TouchableHighlight, Alert, ActivityIndicator } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
@@ -29,17 +28,20 @@ export const ShelterScreen: FC<ProfileNavigationStackScreenProps<'ShelterScreen'
     const [mergedPetData, setMergedPetData] = useState<PetData[]>([]);
 
     const fetchRequest = async () => {
+        setLoading(true);
         try {
             const res = await get(`${BackendApiUri.findRequest}?shelter_id=${data?.Data.Id}`);
             if (res.data.Data) {
-                setRequestData(res.data.Data.filter((request: Request) => request.Status.toLowerCase() === "rejected"))
+                setRequestData(res.data.Data.filter((request: Request) => request.Status.toLowerCase() === "rejected"));
             }
         } catch (e) {
-            console.log(e)
+            console.log(e);
+        } finally {
+            setLoading(false);
         }
     }
 
-    const filterPetDataBasedOnRequests = async () => {
+    const filterPetDataBasedOnRequests = () => {
         if (petData.length > 0 && requestData.length > 0) {
             const filteredPetData = petData.filter(pet => requestData.find(request => request.PetId !== pet.Id));
             setMergedPetData(filteredPetData);
@@ -50,38 +52,40 @@ export const ShelterScreen: FC<ProfileNavigationStackScreenProps<'ShelterScreen'
         try {
             const res = await get(`${BackendApiUri.getUserShelter}`);
             if (res.data) {
-                setData(res.data)
+                setData(res.data);
             }
             if (res.data.Error) {
                 setData(null);
             }
         } catch (error) {
-            console.log(error)
+            console.log(error);
         }
     };
 
     const fetchPetData = async () => {
+        setLoading(true);
         try {
             if (data?.Data.Id == undefined) {
-                setLoading(true)
+                setLoading(true);
             } else {
-                const responsePet = await get(`${BackendApiUri.getPetList}/?shelter_id=${data?.Data.Id}`)
+                const responsePet = await get(`${BackendApiUri.getPetList}/?shelter_id=${data?.Data.Id}`);
                 if (responsePet.data && responsePet.status === 200) {
                     setPetData(responsePet.data);
                 }
-                setLoading(false)
+                setLoading(false);
             }
         } catch (e) {
+            console.log(e);
+            setLoading(false);
         }
     };
-
-
 
     useFocusEffect(
         useCallback(() => {
             const fetchData = async () => {
+                setLoading(true);
                 await fetchProfile();
-                setFetchLoading(false)
+                setFetchLoading(false);
             };
             fetchData();
         }, [navigation, route])
@@ -120,7 +124,7 @@ export const ShelterScreen: FC<ProfileNavigationStackScreenProps<'ShelterScreen'
         setInputValue("");
         setErrorMessage("");
     }
-    
+
     return (
         <SafeAreaProvider style={styles.container}>
             <SafeAreaView className="flex-1 bg-white">
@@ -170,72 +174,75 @@ export const ShelterScreen: FC<ProfileNavigationStackScreenProps<'ShelterScreen'
                                                 </TouchableOpacity>
                                             </View>
 
-                                            {/* {(mergedPetData.length == 0) &&
-                                                <View className='flex flex-1 justify-center items-center mt-20'>
-                                                    <Text className='text-center'>Anda tidak mempunyai data hewan</Text>
-                                                </View>
-                                            } */}
-                                            {loading && (
+                                            {loading ? (
                                                 <View className='flex flex-1 justify-center items-center mt-20'>
                                                     <ActivityIndicator size="large" color="#4689FD" />
                                                 </View>
-                                            )}
-
-                                            {(mergedPetData.length > 0) ? (
-                                                <View style={{ flex: 1, padding: 10 }}>
-                                                    <FlashList
-                                                        estimatedItemSize={25}
-                                                        data={mergedPetData}
-                                                        numColumns={1}
-                                                        keyExtractor={item => item.Id.toString()}
-                                                        renderItem={({ item: pet }) => (
-                                                            <View style={{ flex: 1, marginBottom: 35, marginTop: 20 }}>
-                                                                <TouchableOpacity className="mx-2 justify-center" activeOpacity={1} onPress={() => navigation.navigate("ManagePetScreen", { petId: pet.Id })} style={styles.petListStyle}>
-                                                                    <Image
-                                                                        source={pet.ImageBase64 ? { uri: `data:image/*;base64,${pet.ImageBase64}` } : require('../../../../assets/default_paw2.jpg')}
-                                                                        className="w-full h-80 rounded-3xl"
-                                                                    />
-                                                                    <TouchableHighlight
-                                                                        style={{ position: 'absolute', top: 15, right: 20, backgroundColor: 'rgba(255, 255, 255, 0.65)', padding: 8, borderRadius: 10 }}
-                                                                        underlayColor="transparent"
-                                                                    >
-                                                                        <Text className={`${pet.IsAdopted == true ? 'text-green-500' : 'text-red-500'}`} >{pet.IsAdopted == true ? "Adopted" : "Not Adopted"}</Text>
-                                                                    </TouchableHighlight>
-
-                                                                    <View style={{ position: 'absolute', top: 230, left: 0, right: 0, bottom: 0 }}>
-                                                                        <View style={{ marginTop: 5, backgroundColor: "#FFFDFF", paddingHorizontal: 20, paddingVertical: 15, borderRadius: 15 }}>
-                                                                            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-                                                                                <Text style={{ fontSize: 20, fontWeight: 'bold' }}>{pet.PetName}</Text>
-                                                                                {pet.PetGender === "Male" ? (
-                                                                                    <FontAwesome6 name='mars' size={20} color='#4689FD' />
-                                                                                ) : (
-                                                                                    <FontAwesome6 name='venus' size={20} color='#FF6EC7' />
-                                                                                )}
-                                                                            </View>
-                                                                            <View className="flex-row justify-between">
-                                                                                <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10 }}>
-                                                                                    <FontAwesome6 name='location-dot' size={20} color='#4689FD' />
-                                                                                    <Text style={{ fontSize: 14, fontWeight: 'normal', marginLeft: 5 }}>{pet.ShelterLocation}</Text>
-                                                                                </View>
-                                                                                <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10 }}>
-                                                                                    { getIconName(pet.PetType) == 'rabbit' ? (
-                                                                                        <MaterialCommunityIcons name="rabbit" size={29} color='#8A8A8A' style={{ marginLeft: 20 }} />
-                                                                                    ) : (
-                                                                                        <FontAwesome6 name={getIconName(pet.PetType)} size={24} color='#8A8A8A' style={{ marginLeft: 20 }} />
-                                                                                    )}
-                                                                                </View>
-                                                                            </View>
-                                                                        </View>
-                                                                    </View>
-                                                                </TouchableOpacity>
-                                                            </View>
-                                                        )}
-                                                    />
-                                                </View>
                                             ) : (
-                                                <View className='flex flex-1 justify-center items-center mt-20'>
-                                                    <Text className='text-center'>Anda tidak mempunyai data hewan</Text>
-                                                </View>
+                                                <>
+                                                    {mergedPetData.length > 0 ? (
+                                                        <View style={{ flex: 1, padding: 10 }}>
+                                                            <FlashList
+                                                                estimatedItemSize={25}
+                                                                data={mergedPetData}
+                                                                numColumns={1}
+                                                                keyExtractor={item => item.Id.toString()}
+                                                                renderItem={({ item: pet }) => (
+                                                                    <View style={{ flex: 1, marginBottom: 35, marginTop: 20 }}>
+                                                                        <TouchableOpacity className="mx-2 justify-center" activeOpacity={1} onPress={() => navigation.navigate("ManagePetScreen", { petId: pet.Id })} style={styles.petListStyle}>
+                                                                            <Image
+                                                                                source={pet.ImageBase64 ? { uri: `data:image/*;base64,${pet.ImageBase64}` } : require('../../../../assets/default_paw2.jpg')}
+                                                                                className="w-full h-80 rounded-3xl"
+                                                                            />
+                                                                            <TouchableHighlight
+                                                                                style={{ position: 'absolute', top: 15, right: 20, backgroundColor: 'rgba(255, 255, 255, 0.65)', padding: 8, borderRadius: 10 }}
+                                                                                underlayColor="transparent"
+                                                                            >
+                                                                                <Text className={`${pet.IsAdopted == true ? 'text-green-500' : 'text-red-500'}`} >{pet.IsAdopted == true ? "Adopted" : "Not Adopted"}</Text>
+                                                                            </TouchableHighlight>
+
+                                                                            <View style={{ position: 'absolute', top: 230, left: 0, right: 0, bottom: 0 }}>
+                                                                                <View style={{ marginTop: 5, backgroundColor: "#FFFDFF", paddingHorizontal: 20, paddingVertical: 15, borderRadius: 15 }}>
+                                                                                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                                                                                        <Text style={{ fontSize: 20, fontWeight: 'bold' }}>{pet.PetName}</Text>
+                                                                                        {pet.PetGender === "Male" ? (
+                                                                                            <FontAwesome6 name='mars' size={20} color='#4689FD' />
+                                                                                        ) : (
+                                                                                            <FontAwesome6 name='venus' size={20} color='#FF6EC7' />
+                                                                                        )}
+                                                                                    </View>
+                                                                                    <View className="flex-row justify-between">
+                                                                                        <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10 }}>
+                                                                                            <FontAwesome6 name='location-dot' size={20} color='#4689FD' />
+                                                                                            <Text style={{ fontSize: 14, fontWeight: 'normal', marginLeft: 5 }}>{pet.ShelterLocation}</Text>
+                                                                                        </View>
+                                                                                        <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10 }}>
+                                                                                            { getIconName(pet.PetType) == 'rabbit' ? (
+                                                                                                <MaterialCommunityIcons name="rabbit" size={29} color='#8A8A8A' style={{ marginLeft: 20 }} />
+                                                                                            ) : (
+                                                                                                <FontAwesome6 name={getIconName(pet.PetType)} size={24} color='#8A8A8A' style={{ marginLeft: 20 }} />
+                                                                                            )}
+                                                                                        </View>
+                                                                                    </View>
+                                                                                </View>
+                                                                            </View>
+                                                                        </TouchableOpacity>
+                                                                    </View>
+                                                                )}
+                                                            />
+                                                        </View>
+                                                    ) : (
+                                                        <View className=''>
+                                                            <ScrollView
+                                                                showsVerticalScrollIndicator={false}
+                                                                className="w-full h-full"
+                                                                contentContainerStyle={{flex: 1, justifyContent: 'center', alignItems: 'center'}}
+                                                            >
+                                                                <Text className=''>Sorry, data not found</Text>
+                                                            </ScrollView>
+                                                        </View>
+                                                    )}
+                                                </>
                                             )}
                                         </ScrollView>
 
