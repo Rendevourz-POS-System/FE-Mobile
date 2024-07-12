@@ -46,6 +46,7 @@ export const ApprovalPetScreen: FC<ProfileNavigationStackScreenProps<"ApprovalPe
         Status: "",
         Type: "",
         RequestedAt: new Date(),
+        CompletedAt: new Date(),
         ShelterId: ""
     });
     const fetchRequestDetail = async () => {
@@ -60,6 +61,7 @@ export const ApprovalPetScreen: FC<ProfileNavigationStackScreenProps<"ApprovalPe
                     Status: res.data.Data[0].Status,
                     Type: res.data.Data[0].Type,
                     RequestedAt: res.data.Data[0].RequestedAt,
+                    CompletedAt: res.data.Data[0].CompletedAt,
                     ShelterId: res.data.Data[0].ShelterId
                 });
             } 

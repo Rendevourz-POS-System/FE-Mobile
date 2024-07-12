@@ -42,9 +42,20 @@ export const ShelterScreen: FC<ProfileNavigationStackScreenProps<'ShelterScreen'
     }
 
     const filterPetDataBasedOnRequests = () => {
-        if (petData.length > 0 && requestData.length > 0) {
-            const filteredPetData = petData.filter(pet => requestData.find(request => request.PetId !== pet.Id));
-            setMergedPetData(filteredPetData);
+        // if (petData.length > 0  requestData.length > 0) {
+        //     const filteredPetData = petData.filter(pet => requestData.find(request => request.PetId !== pet.Id));
+        //     setMergedPetData(filteredPetData);
+        // }
+        if(petData.length > 0 ) {
+            if(requestData.length > 0) {
+                const filteredPetData = petData.filter(pet => !requestData.find(request => request.PetId === pet.Id));
+                setMergedPetData(filteredPetData);
+            } else {
+                setMergedPetData(petData);
+            }
+        }
+        else {
+            setMergedPetData([]);
         }
     };
 

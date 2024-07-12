@@ -1,4 +1,4 @@
-import { FontAwesome, FontAwesome6, Ionicons } from "@expo/vector-icons";
+import { FontAwesome, FontAwesome6, Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import React, { FC, useCallback, useEffect, useState } from "react";
 import { ScrollView, Text, View, StyleSheet, ActivityIndicator } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
@@ -16,6 +16,7 @@ import { Image } from "react-native";
 import { Request } from "../../../../interface/IRequest";
 import { TouchableHighlight } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
+import { getIconName } from "../../../../functions/GetPetIconName";
 
 interface ShelterInfo {
     ShelterId: string;
@@ -172,16 +173,29 @@ export const ApprovalScreen: FC<ProfileNavigationStackScreenProps<"ApprovalScree
                     underlayColor="transparent"
                     className={`bg-[#4689FD] opacity-90`}
                 >
-                    <Text className="text-white font-bold text-md">{item.Type == "Rescue" ? "Rescue" : "Surrender"}</Text>
+                    <Text className="text-white font-bold text-md">{item.Type === "Rescue" ? "Rescue" : item.Type === "Adoption" ? "Adoption" : "Surrender"}</Text>
                 </TouchableHighlight>
                 <View style={styles.petInfoContainer}>
                     <View style={styles.petInfo}>
                         <Text style={styles.petName}>{item.pet.PetName}</Text>
                         <FontAwesome6 name={item.pet.PetGender === "Male" ? 'mars' : 'venus'} size={22} color={item.pet.PetGender === "Male" ? '#4689FD' : '#FF6EC7'} />
                     </View>
-                    <View style={styles.petLocation}>
-                        <FontAwesome6 name='location-dot' size={20} color='#4689FD' />
-                        <Text style={styles.petLocationText}>{item.Type == "Rescue" ? "Rescue" : "Surrender"}</Text>
+                    <View className="mt-[10px] flex-row items-center justify-between ">
+                        <View className="flex-row">
+                            <FontAwesome6 name='tag' size={20} color='#4689FD' />
+                            <Text className="text-md ml-[6px]">
+                                {item.Type === "Rescue" ? "Rescue" : item.Type === "Adoption" ? "Adoption" : "Surrender"}
+                            </Text>
+                        </View>
+                        
+                        <View>
+                            { getIconName(item.pet.PetType) == 'rabbit' ? (
+                                <MaterialCommunityIcons name="rabbit" size={29} color='#8A8A8A' style={{ marginLeft: 20 }} />
+                                ) : (
+                                    <FontAwesome6 name={getIconName(item.pet.PetType)} size={24} color='#8A8A8A' style={{ marginLeft: 20 }} />
+                            )}
+                        </View>
+
                     </View>
                 </View>
             </TouchableOpacity>
