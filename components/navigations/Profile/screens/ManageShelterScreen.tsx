@@ -94,7 +94,6 @@ export const ManageShelterScreen: FC<ProfileNavigationStackScreenProps<'ManageSh
         }
 
         formData.append('data', payloadString);
-        console.log(formData);
         // return;
 
         const res = await putForm(`${BackendApiUri.putShelterUpdate}`, formData);

@@ -7,4 +7,5 @@ export interface Request {
     Status: string
     Reason: string
     RequestedAt: Date
+    CompletedAt : Date | undefined
 }

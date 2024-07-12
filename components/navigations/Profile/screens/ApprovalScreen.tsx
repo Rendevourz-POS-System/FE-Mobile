@@ -1,4 +1,4 @@
-import { FontAwesome, FontAwesome6, Ionicons } from "@expo/vector-icons";
+import { FontAwesome, FontAwesome6, Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import React, { FC, useCallback, useEffect, useState } from "react";
 import { ScrollView, Text, View, StyleSheet, ActivityIndicator } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
@@ -16,6 +16,7 @@ import { Image } from "react-native";
 import { Request } from "../../../../interface/IRequest";
 import { TouchableHighlight } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
+import { getIconName } from "../../../../functions/GetPetIconName";
 
 interface ShelterInfo {
     ShelterId: string;
@@ -53,7 +54,7 @@ export const ApprovalScreen: FC<ProfileNavigationStackScreenProps<"ApprovalScree
 
     const fetchPetByShelter = async (shelterId: string) => {
         try {
-            const response = await get(`${BackendApiUri.getPet}?shelter_id=${shelterId}`);
+            const response = await get(`${BackendApiUri.getPet}`);
             if (response.status == 200 && response.data) {
                 setPetData(response.data);
             }
@@ -65,7 +66,7 @@ export const ApprovalScreen: FC<ProfileNavigationStackScreenProps<"ApprovalScree
     const fetchShelterUser = async () => {
         try {
             const response = await get(`${BackendApiUri.getUserShelter}`);
-            if (response.status == 200 && response.data.Data) {
+            if (response.status == 200 && response.data.Data != null) {
                 setUserShelter({
                     ShelterId: response.data.Data.Id,
                     UserId: response.data.Data.UserId,
@@ -79,15 +80,19 @@ export const ApprovalScreen: FC<ProfileNavigationStackScreenProps<"ApprovalScree
 
     const fetchRequest = async (shelterId: string) => {
         try {
-            const response = await get(`${BackendApiUri.findRequest}/?shelter_id=${shelterId}&status=${'Ongoing'}`);
-            if (response.status && response.data.Data) {
+            const response = await get(`${BackendApiUri.findRequest}?shelter_id=${shelterId}&status=${'Ongoing'}`);
+            if (response.status && response.data.Data != null) {
                 setShelterRequest(response.data.Data);
+            }
+            if(response.data.Data == null) {
+                setShelterRequest([])
             }
         } catch (e) {
             console.error(e);
-        } finally {
-            setIsLoading(false);
-        }
+        } 
+        // finally {
+        //     setIsLoading(false);
+        // }
     };
     
     // useEffect(() => {
@@ -111,13 +116,13 @@ export const ApprovalScreen: FC<ProfileNavigationStackScreenProps<"ApprovalScree
             return { ...request, pet }; 
         });
         
-        const mergedData = merge.filter(request => request.Status === 'Ongoing');
-        return mergedData;
+        return merge;
     }
 
     const fetchData = () => {
         const data = merge();
         setMergedData(data);  
+        setIsLoading(false);
     }
 
     // useEffect(() => {
@@ -138,6 +143,7 @@ export const ApprovalScreen: FC<ProfileNavigationStackScreenProps<"ApprovalScree
     useFocusEffect(
         useCallback(() => {
             const fetch = async () => {
+                console.log("hello");
                 setIsLoading(true)
                 await fetchShelterUser();
                 await fetchRequest(userShelter.ShelterId);
@@ -147,9 +153,8 @@ export const ApprovalScreen: FC<ProfileNavigationStackScreenProps<"ApprovalScree
         }, [navigation, route])
     );
 
-    // console.log(mergedData);
-
     const renderPetItem = ({ item }: any) => {
+        if(!item.pet) return null;
         const petImage = item.pet?.ImageBase64 ? { uri: `data:image/*;base64,${item.pet.ImageBase64}` } : require("../../../../assets/default_paw2.jpg");
         return (
             <TouchableOpacity
@@ -168,16 +173,29 @@ export const ApprovalScreen: FC<ProfileNavigationStackScreenProps<"ApprovalScree
                     underlayColor="transparent"
                     className={`bg-[#4689FD] opacity-90`}
                 >
-                    <Text className="text-white font-bold text-md">{item.Type == "Rescue" ? "Rescue" : "Surrender"}</Text>
+                    <Text className="text-white font-bold text-md">{item.Type === "Rescue" ? "Rescue" : item.Type === "Adoption" ? "Adoption" : "Surrender"}</Text>
                 </TouchableHighlight>
                 <View style={styles.petInfoContainer}>
                     <View style={styles.petInfo}>
                         <Text style={styles.petName}>{item.pet.PetName}</Text>
                         <FontAwesome6 name={item.pet.PetGender === "Male" ? 'mars' : 'venus'} size={22} color={item.pet.PetGender === "Male" ? '#4689FD' : '#FF6EC7'} />
                     </View>
-                    <View style={styles.petLocation}>
-                        <FontAwesome6 name='location-dot' size={20} color='#4689FD' />
-                        <Text style={styles.petLocationText}>{item.pet.ShelterLocation}</Text>
+                    <View className="mt-[10px] flex-row items-center justify-between ">
+                        <View className="flex-row">
+                            <FontAwesome6 name='tag' size={20} color='#4689FD' />
+                            <Text className="text-md ml-[6px]">
+                                {item.Type === "Rescue" ? "Rescue" : item.Type === "Adoption" ? "Adoption" : "Surrender"}
+                            </Text>
+                        </View>
+                        
+                        <View>
+                            { getIconName(item.pet.PetType) == 'rabbit' ? (
+                                <MaterialCommunityIcons name="rabbit" size={29} color='#8A8A8A' style={{ marginLeft: 20 }} />
+                                ) : (
+                                    <FontAwesome6 name={getIconName(item.pet.PetType)} size={24} color='#8A8A8A' style={{ marginLeft: 20 }} />
+                            )}
+                        </View>
+
                     </View>
                 </View>
             </TouchableOpacity>
@@ -295,8 +313,8 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
     },
     petLocationText: {
-        fontSize: 14,
-        marginLeft: 5,
+        fontSize: 16,
+        marginLeft: 12,
     },
     petLocation: {
         flexDirection: 'row',
