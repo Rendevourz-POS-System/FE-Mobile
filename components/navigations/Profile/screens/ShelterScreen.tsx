@@ -1,5 +1,5 @@
 import React, { FC, useCallback, useEffect, useState } from "react";
-import { Text, View, StyleSheet, Modal, TouchableOpacity, TextInput, ScrollView, Image, TouchableHighlight, Alert, ActivityIndicator } from "react-native";
+import { Text, View, StyleSheet, Modal, TouchableOpacity, TextInput, ScrollView, Image, TouchableHighlight, Alert, ActivityIndicator, RefreshControl } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { CreateShelter } from "../../../CreateShelter";
 import { get } from "../../../../functions/Fetch";
@@ -26,6 +26,19 @@ export const ShelterScreen: FC<ProfileNavigationStackScreenProps<'ShelterScreen'
     const [fetchLoading, setFetchLoading] = useState(true);
     const [requestData, setRequestData] = useState<Request[]>([]);
     const [mergedPetData, setMergedPetData] = useState<PetData[]>([]);
+    const [refreshing, setRefreshing] = useState(false);
+
+    const onRefresh = async () => {
+        try {
+            setRefreshing(true);
+            await fetchRequest();
+            await fetchPetData();
+            setRefreshing(false);
+            filterPetDataBasedOnRequests();
+        } catch (e) {
+            console.error(e);
+        }
+    }
 
     const fetchRequest = async () => {
         setLoading(true);
@@ -82,6 +95,8 @@ export const ShelterScreen: FC<ProfileNavigationStackScreenProps<'ShelterScreen'
                 const responsePet = await get(`${BackendApiUri.getPetList}/?shelter_id=${data?.Data.Id}`);
                 if (responsePet.data && responsePet.status === 200) {
                     setPetData(responsePet.data);
+                } else {
+                    setPetData([]);
                 }
                 setLoading(false);
             }
@@ -194,6 +209,9 @@ export const ShelterScreen: FC<ProfileNavigationStackScreenProps<'ShelterScreen'
                                                     {mergedPetData.length > 0 ? (
                                                         <View style={{ flex: 1, padding: 10 }}>
                                                             <FlashList
+                                                                refreshControl={
+                                                                    <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+                                                                }
                                                                 estimatedItemSize={25}
                                                                 data={mergedPetData}
                                                                 numColumns={1}
@@ -245,6 +263,9 @@ export const ShelterScreen: FC<ProfileNavigationStackScreenProps<'ShelterScreen'
                                                     ) : (
                                                         <View className=''>
                                                             <ScrollView
+                                                                refreshControl={
+                                                                    <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+                                                                }
                                                                 showsVerticalScrollIndicator={false}
                                                                 className="w-full h-full"
                                                                 contentContainerStyle={{flex: 1, justifyContent: 'center', alignItems: 'center'}}
