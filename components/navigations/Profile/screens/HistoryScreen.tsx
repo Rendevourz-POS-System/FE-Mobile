@@ -16,6 +16,7 @@ interface History {
     Status: string,
     Reason: string,
     RequestedAt: string,
+    CompletedAt : string
 }
 
 interface ShelterProps {
@@ -108,7 +109,7 @@ export const HistoryScreen: FC<ProfileNavigationStackScreenProps<'HistoryScreen'
         <View className="mx-5 my-2 bg-blue-200 rounded-md px-4 py-3">
             <View className="flex-row justify-between">
                 <Text>{item.Type} {item.Status}</Text>
-                <Text>{formatTime(item.RequestedAt)}</Text>
+                <Text>{formatDate(item.RequestedAt)} {item.CompletedAt && (" - " + formatDate(item.CompletedAt))}</Text>
             </View>
             <View>
                 <Text className="text-xs font-light mt-1">{item.Reason}</Text>

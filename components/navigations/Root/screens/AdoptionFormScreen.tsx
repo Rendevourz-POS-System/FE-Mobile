@@ -9,6 +9,8 @@ import { Controller, useForm } from 'react-hook-form';
 import { post } from '../../../../functions/Fetch';
 import { BackendApiUri } from '../../../../functions/BackendApiUri';
 import { NoHeaderNavigationStackScreenProps } from '../../../StackParams/StackScreenProps';
+import { useNavigation } from '@react-navigation/native';
+import { RootBottomTabCompositeNavigationProp } from '../../CompositeNavigationProps';
 
 const adoptionFormSchema = z.object({
     Reason: z.string({ required_error: "Alasan adopsi tidak boleh kosong" }).min(5, { message: "Alasan adopsi harus lebih dari 5 karakter" }),
@@ -27,6 +29,8 @@ export const AdoptionFormScreen: FC<NoHeaderNavigationStackScreenProps<'Adoption
         resolver: zodResolver(adoptionFormSchema),
     });
 
+    const navigateToHistory = useNavigation<RootBottomTabCompositeNavigationProp<'Profile'>>();
+
     const onSubmit = async (data: AdoptionFormType) => {
         const payload = {
             ShelterId: route.params.shelterId,
@@ -40,7 +44,7 @@ export const AdoptionFormScreen: FC<NoHeaderNavigationStackScreenProps<'Adoption
                 Alert.alert("Data Anda Berhasil Tersimpan", "", [
                     {
                         text: 'OK',
-                        onPress: () => navigation.goBack(),
+                        onPress: () => navigateToHistory.navigate("Profile", {screen: "HistoryScreen"}),
                     },
                 ],
                     { cancelable: false })

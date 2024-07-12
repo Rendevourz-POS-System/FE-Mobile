@@ -1,6 +1,6 @@
-// export const baseUrl = "https://shelter-apps-v5z53glgzq-et.a.run.app"
+export const baseUrl = "https://shelter-apps.up.railway.app"
 // export const baseUrl = "http://192.168.43.15:8080"
-export const baseUrl = "http://192.168.18.3:8080"
+// export const baseUrl = "http://192.168.18.3:8080"
 
 export const BackendApiUri = {
     registerUser : '/user/register',
@@ -33,6 +33,7 @@ export const BackendApiUri = {
     getUser: '/user',
     postRequest: '/request/create',
     putPetUpdate: '/pet/update',
+    putPetStatusAdopt: '/pet/change_ready_for_adopt',
     deletePet: '/pet/delete',
 
     // Request
@@ -40,6 +41,7 @@ export const BackendApiUri = {
     findRequest: '/request/find',
     rescueOrSurrender : '/request/rescue_or_surrender',
     updateStatusRequest : '/request/rescue_or_surrender/update',
+    updateStatusAdoption: '/request/update_adoption',
 
     
     // Admin

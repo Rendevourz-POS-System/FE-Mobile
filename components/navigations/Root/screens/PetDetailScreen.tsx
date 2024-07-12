@@ -35,7 +35,6 @@ export const PetDetailScreen: FC<NoHeaderNavigationStackScreenProps<"PetDetailSc
             CreatedAt: new Date(),
         }
     })
-    console.log(data);
 
     const fetchData = async () => {
         try {
@@ -141,16 +140,32 @@ export const PetDetailScreen: FC<NoHeaderNavigationStackScreenProps<"PetDetailSc
                         </View>
 
                         <View className='mt-5 items-center pb-7 px-5'>
-                            {data.Data.IsAdopted == true ? (
-                                <TouchableOpacity style={styles.adopsiButton} onPress={() => navigation.navigate("AdoptionFormScreen", { shelterId: data.Data.ShelterId, petId: data.Data.Id })} className='w-4/5'>
+                            {data.Data.IsAdopted == false && data.Data.ReadyToAdopt ? (
+                                <TouchableOpacity 
+                                    style={styles.adopsiButton} 
+                                    onPress={() => navigation.navigate("AdoptionFormScreen", { shelterId: data.Data.ShelterId, petId: data.Data.Id })} 
+                                    className='w-4/5'>
                                     <Text style={styles.fontButton} className='text-xl text-center'>Adopsi Sekarang</Text>
                                 </TouchableOpacity>
-                            ) : (
-                                <TouchableOpacity style={styles.adopButton} className='w-4/5 bg-red-500' disabled>
-                                    <Text style={styles.fontButton} className='text-xl text-center'>Hewan Tidak Tersedia</Text>
+                            ) : data.Data.ReadyToAdopt == false ? (
+                                <TouchableOpacity 
+                                    style={styles.adopButton} 
+                                    className='w-4/5 bg-red-500' 
+                                    disabled>
+                                    <Text style={styles.fontButton} className='text-xl text-center break-words'>Hewan sedang tidak tersedia untuk adopsi</Text>
                                 </TouchableOpacity>
-                            )}
+                            )
+                            : (
+                                <TouchableOpacity 
+                                    style={styles.adopButton} 
+                                    className='w-4/5 bg-red-500' 
+                                    disabled>
+                                    <Text style={styles.fontButton} className='text-xl text-center'>Hewan sudah tidak tersedia</Text>
+                                </TouchableOpacity>
+                            )
+                            }
                         </View>
+
                     </ScrollView>
 
                 </>
@@ -185,7 +200,6 @@ const styles = StyleSheet.create({
     },
     adopButton: {
         paddingVertical: 20,
-        height: 70,
         borderRadius: 30,
         shadowColor: "#000",
         shadowOffset: { width: 0, height: 2 },

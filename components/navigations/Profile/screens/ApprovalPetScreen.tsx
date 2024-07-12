@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useState } from 'react';
+import React, { FC, useCallback, useEffect, useState } from 'react';
 import { ScrollView, TouchableOpacity, View, StyleSheet, ImageBackground, TouchableHighlight, ActivityIndicator, Linking, Alert } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { Text } from 'react-native-elements';
@@ -10,6 +10,7 @@ import { NoHeaderNavigationStackScreenProps, ProfileNavigationStackScreenProps }
 import { truncateText } from '../../../../functions/TruncateText';
 import { IUser } from '../../../../interface/IUser';
 import { Request } from '../../../../interface/IRequest';
+import { useFocusEffect } from '@react-navigation/native';
 
 interface PetProps {
     Data: PetData
@@ -37,13 +38,32 @@ export const ApprovalPetScreen: FC<ProfileNavigationStackScreenProps<"ApprovalPe
         }
     })
     const [userRequest, setUserRequest] = useState<IUser>();
-    const [requestDetail, setRequestDetail] = useState<Request[]>([]);
-
+    const [requestDetail, setRequestDetail] = useState<Request>({
+        Id: "",
+        UserId: "",
+        PetId: "",
+        Reason: "",
+        Status: "",
+        Type: "",
+        RequestedAt: new Date(),
+        CompletedAt: new Date(),
+        ShelterId: ""
+    });
     const fetchRequestDetail = async () => {
         try {
-            const res = await get(`${BackendApiUri.findRequest}?requestId=${route.params.requestId}`);
+            const res = await get(`${BackendApiUri.findRequest}?request_id=${route.params.requestId}`);
             if(res.status === 200 && res.data) {
-                setRequestDetail(res.data.Data);
+                setRequestDetail({
+                    Id: res.data.Data[0].Id,
+                    UserId: res.data.Data[0].UserId,
+                    PetId: res.data.Data[0].PetId,
+                    Reason: res.data.Data[0].Reason,
+                    Status: res.data.Data[0].Status,
+                    Type: res.data.Data[0].Type,
+                    RequestedAt: res.data.Data[0].RequestedAt,
+                    CompletedAt: res.data.Data[0].CompletedAt,
+                    ShelterId: res.data.Data[0].ShelterId
+                });
             } 
         } catch(e) {
             console.log(e);
@@ -78,7 +98,7 @@ export const ApprovalPetScreen: FC<ProfileNavigationStackScreenProps<"ApprovalPe
         fetchData()
         fetchUserRequest()
         fetchRequestDetail()
-    }, [])
+    }, [navigation, route])
 
     const handleWhatsApp = (phoneNumber: string) => {
         const message = 'Halo saya ingin bertanya mengenai Hewan anda.';
@@ -86,11 +106,31 @@ export const ApprovalPetScreen: FC<ProfileNavigationStackScreenProps<"ApprovalPe
     }
 
     const handleApprove = async () => {
+        // if(requestDetail.Type === 'Adoption') {
+        //     const body = {
+        //         RequestId : route.params.requestId,
+        //         // Type: requestDetail.Type,
+        //         // Status: 'approved'
+        //     }
+            
+        //     try {
+        //         const res = await put(`${BackendApiUri.updateStatusAdoption}`,body);
+        //         if(res.Data) {
+        //             Alert.alert("Success", "Pet berhasil di approved", 
+        //                 [ { text: "OK", onPress: () => navigation.goBack()
+        
+        //             }]);
+        //         }
+        //     } catch(e) {
+        //         console.log("error", e);
+        //     }
+        // }
         const body = {
             RequestId : route.params.requestId,
-            Type: requestDetail[0].Type,
+            Type: requestDetail.Type,
             Status: 'approved'
         }
+        
         try {
             const res = await put(`${BackendApiUri.updateStatusRequest}`,body);
             if(res.Data) {
@@ -100,14 +140,14 @@ export const ApprovalPetScreen: FC<ProfileNavigationStackScreenProps<"ApprovalPe
                 }]);
             }
         } catch(e) {
-            console.log(e);
+            console.log("error", e);
         }
     }
 
     const handleDecline = async () => {
         const body = {
             RequestId : route.params.requestId,
-            Type: requestDetail[0].Type,
+            Type: requestDetail.Type,
             Status: 'rejected'
         }
         try {
@@ -119,7 +159,7 @@ export const ApprovalPetScreen: FC<ProfileNavigationStackScreenProps<"ApprovalPe
                 }]);
             }
         } catch(e) {
-            console.log(e);
+            console.log("error", e);
         }
     }
 
@@ -135,6 +175,13 @@ export const ApprovalPetScreen: FC<ProfileNavigationStackScreenProps<"ApprovalPe
                         <Ionicons name="chevron-back" size={24} color="black" onPress={() => navigation.goBack()} />
                     </View>
                     <ScrollView contentContainerStyle={{ flexGrow: 1, justifyContent: 'space-between', alignContent: 'center' }}>
+                        <TouchableHighlight
+                            style={{ position: 'absolute', top: 20, right: 17, paddingHorizontal: 25, paddingVertical: 8, borderRadius: 20 }}
+                            underlayColor="transparent"
+                            className={`bg-[#4689FD] opacity-90 z-30`}
+                        >
+                            <Text className="text-white font-bold text-md">Surrender</Text>
+                        </TouchableHighlight>
                         <ImageBackground source={data?.Data.ImageBase64 == null ? require('../../../../assets/default_paw2.jpg') : { uri: `data:image/*;base64,${data?.Data.ImageBase64}` }} style={{ width: '100%', height: 400 }} />
                         <View className='pt-8 px-6 bottom-28 bg-white rounded-t-3xl border border-slate-300 border-b-0'>
                             <View className='flex flex-row justify-between'>
@@ -164,16 +211,22 @@ export const ApprovalPetScreen: FC<ProfileNavigationStackScreenProps<"ApprovalPe
                             </View>
 
                             <Text className='mt-8 text-xl font-bold'>Deskripsi Hewan</Text>
-                            <Text className='mt-2 text-base text-[#8A8A8A]'>{data?.Data.PetDescription}</Text>
+                            <Text className='mt-2 text-base text-black'>{data?.Data.PetDescription}</Text>
 
-                            <Text className='mt-8 text-xl font-bold'>Contact Person</Text>
+                            <Text className='mt-8 text-xl font-semibold text-[#3788FD]'>Contact Person</Text>
                             {userRequest ? (
-                                <TouchableOpacity className='bg-blue-100 rounded-md' onPress={() => handleWhatsApp(userRequest.PhoneNumber)}>
-                                    <View className='ml-2 flex flex-row items-center gap-3 p-3'>
-                                        <FontAwesome name="whatsapp" size={50} color="green" />
-                                        <Text className='font-bold text-xl'>{userRequest.Username}</Text>
-                                    </View>
-                                </TouchableOpacity>
+                                <>
+                                    <TouchableOpacity className='bg-blue-100 rounded-md' onPress={() => handleWhatsApp(userRequest.PhoneNumber)}>
+                                        <View className='ml-2 flex flex-row items-center gap-3 p-3'>
+                                            <FontAwesome name="whatsapp" size={50} color="green" />
+                                            <Text className='font-bold text-xl'>{userRequest.Username}</Text>
+                                        </View>
+                                    </TouchableOpacity>
+
+                                    <Text className='mt-8 text-xl font-semibold text-[#3788FD]'>Alasan</Text>
+                                    <Text className='mt-2 text-base text-black'>{requestDetail.Reason}</Text>
+
+                                </>
 
                             ) : (
                                 <Text className='mt-2 text-base text-[#8A8A8A]'>Tidak ada kontak person</Text>
@@ -184,8 +237,8 @@ export const ApprovalPetScreen: FC<ProfileNavigationStackScreenProps<"ApprovalPe
                             <TouchableOpacity style={styles.adopsiButton} onPress={() => handleApprove()} className='w-5/12 py-3 rounded-xl'>
                                 <Text style={styles.fontButton} className='text-xl text-center'>Approve</Text>
                             </TouchableOpacity>
-                            <TouchableOpacity style={{elevation: 5}} onPress={() => handleDecline()} className='w-5/12 py-3 rounded-xl bg-red-600'>
-                                <Text style={styles.fontButton} className='text-xl text-center'>Decline</Text>
+                            <TouchableOpacity style={{elevation: 5}} onPress={() => handleDecline()} className='w-5/12 py-3 rounded-xl bg-[#8A0B1E]'>
+                                <Text style={styles.fontButton} className='text-xl text-center'>Reject</Text>
                             </TouchableOpacity>
                         </View>
                     </ScrollView>
