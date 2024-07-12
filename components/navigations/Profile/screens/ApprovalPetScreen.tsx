@@ -106,6 +106,25 @@ export const ApprovalPetScreen: FC<ProfileNavigationStackScreenProps<"ApprovalPe
     }
 
     const handleApprove = async () => {
+        // if(requestDetail.Type === 'Adoption') {
+        //     const body = {
+        //         RequestId : route.params.requestId,
+        //         // Type: requestDetail.Type,
+        //         // Status: 'approved'
+        //     }
+            
+        //     try {
+        //         const res = await put(`${BackendApiUri.updateStatusAdoption}`,body);
+        //         if(res.Data) {
+        //             Alert.alert("Success", "Pet berhasil di approved", 
+        //                 [ { text: "OK", onPress: () => navigation.goBack()
+        
+        //             }]);
+        //         }
+        //     } catch(e) {
+        //         console.log("error", e);
+        //     }
+        // }
         const body = {
             RequestId : route.params.requestId,
             Type: requestDetail.Type,

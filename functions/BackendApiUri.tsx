@@ -41,7 +41,7 @@ export const BackendApiUri = {
     findRequest: '/request/find',
     rescueOrSurrender : '/request/rescue_or_surrender',
     updateStatusRequest : '/request/rescue_or_surrender/update',
-    updateStatusAdoption: '',
+    updateStatusAdoption: '/request/update_adoption',
 
     
     // Admin
