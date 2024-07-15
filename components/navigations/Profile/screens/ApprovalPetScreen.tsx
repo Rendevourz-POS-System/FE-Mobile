@@ -106,60 +106,82 @@ export const ApprovalPetScreen: FC<ProfileNavigationStackScreenProps<"ApprovalPe
     }
 
     const handleApprove = async () => {
-        // if(requestDetail.Type === 'Adoption') {
-        //     const body = {
-        //         RequestId : route.params.requestId,
-        //         // Type: requestDetail.Type,
-        //         // Status: 'approved'
-        //     }
-            
-        //     try {
-        //         const res = await put(`${BackendApiUri.updateStatusAdoption}`,body);
-        //         if(res.Data) {
-        //             Alert.alert("Success", "Pet berhasil di approved", 
-        //                 [ { text: "OK", onPress: () => navigation.goBack()
-        
-        //             }]);
-        //         }
-        //     } catch(e) {
-        //         console.log("error", e);
-        //     }
-        // }
-        const body = {
-            RequestId : route.params.requestId,
-            Type: requestDetail.Type,
-            Status: 'approved'
-        }
-        
-        try {
-            const res = await put(`${BackendApiUri.updateStatusRequest}`,body);
-            if(res.Data) {
-                Alert.alert("Success", "Pet berhasil di approved", 
-                    [ { text: "OK", onPress: () => navigation.goBack()
-    
-                }]);
+        if(requestDetail.Type === 'Adoption') {
+            const body = {
+                RequestId : route.params.requestId,
+                Status: 'approved'
             }
-        } catch(e) {
-            console.log("error", e);
+            console.log(body)
+            
+            try {
+                const res = await post(`${BackendApiUri.updateStatusAdoption}`,body);
+                if(res.data.Data) {
+                    Alert.alert("Success", "Pet berhasil di approved", 
+                        [ { text: "OK", onPress: () => navigation.goBack()
+        
+                    }]);
+                }
+            } catch(e) {
+                console.log("error", e);
+            }
+        } else {
+            const body = {
+                RequestId : route.params.requestId,
+                Type: requestDetail.Type,
+                Status: 'approved'
+            }
+            
+            try {
+                const res = await put(`${BackendApiUri.updateStatusRequest}`,body);
+                if(res.Data) {
+                    Alert.alert("Success", "Pet berhasil di approved", 
+                        [ { text: "OK", onPress: () => navigation.goBack()
+        
+                    }]);
+                }
+            } catch(e) {
+                console.log("error", e);
+            }
         }
     }
 
     const handleDecline = async () => {
-        const body = {
-            RequestId : route.params.requestId,
-            Type: requestDetail.Type,
-            Status: 'rejected'
-        }
-        try {
-            const res = await put(`${BackendApiUri.updateStatusRequest}`,body);
-            if(res.Data) {
-                Alert.alert("Success", "Pet berhasil di decline", 
-                    [ { text: "OK", onPress: () => navigation.goBack()
-    
-                }]);
+        if(requestDetail.Type === 'Adoption') {
+            const body = {
+                RequestId : route.params.requestId,
+                Status: 'rejected'
             }
-        } catch(e) {
-            console.log("error", e);
+
+            console.log(body)
+
+            try {
+                const res = await post(`${BackendApiUri.updateStatusAdoption}`,body);
+                if(res.data.Data) {
+                    Alert.alert("Success", "Pet berhasil di decline",
+                        [ { text: "OK", onPress: () => navigation.goBack()
+                        }]);
+                }
+            } catch(e) {
+                console.log("error", e);
+            }
+        }
+        else {
+            const body = {
+                RequestId : route.params.requestId,
+                Type: requestDetail.Type,
+                Status: 'rejected'
+            }
+            try {
+                const res = await put(`${BackendApiUri.updateStatusAdoption}`,body);
+                if(res.Data) {
+                    Alert.alert("Success", "Pet berhasil di decline", 
+                        [ { text: "OK", onPress: () => navigation.goBack()
+        
+                    }]);
+                }
+            } catch(e) {
+                console.log("error", e);
+            }
         }
     }
 

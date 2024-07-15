@@ -46,6 +46,7 @@ export const PetListScreen : FC<NoHeaderProps> = ({navigation, route} : any) => 
     const onRefresh = () => {
         try { 
             setRefreshing(true);
+            fetchPet();
             fetchData();
         } catch(e) {
             console.log(e);
@@ -82,7 +83,6 @@ export const PetListScreen : FC<NoHeaderProps> = ({navigation, route} : any) => 
 
     const fetchPet = async () => {
         try{
-            let petIsNull = selectedItems.length > 0;
             let url = `${BackendApiUri.getPetList}/?search=${search}&location=${filterLocation.label}&shelter_name=${shelterName}`
             if(selectedItems.length > 0 ) {
                 for(let i=0; i<selectedItems.length; i++) {
@@ -98,6 +98,8 @@ export const PetListScreen : FC<NoHeaderProps> = ({navigation, route} : any) => 
                 } else {
                     setPetData(responsePet.data);
                 }
+            } else {
+                setPetData([]);
             }
         } catch(e) {
             throw Error;
@@ -108,9 +110,8 @@ export const PetListScreen : FC<NoHeaderProps> = ({navigation, route} : any) => 
 
     const fetchData = async () => {
         const data = mergePets();
-        const atas = data.filter(item => item.ShelterId != null);
+        const atas = data.filter(item => item.ShelterId != null && item.IsAdopted == false);
         setMergedData(atas);
-        setRefreshing(false);
     };
 
     useEffect(() => {
