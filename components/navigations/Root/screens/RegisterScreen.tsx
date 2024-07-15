@@ -81,17 +81,29 @@ export const RegisterScreen: FC<GuestNavigationStackScreenProps<'Register'>> = (
 
     const fetchProvinceData = async () => {
         const res = await getProvince();
-        setProvinces(res?.data);
+        if(res?.data != null) {
+            setProvinces(res?.data)
+        } else {
+            setProvinces([]);
+        }
     };
 
     const fetchKabupatenData = async (provinceId : string) => {
         const res = await getKabupaten(provinceId);
-        setKabupatens(res?.data);
+        if(res?.data != null) {
+            setKabupatens(res?.data);
+        } else {
+            setKabupatens([]);
+        }
     };
 
     const fetchCityData = async (kabupatenId : string) => {
         const res = await getCity(kabupatenId);
-        setCities(res?.data);
+        if(res?.data != null) {
+            setCities(res?.data);
+        } else {
+            setCities([]);
+        }
     }
 
     const onKabupatenChange = (kabupatenId: string) => {
