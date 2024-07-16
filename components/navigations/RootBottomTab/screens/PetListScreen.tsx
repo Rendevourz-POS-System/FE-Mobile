@@ -284,8 +284,14 @@ export const PetListScreen : FC<NoHeaderProps> = ({navigation, route} : any) => 
                                         <View className="mx-2">
                                             <View className="flex flex-row items-center justify-between my-2">
                                                 <Text className='text-xl font-bold my-2'>Location</Text>
-                                                <TouchableOpacity className='px-2 rounded-2xl my-2' onPress={() => setFilterLocation({label: "", value: ""})}>
-                                                    <Text className='text-[#4689FD] text-lg font-bold'>Reset</Text>
+                                                <TouchableOpacity className='px-2 rounded-2xl my-2' 
+                                                onPress={() => {
+                                                    setFilterLocation({label: "", value: ""})
+                                                    setShelterName("")
+                                                    setSelectedItems([])
+                                                }}
+                                                >
+                                                    <Text className='text-[#4689FD] text-lg font-bold'>Reset all</Text>
                                                 </TouchableOpacity>
                                             </View>
                                             <Dropdown
