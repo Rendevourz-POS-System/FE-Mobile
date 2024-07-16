@@ -291,7 +291,7 @@ export const PetListScreen : FC<NoHeaderProps> = ({navigation, route} : any) => 
                                                     setSelectedItems([])
                                                 }}
                                                 >
-                                                    <Text className='text-[#4689FD] text-lg font-bold'>Reset all</Text>
+                                                    <Text className='text-[#4689FD] text-lg font-bold'>Reset</Text>
                                                 </TouchableOpacity>
                                             </View>
                                             <Dropdown
