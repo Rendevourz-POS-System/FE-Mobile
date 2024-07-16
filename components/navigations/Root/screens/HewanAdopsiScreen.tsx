@@ -15,14 +15,24 @@ export const HewanAdopsiScreen: FC<NoHeaderNavigationStackScreenProps<'HewanAdop
     
     const fetchPetData = async () => {
         try{
-            const responsePet = await get(`${BackendApiUri.getPetList}/?shelter_id=${route.params.shelterId}&page=1&page_size=200`)
-            if(responsePet && responsePet.status === 200) {
-                setPetData(responsePet.data);
+            const responsePet = await get(`${BackendApiUri.getPetList}/?shelter_id=${route.params.shelterId}`)
+            if(responsePet.data && responsePet.status === 200) {
+                const userShelter = await get(`${BackendApiUri.getUserShelter}`);
+                if(userShelter.data.Data) {
+                    const popUserPet = responsePet.data.filter((pet: PetData) => pet.ShelterId !== userShelter.data.Data.Id);
+                    setPetData(popUserPet);
+                } else {
+                    setPetData(responsePet.data);
+                }
+            } else {
+                setPetData([]);
             }
         } catch(e) {
             throw Error;
         } 
     };
+
+    console.log(petData)
 
     useEffect(() => {
         fetchPetData();
@@ -92,7 +102,7 @@ export const HewanAdopsiScreen: FC<NoHeaderNavigationStackScreenProps<'HewanAdop
                                             <View className="flex-row">
                                                 <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10 }}>
                                                     <FontAwesome6 name='location-dot' size={20} color='#4689FD' />
-                                                    <Text style={{ fontSize: 14, fontWeight: 'normal', marginLeft: 5 }}>Jakarta Barat</Text>
+                                                    <Text style={{ fontSize: 14, fontWeight: 'normal', marginLeft: 5 }}>{pet.ShelterLocation}</Text>
                                                 </View>
                                             </View>
                                         </View>
