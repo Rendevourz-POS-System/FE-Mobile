@@ -23,7 +23,7 @@ const createShelterFormSchema = z.object({
     ShelterContactNumber: z.string({ required_error: "Kontak shelter tidak boleh kosong" }),
     ShelterDescription: z.string({ required_error: 'Deskripsi shelter tidak boleh kosong' }),
     PetTypeAccepted: z.string().array().nonempty({message: "Jenis hewan tidak boleh kosong"}),
-    TotalPet: z.number({ required_error: "Total hewan tidak boleh kosong" }).int().positive({message: "Harus lebih dari 0"}).nonnegative("Total hewan harus merupakan bilangan bulat positif"),
+    TotalPet: z.number().default(0),
     BankAccountNumber: z.string({ required_error: 'Nomor rekening bank tidak boleh kosong' }).min(10, { message: 'Nomor rekening harus lebih dari 10 digit' }).refine(value => /^\d+$/.test(value), { message: "Nomor rekening harus berupa angka (0-9)" }),
     Pin: z.string({ required_error: "Pin tidak boleh kosong" }).min(6, { message: "Pin tidak boleh kurang dari 6 karakter" }).refine(value => /^\d+$/.test(value), { message: "Pin harus berupa angka (0-9)" }),
 })
@@ -329,16 +329,11 @@ export const CreateShelter = () => {
                     render={() => (
                         <TextInput
                             style={{ flex: 1 }}
-                            placeholder="Masukkan Total Hewan Shelter"
+                            placeholder="0"
                             keyboardType="numeric"
-                            value={inputTotalPetValue?.toString() ?? ''}
-                            onChangeText={(text) => {
-                                const numericValue = parseFloat(text);
-                                if (!isNaN(numericValue)) {
-                                    setInputTotalPetValue(numericValue);
-                                    setValue("TotalPet", numericValue)
-                                }
-                            }}
+                            value={"0"}
+                            defaultValue="0"
+                            editable={false}
                         />
                     )}
                 />

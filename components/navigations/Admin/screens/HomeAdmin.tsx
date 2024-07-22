@@ -42,9 +42,14 @@ export const HomeAdmin: FC<AdminNavigationStackScreenProps<'HomeAdmin'>> = ({ na
     }, [])
 
     const fetchUser = async () => {
+        setIsLoading(true);
+        
+        // Delay execution by 5 seconds
+        await new Promise(resolve => setTimeout(resolve, 5000));
+    
         try {
             const response = await get(`${BackendApiUri.getUser}`);
-            if (response && response.status === 200) {
+            if (response.data != null && response.status === 200) {
                 const filteredData = response.data.filter((item: any) => item.Email !== 'administrator@gmail.com');
                 setUserData(filteredData);
             } else {
@@ -56,6 +61,7 @@ export const HomeAdmin: FC<AdminNavigationStackScreenProps<'HomeAdmin'>> = ({ na
             setIsLoading(false);
         }
     };
+    
 
     const fetchShelter = async () => {
         try {
@@ -133,7 +139,7 @@ export const HomeAdmin: FC<AdminNavigationStackScreenProps<'HomeAdmin'>> = ({ na
                         const response = await deletes(`${BackendApiUri.deleteAdminUser}/${id}`);
                         if (response) {
                             Alert.alert(`Anda berhasil menghapus ${name}`);
-                            fetchUser();
+                            await fetchUser();
                         }
                     } catch (e) {
                         Alert.alert(`Anda gagal menghapus ${name}`);

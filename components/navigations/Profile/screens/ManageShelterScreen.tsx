@@ -25,7 +25,7 @@ const editShelterFormSchema = z.object({
     ShelterContactNumber: z.string({ required_error: "Kontak shelter tidak boleh kosong" }),
     ShelterDescription: z.string({ required_error: 'Deskripsi shelter tidak boleh kosong' }),
     PetTypeAccepted: z.string().array().nonempty(),
-    TotalPet: z.number({ required_error: "Total hewan tidak boleh kosong" }).int().positive().nonnegative("Total hewan harus merupakan bilangan bulat positif"),
+    TotalPet: z.number({ required_error: "Total hewan tidak boleh kosong" }).nonnegative("Total hewan tidak boleh negatif"),
     BankAccountNumber: z.string({ required_error: 'Nomor rekening bank tidak boleh kosong' }).min(10, { message: 'Nomor rekening harus lebih dari 10 digit' }).refine(value => /^\d+$/.test(value), { message: "Nomor rekening harus berupa angka (0-9)" }),
     Pin: z.string({ required_error: "Pin tidak boleh kosong" }).min(6, { message: "Pin tidak boleh kurang dari 6 karakter" }).refine(value => /^\d+$/.test(value), { message: "Pin harus berupa angka (0-9)" }),
     // OldImage: z.array(z.string()).optional()
@@ -81,6 +81,7 @@ export const ManageShelterScreen: FC<ProfileNavigationStackScreenProps<'ManageSh
             Pin: data.Pin,
             OldImage: shelterUser?.ImagePath
         }
+        console.log(payload)
         let payloadString = JSON.stringify(payload);
         const formData = new FormData();
         if(image) {
@@ -369,12 +370,7 @@ export const ManageShelterScreen: FC<ProfileNavigationStackScreenProps<'ManageSh
                                         <TextInput
                                             style={{ flex: 1 }}
                                             placeholder="Total hewan"
-                                            onChangeText={(text: string) => {
-                                                const numericValue = parseInt(text);
-                                                if (!isNaN(numericValue)) {
-                                                    setValue('TotalPet', numericValue);
-                                                }
-                                            }}
+                                            editable={false}
                                             value={value?.toString()}
                                             keyboardType="numeric"
                                         />

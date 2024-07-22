@@ -106,7 +106,7 @@ export const ApprovalPetScreen: FC<ProfileNavigationStackScreenProps<"ApprovalPe
     }
 
     const handleApprove = async () => {
-        if(requestDetail.Type === 'Adoption') {
+        if(requestDetail.Type === 'adoption') {
             const body = {
                 RequestId : route.params.requestId,
                 Status: 'approved'
@@ -146,13 +146,11 @@ export const ApprovalPetScreen: FC<ProfileNavigationStackScreenProps<"ApprovalPe
     }
 
     const handleDecline = async () => {
-        if(requestDetail.Type === 'Adoption') {
+        if(requestDetail.Type === 'adoption') {
             const body = {
                 RequestId : route.params.requestId,
                 Status: 'rejected'
             }
-
-            console.log(body)
 
             try {
                 const res = await post(`${BackendApiUri.updateStatusAdoption}`,body);
