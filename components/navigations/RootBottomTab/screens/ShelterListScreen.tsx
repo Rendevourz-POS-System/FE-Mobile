@@ -41,7 +41,7 @@ export const ShelterListScreen : FC<NoHeaderProps> = ({navigation, route} : any)
     });
     // console.log(filterLocation)
     const [applyPressed, setApplyPressed] = useState<boolean>(false);
-    const [isLoading, setIsLoading] = useState<boolean>(true);
+    const [isLoading, setIsLoading] = useState<boolean>(false);
     const [search, setSearch] = useState<string>('');
     const [debounceValue] = useDebounce(search, 1000);
     const bottomSheetModalRef = useRef<BottomSheetModal>(null);
@@ -52,6 +52,7 @@ export const ShelterListScreen : FC<NoHeaderProps> = ({navigation, route} : any)
     const onRefresh = async () => {
         try{
             setRefreshing(true);
+            setIsLoading(true);
             await fetchData();
         } catch(e){
             console.log(e);
