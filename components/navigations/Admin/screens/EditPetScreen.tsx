@@ -89,7 +89,7 @@ export const EditPetScreen: FC<AdminNavigationStackScreenProps<'EditPetScreen'>>
             PetGender: data.PetGender,
             IsVaccinated: data.IsVaccinated == "true" ? true : false,
             PetDescription: data.PetDescription,
-            OldImage: petData?.Data.Image,
+            OldImage: petData?.Data.OldImage,
         }
         const formData = new FormData();
 
