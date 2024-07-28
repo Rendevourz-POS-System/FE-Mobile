@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "Pet Adopter",
+    "name": "AdaPet",
     "entryPoint": "./App.tsx",
     "slug": "shelter-app",
     "version": "1.0.0",
