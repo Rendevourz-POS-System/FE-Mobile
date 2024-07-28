@@ -112,18 +112,6 @@ export const ManagePetScreen: FC<ProfileNavigationStackScreenProps<"ManagePetScr
     }));
 
     const onSubmit = async (data: EditPetFormType) => {
-        const payload = {
-            Id: route.params.petId,
-            ShelterId: petData?.Data.ShelterId,
-            PetName: data.PetName,
-            PetAge: data.PetAge,
-            PetType: data.PetType,
-            PetGender: data.PetGender,
-            IsVaccinated: data.IsVaccinated == "true" ? true : false,
-            PetDescription: data.PetDescription,
-            OldImage: petData?.Data.OldImage,
-            ReadyToAdopt : data.ReadyToAdopt
-        }
         const formData = new FormData();
 
         // Add image file
@@ -134,6 +122,20 @@ export const ManagePetScreen: FC<ProfileNavigationStackScreenProps<"ManagePetScr
                 name: fileInfo.uri.split('/').pop(),
                 type: 'image/jpeg'
             } as any); // You can also check and set the type dynamically based on file extension
+        }
+
+        const payload = {
+            Id: route.params.petId,
+            ShelterId: petData?.Data.ShelterId,
+            PetName: data.PetName,
+            PetAge: data.PetAge,
+            PetType: data.PetType,
+            PetGender: data.PetGender,
+            IsVaccinated: data.IsVaccinated == "true" ? true : false,
+            PetDescription: data.PetDescription,
+            OldImage: image ? petData?.Data.Image : [],
+            ImagePath: !image ? petData?.Data.Image : [],
+            ReadyToAdopt : data.ReadyToAdopt
         }
 
         formData.append('data', JSON.stringify(payload));

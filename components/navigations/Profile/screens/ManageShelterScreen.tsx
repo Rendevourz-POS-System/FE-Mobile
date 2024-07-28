@@ -68,6 +68,16 @@ export const ManageShelterScreen: FC<ProfileNavigationStackScreenProps<'ManageSh
         fetchData();
     }, []);
     const onSubmit = async (data: CreateShelterFormType) => {
+        const formData = new FormData();
+        if(image) {
+            console.log("masuk imagee nih")
+            const fileInfo = await FileSystem.getInfoAsync(image);
+            formData.append('files', {
+                uri: image,
+                name: fileInfo.uri.split('/').pop(),
+                type: 'image/jpeg'
+            } as any); // You can also check and set the type dynamically based on file extension
+        }
         const payload = {
             ShelterName: data.ShelterName,
             ShelterLocation: data.ShelterLocation,
@@ -79,20 +89,11 @@ export const ManageShelterScreen: FC<ProfileNavigationStackScreenProps<'ManageSh
             TotalPet: data.TotalPet,
             BankAccountNumber: data.BankAccountNumber,
             Pin: data.Pin,
-            OldImage: shelterUser?.ImagePath
+            OldImage: image ? shelterUser?.ImagePath : [],
+            ImagePath: !image ? shelterUser?.ImagePath : []
         }
-        console.log(payload)
+        
         let payloadString = JSON.stringify(payload);
-        const formData = new FormData();
-        if(image) {
-            console.log("masuk imagee nih")
-            const fileInfo = await FileSystem.getInfoAsync(image);
-            formData.append('files', {
-                uri: image,
-                name: fileInfo.uri.split('/').pop(),
-                type: 'image/jpeg'
-            } as any); // You can also check and set the type dynamically based on file extension
-        }
 
         formData.append('data', payloadString);
         // return;
