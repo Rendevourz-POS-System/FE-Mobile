@@ -1,4 +1,4 @@
-import { FontAwesome, Ionicons } from "@expo/vector-icons";
+import { FontAwesome, FontAwesome6, Ionicons } from "@expo/vector-icons";
 import React, { FC, useCallback, useEffect, useRef, useState } from "react";
 import { ScrollView, Text, View, StyleSheet, TouchableOpacity, TextInput, Alert, Image, BackHandler } from "react-native";
 import { z } from "zod";
@@ -38,6 +38,7 @@ export const CreateShelter = () => {
     const [petTypes, setPetTypes] = useState<PetType[]>([]);
     const [shelterLocation, setShelterLocation] = useState<ShelterLocation[]>([]);
     const [selected, setSelected] = useState<string[]>([]);
+    const [hidePass, setHidePass] = useState(true);
     const [image, setImage] = useState<string | null>(null);
     const imgDir = FileSystem.documentDirectory + 'images/';
     const bottomSheetModalRef = useRef<BottomSheetModal>(null);
@@ -398,11 +399,17 @@ export const CreateShelter = () => {
                     name="Pin"
                     control={control}
                     render={() => (
-                        <TextInput
-                            placeholder="Masukkan Pin"
-                            style={{ flex: 1 }}
-                            onChangeText={(text: string) => setValue('Pin', text)}
-                        />
+                        <>
+                            <TextInput
+                                placeholder="Masukkan Pin"
+                                secureTextEntry={hidePass ? true : false}
+                                inputMode="numeric"
+                                keyboardType="numeric"
+                                style={{ flex: 1 }}
+                                onChangeText={(text: string) => setValue('Pin', text)}
+                            />
+                            <FontAwesome6 name={hidePass ? "eye-slash" : "eye"} size={16} color="grey" onPress={() => setHidePass(!hidePass)} />
+                        </>
                     )}
                 />
             </View>

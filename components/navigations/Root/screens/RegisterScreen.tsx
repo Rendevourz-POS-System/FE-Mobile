@@ -1,6 +1,6 @@
 import React, { FC, useEffect, useState } from "react";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
-import { View, Text, Image, TextInput, StyleSheet, TouchableOpacity, ScrollView, Button, ActivityIndicator } from "react-native";
+import { View, Text, Image, TextInput, StyleSheet, TouchableOpacity, ScrollView, Button, ActivityIndicator, Alert } from "react-native";
 import { Icon } from "react-native-elements";
 import { number, z, ZodNumber } from "zod";
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -163,11 +163,14 @@ export const RegisterScreen: FC<GuestNavigationStackScreenProps<'Register'>> = (
         };
         try {
             const response = await post(BackendApiUri.registerUser, body);
-            if(response.status === 200) {
+            if(response.data.Verified === false) {
                 navigation.navigate("VerifyOTP", {userId : response.data.Id, email : body.Email});
             }
+            else {
+                Alert.alert('Email is already exists', 'Please use another email address', [{ text: "OK" }]);
+            }
         } catch (e) {
-            console.log(e)
+            Alert.alert('NIK is already exists', 'Please use another NIK', [{ text: "OK" }]);
         }
     }
 

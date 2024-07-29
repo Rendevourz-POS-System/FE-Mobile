@@ -1,4 +1,4 @@
-import { FontAwesome, Ionicons } from "@expo/vector-icons";
+import { FontAwesome, FontAwesome6, Ionicons } from "@expo/vector-icons";
 import React, { FC, useCallback, useEffect, useRef, useState } from "react";
 import { ScrollView, Text, View, StyleSheet, TouchableOpacity, TextInput, Alert, Image } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
@@ -45,6 +45,7 @@ export const ManageShelterScreen: FC<ProfileNavigationStackScreenProps<'ManageSh
         resolver: zodResolver(editShelterFormSchema),
     });
     const [shelterUser, setShelterUser] = useState<ManageShelterUser>();
+    const [hidePass, setHidePass] = useState(true);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -449,12 +450,18 @@ export const ManageShelterScreen: FC<ProfileNavigationStackScreenProps<'ManageSh
                                     name="Pin"
                                     control={control}
                                     render={({ field: { value } }) => (
-                                        <TextInput
-                                            placeholder="Masukkan Pin"
-                                            style={{ flex: 1 }}
-                                            onChangeText={(text: string) => setValue('Pin', text)}
-                                            value={value}
-                                        />
+                                        <>
+                                            <TextInput
+                                                placeholder="Masukkan Pin"
+                                                style={{ flex: 1 }}
+                                                onChangeText={(text: string) => setValue('Pin', text)}
+                                                value={value}
+                                                keyboardType="numeric"
+                                                inputMode="numeric"
+                                                secureTextEntry={hidePass ? true : false}
+                                            />
+                                            <FontAwesome6 name={hidePass ? "eye-slash" : "eye"} size={16} color="grey" onPress={() => setHidePass(!hidePass)} />
+                                        </>
                                     )}
                                 />
                             </View>
@@ -515,7 +522,8 @@ const styles = StyleSheet.create({
         borderBottomWidth: 2,
         borderRadius: 10,
         flexDirection: 'row',
-        justifyContent: 'space-between'
+        justifyContent: 'space-between',
+        alignItems: 'center'
     },
     errorMessage: {
         color: 'red',

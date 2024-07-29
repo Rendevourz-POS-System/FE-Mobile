@@ -27,6 +27,7 @@ export const ShelterScreen: FC<ProfileNavigationStackScreenProps<'ShelterScreen'
     const [requestData, setRequestData] = useState<Request[]>([]);
     const [mergedPetData, setMergedPetData] = useState<PetData[]>([]);
     const [refreshing, setRefreshing] = useState(false);
+    const [hidePass, setHidePass] = useState(true);
 
     const onRefresh = async () => {
         try {
@@ -286,10 +287,13 @@ export const ShelterScreen: FC<ProfileNavigationStackScreenProps<'ShelterScreen'
                                                         <View style={styles.inputBox}>
                                                             <TextInput
                                                                 value={inputValue}
+                                                                secureTextEntry={hidePass ? true : false}
                                                                 onChangeText={handleInputChange}
                                                                 placeholder="Masukkan Pin"
                                                                 keyboardType="numeric"
+                                                                inputMode="numeric"
                                                             />
+                                                            <FontAwesome6 name={hidePass ? "eye-slash" : "eye"} size={16} color="grey" onPress={() => setHidePass(!hidePass)} />
                                                         </View>
                                                         {errorMessage != "" && <Text className="text-[#FF0000]">{errorMessage}</Text>}
                                                         <View className="mt-4 mb-3 flex-row justify-between" >
@@ -358,7 +362,9 @@ const styles = StyleSheet.create({
         borderColor: "#CECECE",
         borderWidth: 2,
         borderRadius: 8,
-        flexDirection: 'row'
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center'
     },
     body: {
         backgroundColor: 'white',
