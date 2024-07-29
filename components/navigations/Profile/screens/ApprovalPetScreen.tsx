@@ -32,7 +32,7 @@ export const ApprovalPetScreen: FC<ProfileNavigationStackScreenProps<"ApprovalPe
             PetDescription: "",
             ShelterLocation: "",
             IsVaccinated: false,
-            OldImage: [],
+            Image: [],
             ImageBase64: [],
             CreatedAt: new Date(),
         }

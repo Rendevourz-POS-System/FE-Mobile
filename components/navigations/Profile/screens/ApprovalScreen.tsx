@@ -173,7 +173,7 @@ export const ApprovalScreen: FC<ProfileNavigationStackScreenProps<"ApprovalScree
                     underlayColor="transparent"
                     className={`bg-[#4689FD] opacity-90`}
                 >
-                    <Text className="text-white font-bold text-md">{item.Type === "Rescue" ? "Rescue" : item.Type === "Adoption" ? "Adoption" : "Surrender"}</Text>
+                    <Text className="text-white font-bold text-md">{item.Type === "rescue" ? "Rescue" : item.Type === "adoption" ? "Adoption" : "Surrender"}</Text>
                 </TouchableHighlight>
                 <View style={styles.petInfoContainer}>
                     <View style={styles.petInfo}>
@@ -201,6 +201,8 @@ export const ApprovalScreen: FC<ProfileNavigationStackScreenProps<"ApprovalScree
             </TouchableOpacity>
         )
     }
+
+    console.log(mergedData)
 
     return (
         <SafeAreaProvider style={styles.container}>

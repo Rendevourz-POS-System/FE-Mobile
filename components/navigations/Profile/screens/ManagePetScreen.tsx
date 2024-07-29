@@ -138,6 +138,8 @@ export const ManagePetScreen: FC<ProfileNavigationStackScreenProps<"ManagePetScr
             ReadyToAdopt : data.ReadyToAdopt
         }
 
+        console.log(payload)
+
         formData.append('data', JSON.stringify(payload));
         // const bodyPutAdopt = {
         //     Id: route.params.petId,
