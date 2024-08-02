@@ -1,8 +1,8 @@
 import { Ionicons } from "@expo/vector-icons";
 import React, { FC, useEffect, useState } from "react";
-import { SectionList, Text, View, StyleSheet } from "react-native";
+import { SectionList, Text, View, StyleSheet, TouchableOpacity } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
-import { ProfileNavigationStackScreenProps } from "../../../StackParams/StackScreenProps";
+import { NoHeaderNavigationStackScreenProps, ProfileNavigationStackScreenProps } from "../../../StackParams/StackScreenProps";
 import { get } from "../../../../functions/Fetch";
 import { BackendApiUri } from "../../../../functions/BackendApiUri";
 import { useAuth } from "../../../../app/context/AuthContext";
@@ -30,7 +30,7 @@ interface GroupedHistory {
     data: History[];
 }
 
-export const HistoryScreen: FC<ProfileNavigationStackScreenProps<'HistoryScreen'>> = ({ navigation }) => {
+export const HistoryScreen: FC<NoHeaderNavigationStackScreenProps<'PetDetailScreen'>> = ({ navigation }) => {
     const { authState } = useAuth();
     const [data, setData] = useState<History[]>([]);
     const [groupedData, setGroupedData] = useState<GroupedHistory[]>([]);
@@ -106,15 +106,19 @@ export const HistoryScreen: FC<ProfileNavigationStackScreenProps<'HistoryScreen'
     };
 
     const renderHistoryItem = ({ item }: { item: History }) => (
-        <View className="mx-5 my-2 bg-blue-200 rounded-md px-4 py-3">
-            <View className="flex-row justify-between">
-                <Text>{item.Type} {item.Status}</Text>
-                <Text>{formatDate(item.RequestedAt)} {item.CompletedAt && (" - " + formatDate(item.CompletedAt))}</Text>
+        <TouchableOpacity onPress={() => {
+            navigation.navigate('PetDetailScreen', { petId: item.PetId })
+        }}>
+            <View className="mx-5 my-2 bg-blue-200 rounded-md px-4 py-3">
+                <View className="flex-row justify-between">
+                    <Text>{item.Type} {item.Status}</Text>
+                    <Text>{formatDate(item.RequestedAt)} {item.CompletedAt && (" - " + formatDate(item.CompletedAt))}</Text>
+                </View>
+                <View>
+                    <Text className="text-xs font-light mt-1">{item.Reason}</Text>
+                </View>
             </View>
-            <View>
-                <Text className="text-xs font-light mt-1">{item.Reason}</Text>
-            </View>
-        </View>
+        </TouchableOpacity>
     );
 
     const renderSectionHeader = ({ section }: { section: { title: string } }) => (
