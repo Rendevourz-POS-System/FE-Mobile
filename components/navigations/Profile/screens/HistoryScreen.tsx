@@ -105,21 +105,27 @@ export const HistoryScreen: FC<NoHeaderNavigationStackScreenProps<'PetDetailScre
         return date.toLocaleTimeString('id-ID', timeOptions);
     };
 
-    const renderHistoryItem = ({ item }: { item: History }) => (
-        <TouchableOpacity onPress={() => {
-            navigation.navigate('PetDetailScreen', { petId: item.PetId })
-        }}>
-            <View className="mx-5 my-2 bg-blue-200 rounded-md px-4 py-3">
-                <View className="flex-row justify-between">
-                    <Text>{item.Type} {item.Status}</Text>
-                    <Text>{formatDate(item.RequestedAt)} {item.CompletedAt && (" - " + formatDate(item.CompletedAt))}</Text>
+    const renderHistoryItem = ({ item }: { item: History }) => {
+        return (
+            <TouchableOpacity 
+            activeOpacity={item.Type != "donation" ? 0 : 1}
+            onPress={() => {
+                if(item.Type != "donation") {
+                    navigation.navigate('PetDetailScreen', { petId: item.PetId })
+                } 
+            }}>
+                <View className="mx-5 my-2 bg-blue-200 rounded-md px-4 py-3">
+                    <View className="flex-row justify-between">
+                        <Text>{item.Type} {item.Status}</Text>
+                        <Text>{formatDate(item.RequestedAt)} {item.CompletedAt && (" - " + formatDate(item.CompletedAt))}</Text>
+                    </View>
+                    <View>
+                        <Text className="text-xs font-light mt-1">{item.Reason}</Text>
+                    </View>
                 </View>
-                <View>
-                    <Text className="text-xs font-light mt-1">{item.Reason}</Text>
-                </View>
-            </View>
-        </TouchableOpacity>
-    );
+            </TouchableOpacity>
+        )
+    };
 
     const renderSectionHeader = ({ section }: { section: { title: string } }) => (
         <View style={styles.sectionHeader}>
