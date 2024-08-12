@@ -89,7 +89,7 @@ export const EditPetScreen: FC<AdminNavigationStackScreenProps<'EditPetScreen'>>
             PetGender: data.PetGender,
             IsVaccinated: data.IsVaccinated == "true" ? true : false,
             PetDescription: data.PetDescription,
-            OldImage: petData?.Data.OldImage,
+            OldImage: petData?.Data.Image,
         }
         const formData = new FormData();
 
@@ -185,11 +185,11 @@ export const EditPetScreen: FC<AdminNavigationStackScreenProps<'EditPetScreen'>>
                                 <View className="flex flex-row">
                                     <View className="flex-row justify-start items-center mr-5">
                                         <RadioButton.Android value="Male" color={'#4689FD'} uncheckedColor="#808080" />
-                                        <Text className="text-base text-[#808080]">Laki-Laki</Text>
+                                        <Text className="text-base text-[#808080]">Jantan</Text>
                                     </View>
                                     <View className="flex-row justify-start items-center">
                                         <RadioButton.Android value="Female" color={'#4689FD'} uncheckedColor="#808080" />
-                                        <Text className="text-base text-[#808080]">Perempuan</Text>
+                                        <Text className="text-base text-[#808080]">Betina</Text>
                                     </View>
                                 </View>
                             </RadioButton.Group>

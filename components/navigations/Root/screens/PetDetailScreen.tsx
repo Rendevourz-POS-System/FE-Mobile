@@ -139,7 +139,7 @@ export const PetDetailScreen: FC<NoHeaderNavigationStackScreenProps<"PetDetailSc
                             <Text className='mt-2 text-base text-[#8A8A8A]'>{data?.Data.PetDescription}</Text>
                         </View>
 
-                        <View className='mt-5 items-center pb-7 px-5'>
+                        {/* <View className='mt-5 items-center pb-7 px-5'>
                             {data.Data.IsAdopted == false && data.Data.ReadyToAdopt ? (
                                 <TouchableOpacity 
                                     style={styles.adopsiButton} 
@@ -164,7 +164,7 @@ export const PetDetailScreen: FC<NoHeaderNavigationStackScreenProps<"PetDetailSc
                                 </TouchableOpacity>
                             )
                             }
-                        </View>
+                        </View> */}
 
                     </ScrollView>
 

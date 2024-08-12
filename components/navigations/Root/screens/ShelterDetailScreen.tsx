@@ -214,24 +214,20 @@ export const ShelterDetailScreen: FC<NoHeaderNavigationStackScreenProps<'Shelter
                             <View className='flex-row justify-around'>
                                 <TouchableOpacity style={styles.buttonBox} onPress={() => navigation.navigate("HewanAdopsiScreen", { shelterId: route.params.shelterId })}>
                                     <MaterialIcons name="pets" size={24} color="white" />
-                                    <Text style={styles.fontButton} className='ml-3 text-s text-center'>Adoption Pet</Text>
-                                </TouchableOpacity>
-                                <TouchableOpacity style={styles.buttonBox} onPress={() => navigation.navigate('Create', { screen: 'CreateSurrenderScreen', params: { shelterId: route.params.shelterId, type: 'Surrender' } })}>
-                                    <FontAwesome6 name="house-medical-circle-exclamation" size={24} color="white" />
-                                    <Text style={styles.fontButton} className='ml-3 text-s text-center'>Surrender Pet</Text>
-                                </TouchableOpacity>
-                            </View>
-
-                            <View className='mt-3 flex-row justify-around'>
-                                <TouchableOpacity disabled={data.Data.BankAccountNumber === ""} style={styles.buttonBox} onPress={() => navigation.navigate("DonateScreen", { shelterId: route.params.shelterId, bankNumber: data.Data.BankAccountNumber })}>
-                                    <FontAwesome6 name="hand-holding-heart" size={24} color="white" />
-                                    <Text style={styles.fontButton} className='ml-3 text-s text-center'>Donation</Text>
+                                    <Text style={styles.fontButton} className='ml-3 text-s text-center'>Pet List</Text>
                                 </TouchableOpacity>
                                 <TouchableOpacity style={styles.buttonBox} onPress={() => navigation.navigate('Create', { screen: 'CreateRescueScreen', params: { shelterId: route.params.shelterId, type: 'Rescue' } })}>
                                     <MaterialIcons name="warning" size={24} color="white" />
                                     <Text style={styles.fontButton} className='ml-3 text-s text-center'>Rescue</Text>
                                 </TouchableOpacity>
                             </View>
+
+                            {/* <View className='mt-3 flex-row justify-around'>
+                                <TouchableOpacity disabled={data.Data.BankAccountNumber === ""} style={styles.buttonBox} onPress={() => navigation.navigate("DonateScreen", { shelterId: route.params.shelterId, bankNumber: data.Data.BankAccountNumber })}>
+                                    <FontAwesome6 name="hand-holding-heart" size={24} color="white" />
+                                    <Text style={styles.fontButton} className='ml-3 text-s text-center'>Donation</Text>
+                                </TouchableOpacity>
+                            </View> */}
                         </View>
                     </ScrollView>
                 </>

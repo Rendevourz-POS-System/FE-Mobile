@@ -13,7 +13,7 @@ export const CreateScreen: FC<CreateNavigationStackScreenProps<'ChooseScreen'>> 
                     <Text className="text-4xl font-bold">Choose What To Do</Text>
                 </View>
                 <View className="w-full h-full flex flex-row justify-center items-center">
-                    <TouchableOpacity
+                    {/* <TouchableOpacity
                         className="px-5 py-20 bg-blue-600 w-40 rounded-xl items-center"
                         onPress={() => navigation.navigate("ChooseShelter", { type: 'Surrender' })}
                     >
@@ -21,9 +21,9 @@ export const CreateScreen: FC<CreateNavigationStackScreenProps<'ChooseScreen'>> 
                             <FontAwesome6 name="house-medical-circle-exclamation" size={55} color="white" />
                         </View>
                         <Text className="text-center text-white font-bold text-lg">Create Pet Surrender</Text>
-                    </TouchableOpacity>
+                    </TouchableOpacity> */}
                     <TouchableOpacity
-                        className="px-5 py-20 bg-blue-600 w-40 rounded-xl items-center ml-8"
+                        className="px-5 py-20 bg-blue-600 w-40 rounded-xl items-center mb-12"
                         onPress={() => navigation.navigate("ChooseShelter", { type: 'Rescue' })}
                     >
                         <View className="mb-3">
