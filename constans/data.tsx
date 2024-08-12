@@ -2,7 +2,6 @@
 export const dataJenisHewan = [
     { key: '1', value: 'Dog' },
     { key: '2', value: 'Cat' },
-    { key: '3', value: 'Rabbit' }
 ]
 
 export const dataSpesiesHewan = {

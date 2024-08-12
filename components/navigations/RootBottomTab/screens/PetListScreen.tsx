@@ -153,7 +153,7 @@ export const PetListScreen : FC<NoHeaderProps> = ({navigation, route} : any) => 
     const petImages : PetImageMap = {
         Dog: require('../../../../assets/icon_Dog.jpg'),
         Cat: require('../../../../assets/icon_Cat.jpg'),
-        Rabbit: require('../../../../assets/icon_Rabbit.jpg'),
+        // Rabbit: require('../../../../assets/icon_Rabbit.jpg'),
     };
 
     const renderItem = (item : Location) => {
