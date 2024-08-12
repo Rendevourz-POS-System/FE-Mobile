@@ -186,7 +186,7 @@ export const ShelterDetailScreen: FC<NoHeaderNavigationStackScreenProps<'Shelter
                                     <Text className="text-black font-bold">{data.Data.TotalPet}</Text>
                                 </View>
                                 <View className="flex-1 border-2 border-gray-300 px-4 py-3 mx-1 text-center rounded-xl items-center justify-center" style={{ height: 75 }}>
-                                    <Text className="text-gray-500 text-center">Adopsi Available</Text>
+                                    <Text className="text-gray-500 text-center">Available</Text>
                                     <Text className="text-black font-bold">{data.Data.ShelterCapacity}</Text>
                                 </View>
                                 <View className="flex-1 border-2 border-gray-300 px-4 py-[4] mx-1 text-center rounded-xl items-center justify-center" style={{ height: 75 }}>
